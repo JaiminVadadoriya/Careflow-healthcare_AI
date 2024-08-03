@@ -1,0 +1,45 @@
+<!-- <p>login works!</p> -->
+<div class="container">
+  <div class="box">
+    <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" fxLayout="column"  fxLayoutAlign="center center" fxLayoutGap="10px">
+      <mat-form-field class="example-full-width">
+        <mat-label>Enter your Email</mat-label>
+        <input
+          matInput
+          placeholder="Ex. Nik@gmail.com"
+          type="email"
+          formControlName="email"
+          [errorStateMatcher]="matcher"
+        />
+        <mat-icon matPrefix>mail</mat-icon>
+        @if (loginForm.controls['email'].hasError('email') &&
+        !loginForm.controls['email'].hasError('required')) {
+        <mat-error>Please enter a valid email address</mat-error>
+        } @if (loginForm.controls['email'].hasError('required')) {
+        <mat-error>Email is <strong>required</strong></mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field>
+        <input
+          matInput
+          placeholder="Password"
+          [type]="hide ? 'password' : 'text'"
+          formControlName="password"
+          required
+          [errorStateMatcher]="matcher"
+        />
+        
+        <mat-icon matPrefix>password</mat-icon>
+        <mat-icon matSuffix (click)="hide = !hide">{{
+          hide ? "visibility_off" : "visibility"
+        }}</mat-icon>
+        @if (loginForm.controls['password'].hasError('required')){
+        <mat-error>Enter your password</mat-error>
+        }
+      </mat-form-field>
+      <button mat-flat-button type="submit" style="width:100% ">Login</button>
+    </form>
+  </div>
+  <!-- login image -->
+  <!-- <img src="" alt=""> -->
+</div>
