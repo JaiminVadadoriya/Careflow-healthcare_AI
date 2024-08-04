@@ -1,0 +1,40 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+/* Styles for the chat window */
+.chat-window {
+    margin: 20px;
+
+}
+.messages {
+  /* Styles for the messages */
+  box-shadow: rgba(255, 255, 255, 0.1) 0px 1px 1px 0px inset,
+    rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+  width: 50vw;
+  margin: 20px;
+  overflow-x: scroll;
+}
+/* Styles for user messages */
+.user-message {
+  padding: 10px;
+  background-color: #009dff;
+  color: white;
+  float: right;
+  border-radius: 10px;
+}
+/* Styles for bot messages */
+.bot-message {
+    padding: 10px;
+    background-color: #e3e3e3;
+    border-radius: 10px;
+    float: left;
+}
+input {
+  /* Styles for the input field */
+}
+button {
+  /* Styles for the send button */
+}
