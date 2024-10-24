@@ -1,21 +1,39 @@
+/* Styles for the layout */
+.sidenav-container {
+  height: 100vh;
+}
 
-  .floating-button {
-    position: fixed;
-    top: 20px; /* Adjust as needed */
-    left: 20px; /* Changed to left */
-    background-color: #007bff; /* Button color */
-    color: white; /* Text color */
-    border: none; /* Remove border */
-    border-radius: 50%; /* Round shape */
-    width: 50px; /* Button size */
-    height: 50px; /* Button size */
-    cursor: pointer; /* Pointer on hover */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Shadow for depth */
-    transition: background-color 0.3s; /* Transition effect */
-  }
-  
-  
-  .floating-button:hover {
-    background-color: #0056b3; /* Darker shade on hover */
-  }
-  
+.main-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
+  /* Add background for better visibility */
+  background-color: rgba(255, 255, 255, 1); 
+}
+
+.main-toolbar.scrolled {
+  background-color: rgba(255, 255, 255, 0.7); /* Transparent when scrolled */
+  backdrop-filter: blur(8px); /* Blur effect */
+  -webkit-backdrop-filter: blur(8px); /* Support for Safari */
+}
+
+.mat-sidenav-content {
+  /* Push content below the fixed toolbar */
+  padding-top: 64px; /* Adjust this value based on toolbar height */
+  padding: 20px;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+
+.sidenav {
+  width: 250px;
+  padding-top: 64px; /* Adjust this value based on toolbar height */
+}
+
+/* Optional: main content styling */
+.main-content {
+  padding: 16px;
+}

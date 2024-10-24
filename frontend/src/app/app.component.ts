@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -7,14 +7,19 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'CareFlow';
-  isSideNavOpen: boolean = false; // Track the state of the side nav
+  
+
+  opened = false; // This controls whether the sidenav is opened or closed
 
   toggleNav() {
-    this.isSideNavOpen = !this.isSideNavOpen; // Toggle the state
+    this.opened = !this.opened;
   }
+  isScrolled = false;
 
-  onNavToggle(isOpen: boolean) {
-    this.isSideNavOpen = isOpen; // Update the state based on the event
+  @HostListener('window:scroll', ['$event'])
+  onWindowScroll() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    this.isScrolled = scrollTop > 0;
   }
 
 }

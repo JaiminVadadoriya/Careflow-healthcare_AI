@@ -1,7 +1,29 @@
-<app-side-nav (navToggle)="onNavToggle($event)"></app-side-nav>
-<div class="main-content">
-  <router-outlet></router-outlet> <!-- This is where your routed components will be displayed -->
-</div>
-<button class="floating-button" (click)="toggleNav()">
-  &#9776; <!-- Hamburger icon -->
-</button>
+<!-- Main Toolbar with Menu Button -->
+<mat-toolbar color="primary" class="main-toolbar" [ngClass]="{'scrolled': isScrolled}">
+  <button mat-icon-button aria-label="Toggle sidenav" (click)="drawer.toggle()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>{{ title }}</span>
+</mat-toolbar>
+
+<!-- Sidenav Container -->
+<mat-sidenav-container class="sidenav-container">
+  
+  <!-- Side Navigation Drawer -->
+  <mat-sidenav #drawer mode="side" [(opened)]="opened" class="sidenav">
+    <mat-nav-list>
+      <a mat-list-item routerLink="/">Home</a>
+      <a mat-list-item routerLink="/about">About</a>
+      <a mat-list-item routerLink="/services">Services</a>
+      <a mat-list-item routerLink="/contact">Contact</a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- Main Content Area -->
+  <mat-sidenav-content>
+    <!-- Your content goes here -->
+    <div class="main-content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
