@@ -8,6 +8,8 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HelperModule } from './helpers/helpers.module';
+import { SideNavComponent } from "./side-nav/side-nav.component";
+
 
 @NgModule({
   declarations: [
@@ -19,7 +21,8 @@ import { HelperModule } from './helpers/helpers.module';
     MatFormFieldModule,
     MatInputModule,
     HelperModule,
-  ],
+    SideNavComponent,
+],
   providers: [
     provideAnimationsAsync()
   ],

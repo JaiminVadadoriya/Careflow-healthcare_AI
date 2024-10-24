@@ -1,0 +1,21 @@
+
+  .floating-button {
+    position: fixed;
+    top: 20px; /* Adjust as needed */
+    left: 20px; /* Changed to left */
+    background-color: #007bff; /* Button color */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    border-radius: 50%; /* Round shape */
+    width: 50px; /* Button size */
+    height: 50px; /* Button size */
+    cursor: pointer; /* Pointer on hover */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+    transition: background-color 0.3s; /* Transition effect */
+  }
+  
+  
+  .floating-button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+  }
+  

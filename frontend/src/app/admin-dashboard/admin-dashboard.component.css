@@ -1,0 +1,38 @@
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+  
+  .chart-section {
+    margin-bottom: 40px;
+  }
+  
+  .queries-section {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .query-tile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .trend-indicator {
+    width: 100px; /* Adjust width as needed */
+    height: 60px; /* Adjust height as needed */
+  }
+  
+  .trend-indicator.up canvas {
+    border: 2px solid green;
+  }
+  
+  .trend-indicator.down canvas {
+    border: 2px solid red;
+  }
+  

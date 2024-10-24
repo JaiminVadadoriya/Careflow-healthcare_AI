@@ -1,0 +1,35 @@
+.side-nav {
+    width: 200px;
+    height: 100vh;
+    background-color: #f8f9fa;
+    position: fixed;
+    top: 0;
+    left: -220px; /* Initially hidden */
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: left 0.3s ease; /* Smooth transition */
+  }
+  
+  .side-nav.open {
+    left: 0; /* Show the side nav */
+  }
+  
+  .side-nav ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .side-nav li {
+    margin: 15px 0;
+  }
+  
+  .side-nav a {
+    text-decoration: none;
+    color: #333;
+  }
+  
+  .side-nav a.active {
+    font-weight: bold;
+    color: #007bff;
+  }
+  

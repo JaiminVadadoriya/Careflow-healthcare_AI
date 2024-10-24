@@ -1,2 +1,7 @@
-
-<router-outlet></router-outlet>
+<app-side-nav (navToggle)="onNavToggle($event)"></app-side-nav>
+<div class="main-content">
+  <router-outlet></router-outlet> <!-- This is where your routed components will be displayed -->
+</div>
+<button class="floating-button" (click)="toggleNav()">
+  &#9776; <!-- Hamburger icon -->
+</button>
