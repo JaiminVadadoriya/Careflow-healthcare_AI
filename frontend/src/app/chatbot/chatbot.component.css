@@ -1,12 +1,11 @@
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 /* Styles for the chat window */
 .chat-window {
-    margin: 20px;
-
+  margin: 20px;
 }
 .messages {
   /* Styles for the messages */
@@ -15,7 +14,10 @@
     rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
   width: 50vw;
   margin: 20px;
-  overflow-x: scroll;
+  /* overflow-x: scroll; */
+  
+  display: flex;
+  flex-wrap: wrap;
 }
 /* Styles for user messages */
 .user-message {
@@ -24,13 +26,17 @@
   color: white;
   float: right;
   border-radius: 10px;
+  width: 350px;
+  margin-left: auto;
 }
 /* Styles for bot messages */
 .bot-message {
-    padding: 10px;
-    background-color: #e3e3e3;
-    border-radius: 10px;
-    float: left;
+  padding: 10px;
+  background-color: #e3e3e3;
+  border-radius: 10px;
+  float: left;
+  width: 350px;
+  margin-right: auto;
 }
 input {
   /* Styles for the input field */

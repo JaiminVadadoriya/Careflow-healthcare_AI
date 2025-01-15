@@ -1,7 +1,7 @@
 /* Styles for the layout */
-.sidenav-container {
+/* .sidenav-container {
   height: 100vh;
-}
+} */
 
 .main-toolbar {
   position: relative;
@@ -24,7 +24,7 @@
   /* Push content below the fixed toolbar */
   padding-top: 64px; /* Adjust this value based on toolbar height */
   padding: 20px;
-  height: calc(100vh - 64px);
+  /* height: calc(100vh - 64px); */
   overflow-y: auto;
 }
 
