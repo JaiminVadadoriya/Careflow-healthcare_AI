@@ -4,7 +4,7 @@
 }
 
 .main-toolbar {
-  position: fixed;
+  position: relative;
   top: 0;
   left: 0;
   width: 100%;
@@ -30,7 +30,6 @@
 
 .sidenav {
   width: 250px;
-  padding-top: 64px; /* Adjust this value based on toolbar height */
 }
 
 /* Optional: main content styling */

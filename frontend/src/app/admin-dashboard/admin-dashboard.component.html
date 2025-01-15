@@ -1,33 +1,30 @@
 <div class="dashboard-container">
-    <!-- Medicine Chart Section -->
-    <div class="chart-section">
-      <h2>Overall Medicine Needed</h2>
-      <canvas
-        baseChart
-        [datasets]="[{ data: chartData, label: 'Medicine Needed' }]"
-        [labels]="chartLabels"
-        [options]="{ responsive: true }"
-        [type]="'bar'">
-      </canvas>
-    </div>
-  
-    <!-- Recent Queries Section -->
-    <div class="queries-section">
-      <h2>Recent Medicine Queries</h2>
-      <div *ngFor="let query of queries" class="query-tile">
-        <div class="query-details">
-          <p>{{ query.medicine }}</p>
-          <p>{{ query.date }}</p>
-        </div>
-        <div class="trend-indicator" [ngClass]="{'up': query.trend === 'up', 'down': query.trend === 'down'}">
-          <canvas
-            baseChart
-            [data]="getTrendData(query.trend)"
-            [type]="'line'"
-            [options]="trendChartOptions">
-          </canvas>
-        </div>
-      </div>
+  <!-- Medicine Chart Section -->
+  <div class="chart-section">
+    <h2>Overall Medicine Needed</h2>
+    <canvas baseChart [datasets]="[{ data: chartData, label: 'Medicine Needed', backgroundColor: chartColors }]"
+      [labels]="chartLabels" [options]="{ responsive: true }" [type]="'bar'">
+    </canvas>
+  </div>
+
+  <!-- Recent Queries Section -->
+  <div class="queries-section">
+    <h2>Recent Medicine Queries</h2>
+    <div *ngFor="let query of queries" class="">
+      <mat-card appearance="outlined" style="padding: 10px;">
+        <mat-card-title-group>
+          <mat-card-title>{{ query.medicine }}</mat-card-title>
+          <mat-card-subtitle>{{ query.date }}</mat-card-subtitle>
+          <div align="end" class="trend-indicator" [ngClass]="{'up': query.trend === 'up', 'down': query.trend === 'down'}">
+            <canvas baseChart [data]="getTrendData(query.trend)" [type]="'line'" [options]="trendChartOptions">
+            </canvas>
+          </div>
+        </mat-card-title-group>
+
+        <!-- <mat-card-actions align="end"> -->
+        <!-- </mat-card-actions> -->
+      </mat-card>
+      <br/>
     </div>
   </div>
-  
+</div>

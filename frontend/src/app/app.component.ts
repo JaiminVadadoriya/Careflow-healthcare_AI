@@ -7,7 +7,7 @@ import { Component, HostListener } from '@angular/core';
 })
 export class AppComponent {
   title = 'CareFlow';
-  
+  isAuthenticated = true; // This controls whether the user is authenticated or not
 
   opened = false; // This controls whether the sidenav is opened or closed
 

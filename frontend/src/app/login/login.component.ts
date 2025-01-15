@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -31,7 +31,10 @@ import { MyErrorStateMatcher } from '../helpers/error-state-matcher/error-state-
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
-export class LoginComponent {
+export class LoginComponent{
+  dynamicColor: string = '';
+  imageUrl: string = 'https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg';
+
   loginForm: FormGroup;
   hide: boolean = true;
   submitted: boolean = false;
@@ -45,7 +48,7 @@ export class LoginComponent {
   }
 
   onSubmit() {
-    if (this.loginForm.invalid) {}
+    if (this.loginForm.invalid) { }
     console.log(this.loginForm.value);
     // throw new Error('Method not implemented.');
   }

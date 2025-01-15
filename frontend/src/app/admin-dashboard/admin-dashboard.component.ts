@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
 import { BaseChartDirective, } from 'ng2-charts';
+import {MatCardModule} from '@angular/material/card';
 
 
 // Register all Chart.js components (or selectively register only what you need)
@@ -10,13 +11,16 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [BaseChartDirective, CommonModule,],
+  imports: [BaseChartDirective, CommonModule,MatCardModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css']
 })
 export class AdminDashboardComponent {
   public chartLabels: string[] = this.getMonthLabels(); // Labels for the bar chart
   public chartData: number[] = this.getRandomData(); // Random data for the bar chart
+
+  // Get the current month
+  public currentMonth = new Date().getMonth();
 
   // Sample recent queries data
   public queries = [
@@ -26,22 +30,27 @@ export class AdminDashboardComponent {
     { medicine: 'Aspirin', date: '2024-10-04', trend: 'down' },
   ];
 
+  // Create the background color array where the current month has a different color
+  chartColors: string[] = this.chartLabels.map((label, index) =>
+    index === this.chartLabels.length-1 ? '#398484' : '#00bdbc'  // Red for the current month, blue for others
+  );
+
   public trendChartOptions: ChartConfiguration<'line'>['options'] = {
     responsive: true,
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: 'Days',
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: 'Queries',
-        },
-      },
-    },
+    // scales: {
+    //   x: {
+    //     title: {
+    //       display: true,
+    //       text: 'Days',
+    //     },
+    //   },
+    //   y: {
+    //     title: {
+    //       display: true,
+    //       text: 'Queries',
+    //     },
+    //   },
+    // },
     plugins: {
       legend: {
         display: false,
@@ -62,7 +71,12 @@ export class AdminDashboardComponent {
       'July', 'August', 'September', 'October', 'November', 'December',
     ];
 
-    return months.slice(0, currentMonth + 1); // Return months from January to current month
+    // Get the months starting from next month to the current month
+  const nextMonths = months.slice(currentMonth+1,months.length);  // Months from next month
+  const previousMonths = months.slice(0, currentMonth+1);  // Months before current month
+  const result = [...nextMonths, ...previousMonths];  // Combine them in the required order
+
+  return result;
   }
 
   // Function to get trend data based on trend direction

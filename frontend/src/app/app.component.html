@@ -1,6 +1,10 @@
-<!-- Main Toolbar with Menu Button -->
-<mat-toolbar color="primary" class="main-toolbar" [ngClass]="{'scrolled': isScrolled}">
-  <button mat-icon-button aria-label="Toggle sidenav" (click)="drawer.toggle()">
+
+<!-- Title Bar -->
+ <div *ngIf="isAuthenticated;else login"> 
+
+   <!-- Main Toolbar with Menu Button -->
+   <mat-toolbar color="primary" class="main-toolbar" [ngClass]="{'scrolled': isScrolled}">
+     <button mat-icon-button aria-label="Toggle sidenav" (click)="drawer.toggle()">
     <mat-icon>menu</mat-icon>
   </button>
   <span>{{ title }}</span>
@@ -18,7 +22,7 @@
       <a mat-list-item routerLink="/contact">Contact</a>
     </mat-nav-list>
   </mat-sidenav>
-
+  
   <!-- Main Content Area -->
   <mat-sidenav-content>
     <!-- Your content goes here -->
@@ -27,3 +31,9 @@
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>
+
+</div>
+
+<ng-template #login>
+  <router-outlet></router-outlet>
+</ng-template>
