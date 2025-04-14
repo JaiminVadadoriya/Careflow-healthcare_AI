@@ -1,29 +1,13 @@
-import bodyParser from "body-parser";
-import cors from "cors";
 import dotenv from "dotenv";
-import express from "express";
+import { app } from "./app.js";
 import connectDB from "./db/index.js"; // Ensure that this file also uses ES module export
-
-// Import routes using import
-import appointmentRoutes from "./routes/appointment.routes.js";
-import patientRoutes from "./routes/patient.routes.js";
-import userRoutes from "./routes/user.routes.js";
 
 // Load environment variables
 dotenv.config();
 
 // App initialization
-const app = express();
+// const app = express();
 const port = process.env.PORT || 5000;
-
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
-
-// Routes
-app.use("/api/users", userRoutes);
-app.use("/api/appointments", appointmentRoutes);
-app.use("/api/patients", patientRoutes);
 
 connectDB()
   .then(() => {

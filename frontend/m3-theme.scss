@@ -1,0 +1,167 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+// Define palettes for primary, secondary, tertiary, neutral, etc.
+$_palettes: (
+  primary: (
+    0: #000000,
+    10: #002117,
+    20: #003829,
+    25: #004433,
+    30: #00513d,
+    35: #005e47,
+    40: #006c51,
+    50: #008767,
+    60: #1fa37f,
+    70: #46bf98,
+    80: #65dbb3,
+    90: #83f8ce,
+    95: #bbffe3,
+    98: #e7fff2,
+    99: #f4fff8,
+    100: #ffffff,
+  ),
+  secondary: (
+    0: #000000,
+    10: #002117,
+    20: #003829,
+    25: #004433,
+    30: #00513d,
+    35: #005e47,
+    40: #006c52,
+    50: #008767,
+    60: #1ea37f,
+    70: #45bf99,
+    80: #65dbb3,
+    90: #83f8ce,
+    95: #bbffe3,
+    98: #e7fff2,
+    99: #f4fff8,
+    100: #ffffff,
+  ),
+  tertiary: (
+    0: #000000,
+    10: #001e2b,
+    20: #003547,
+    25: #004156,
+    30: #004d66,
+    35: #005976,
+    40: #006686,
+    50: #0081a8,
+    60: #179cc9,
+    70: #45b7e6,
+    80: #70d2ff,
+    90: #c0e8ff,
+    95: #e1f3ff,
+    98: #f4faff,
+    99: #fafcff,
+    100: #ffffff,
+  ),
+  neutral: (
+    0: #000000,
+    4: #0c0c00,
+    6: #111100,
+    10: #1d1d00,
+    12: #212100,
+    17: #2c2c00,
+    20: #333200,
+    22: #383600,
+    24: #3d3b00,
+    25: #3f3d00,
+    30: #4b4900,
+    35: #575500,
+    40: #636100,
+    50: #7d7b00,
+    60: #979523,
+    70: #b3b03c,
+    80: #cfcb55,
+    87: #e3df67,
+    90: #ebe86e,
+    92: #f1ee73,
+    94: #f7f378,
+    95: #faf67a,
+    96: #fcf896,
+    98: #fffbce,
+    99: #fffbff,
+    100: #ffffff,
+  ),
+  neutral-variant: (
+    0: #000000,
+    10: #151d1a,
+    20: #29322e,
+    25: #343d39,
+    30: #404944,
+    35: #4b5550,
+    40: #57615b,
+    50: #707974,
+    60: #89938d,
+    70: #a4ada8,
+    80: #bfc9c3,
+    90: #dbe5de,
+    95: #e9f3ec,
+    98: #f2fcf5,
+    99: #f5fff8,
+    100: #ffffff,
+  ),
+  error: (
+    0: #000000,
+    10: #410002,
+    20: #690005,
+    25: #7e0007,
+    30: #93000a,
+    35: #a80710,
+    40: #ba1a1a,
+    50: #de3730,
+    60: #ff5449,
+    70: #ff897d,
+    80: #ffb4ab,
+    90: #ffdad6,
+    95: #ffedea,
+    98: #fff8f7,
+    99: #fffbff,
+    100: #ffffff,
+  ),
+);
+
+$_rest: (
+  secondary: map.get($_palettes, secondary),
+  neutral: map.get($_palettes, neutral),
+  neutral-variant: map.get($_palettes, neutral-variant),
+  error: map.get($_palettes, error),
+);
+$_primary: map.merge(map.get($_palettes, primary), $_rest);
+$_tertiary: map.merge(map.get($_palettes, tertiary), $_rest);
+
+// Define the themes
+$light-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: $_primary,
+    tertiary: $_tertiary,
+    use-system-variables: true,
+  ),
+  typography: (
+    use-system-variables: true,
+  ),
+));
+
+$dark-theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: $_primary,
+    tertiary: $_tertiary,
+    use-system-variables: true,
+  ),
+  typography: (
+    use-system-variables: true,
+  ),
+));
+
+// Wrap the theme mixins inside selectors
+.my-light-theme {
+  @include mat.all-component-themes($light-theme);
+}
+
+body.dark-theme {
+  @include mat.all-component-colors($dark-theme);
+}

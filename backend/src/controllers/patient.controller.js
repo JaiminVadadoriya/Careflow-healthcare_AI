@@ -1,115 +1,298 @@
-import bcrypt from 'bcryptjs'; // Import bcrypt for password hashing and comparison
-import jwt from 'jsonwebtoken'; // Import jsonwebtoken for JWT creation
-import Patient from '../models/patient.model.js'; // Import Patient model
+// patient.controller.js
+import Appointment from '../models/appointment.model.js';
+import lab_test_result from '../models/lab_test_result.js';
+import medical_recordModel from '../models/medical_record.model.js';
+// import LabTestResult from '../models/labTestResult.model.js';
+// import MedicalRecord from '../models/medicalRecord.model.js';
+import Patient from '../models/patient.model.js';
+import { APIError } from '../utils/api_error_handler.utils.js';
+import ApiResponse from '../utils/api_response.utils.js';
+import { asyncHandler } from '../utils/async_handler.utils.js';
+import { generateAccessAndRefreshTokens } from '../utils/token.utils.js';
 
-// Add a new patient (with password hashing)
-export const addPatient = async (req, res) => {
-  const { full_name, dob, gender, contact_info, assigned_doctor, medical_history, password } = req.body;
+// 🟢 Public Routes
+export const registerPatient = asyncHandler(async (req, res) => {
+  const { full_name, dob, gender, contact_info, emergency_contact, password } = req.body;
 
-  try {
-    // Check if the required fields are provided
-    if (!full_name || !dob || !gender || !contact_info || !assigned_doctor || !medical_history || !password) {
-      return res.status(400).json({ message: 'All fields are required' });
+  // Validate required fields
+  const requiredFields = { full_name, dob, gender, contact_info, emergency_contact, password };
+  for (const [key, value] of Object.entries(requiredFields)) {
+    if (!value || (typeof value === 'string' && value.trim() === '')) {
+      throw new APIError(400, `${key.replace('_', ' ')} is required`);
     }
-
-    // Hash the password before saving
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // Create a new Patient instance with hashed password
-    const newPatient = new Patient({
-      full_name,
-      dob,
-      gender,
-      contact_info,
-      assigned_doctor,
-      medical_history,
-      password: hashedPassword // Save the hashed password
-    });
-
-    // Save the patient to the database
-    await newPatient.save();
-
-    // Respond with the newly created patient (without password)
-    res.status(201).json({ message: 'Patient added successfully', patient: newPatient });
-  } catch (error) {
-    console.error('Error adding patient:', error);
-    res.status(500).json({ message: 'Error adding patient', error: error.message });
   }
-};
 
-// Get all patients
-export const getPatients = async (req, res) => {
-  try {
-    const patients = await Patient.find();
+  // Check for existing patient
+  const existingPatient = await Patient.findOne({
+    $or: [
+      { 'contact_info.email': contact_info.email },
+      { 'contact_info.phone': contact_info.phone }
+    ]
+  });
 
-    // If no patients found, send an empty array with a message
-    if (patients.length === 0) {
-      return res.status(404).json({ message: 'No patients found' });
-    }
-
-    // Respond with the list of patients (without passwords)
-    res.json(patients);
-  } catch (error) {
-    console.error('Error fetching patients:', error);
-    res.status(500).json({ message: 'Error fetching patients', error: error.message });
+  if (existingPatient) {
+    throw new APIError(409, 'Patient with this email or phone already exists');
   }
-};
 
-// Get patient details by ID
-export const getPatientById = async (req, res) => {
-  const { id } = req.params;
+  const patient = await Patient.create({
+    full_name,
+    dob,
+    gender,
+    contact_info,
+    emergency_contact,
+    password
+  });
 
-  try {
-    // Find the patient by ID and populate the assigned doctor
-    const patient = await Patient.findById(id).populate('assigned_doctor');
+  const createdPatient = await Patient.findById(patient._id).select('-password -refreshToken');
+  return res
+    .status(201)
+    .json(new ApiResponse(201, createdPatient, 'Patient registered successfully'));
+});
 
-    // If patient not found, send a 404 response
-    if (!patient) {
-      return res.status(404).json({ message: 'Patient not found' });
-    }
-
-    // Respond with the patient details (without password)
-    res.json(patient);
-  } catch (error) {
-    console.error('Error fetching patient:', error);
-    res.status(500).json({ message: 'Error fetching patient', error: error.message });
-  }
-};
-
-// Login patient (password validation and JWT generation)
-export const loginPatient = async (req, res) => {
+export const loginPatient = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  try {
-    // Find the patient by email
-    const patient = await Patient.findOne({ 'contact_info.email': email });
-
-    if (!patient) {
-      return res.status(400).json({ success: false, message: 'Patient not found' });
-    }
-
-    // Compare the entered password with the stored hashed password
-    const isPasswordValid = await bcrypt.compare(password, patient.password);
-
-    if (!isPasswordValid) {
-      return res.status(400).json({ success: false, message: 'Invalid password' });
-    }
-
-    // Generate JWT token
-    const payload = {
-      patientId: patient._id,
-      full_name: patient.full_name,
-      email: patient.contact_info.email,
-    };
-
-    const secretKey = process.env.JWT_SECRET || 'yourSecretKey'; // Use an environment variable for secret key
-    const token = jwt.sign(payload, secretKey, { expiresIn: '1h' });  // Token expires in 1 hour
-
-    // Respond with the JWT token
-    res.json({ success: true, message: 'Login successful', token });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Server error' });
+  if (!email || !password) {
+    throw new APIError(400, 'Email and password are required');
   }
-};
+
+  const patient = await Patient.findOne({ 'contact_info.email': email });
+  if (!patient) {
+    throw new APIError(404, 'Patient not found');
+  }
+
+  const isPasswordValid = await patient.isPasswordCorrect(password);
+  if (!isPasswordValid) {
+    throw new APIError(401, 'Invalid credentials');
+  }
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(patient);
+
+  const loggedInPatient = await Patient.findById(patient._id).select('-password -refreshToken');
+  
+  const options = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+  };
+
+  return res
+    .status(200)
+    .cookie('accessToken', accessToken, options)
+    .cookie('refreshToken', refreshToken, options)
+    .json(new ApiResponse(200, {
+      patient: loggedInPatient,
+      accessToken,
+      refreshToken
+    }, 'Login successful'));
+});
+
+// 🔐 Authenticated Routes
+export const getCurrentUser = asyncHandler(async (req, res) => {
+  const patient = await Patient.findById(req.patient?._id).select('-password -refreshToken');
+  return res
+    .status(200)
+    .json(new ApiResponse(200, patient, 'Current patient fetched successfully'));
+});
+
+export const updateAccountDetails = asyncHandler(async (req, res) => {
+  const { full_name, contact_info } = req.body;
+
+  const updateFields = {};
+  if (full_name) updateFields.full_name = full_name;
+  if (contact_info) updateFields.contact_info = contact_info;
+
+  const updatedPatient = await Patient.findByIdAndUpdate(
+    req.patient._id,
+    updateFields,
+    { new: true, runValidators: true }
+  ).select('-password -refreshToken');
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedPatient, 'Account details updated successfully'));
+});
+
+// 🏥 Patient Data Management
+export const getPatientData = asyncHandler(async (req, res) => {
+  const patient = await Patient.findById(req.params.patientId)
+    .select('-password -refreshToken')
+    .populate('assigned_doctor', 'full_name specialization')
+    .populate('medical_history', 'diagnosis date_time');
+
+  if (!patient) {
+    throw new APIError(404, 'Patient not found');
+  }
+
+  // Authorization check
+  if (patient._id.toString() !== req.patient?._id.toString() && req.user?.role !== 'doctor') {
+    throw new APIError(403, 'Unauthorized access');
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, patient, 'Patient data retrieved successfully'));
+});
+
+export const updatePatientData = asyncHandler(async (req, res) => {
+  const { patientId } = req.params;
+  
+  if (patientId !== req.patient?._id.toString()) {
+    throw new APIError(403, 'You can only update your own profile');
+  }
+
+  const allowedUpdates = ['contact_info', 'emergency_contact'];
+  const updates = Object.keys(req.body).filter(key => allowedUpdates.includes(key));
+  
+  if (updates.length === 0) {
+    throw new APIError(400, 'No valid fields to update');
+  }
+
+  const updatedPatient = await Patient.findByIdAndUpdate(
+    patientId,
+    req.body,
+    { new: true, runValidators: true }
+  ).select('-password -refreshToken');
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedPatient, 'Patient data updated successfully'));
+});
+
+// 🗓️ Appointments
+export const getAppointments = asyncHandler(async (req, res) => {
+  const appointments = await Appointment.find({ patient: req.patient._id })
+    .populate('doctor', 'full_name specialization')
+    .sort({ date_time: -1 });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, appointments, 'Appointments retrieved successfully'));
+});
+
+export const postAppointments = asyncHandler(async (req, res) => {
+  const { doctorId, date_time, reason } = req.body;
+
+  if (!doctorId || !date_time || !reason) {
+    throw new APIError(400, 'Doctor ID, date/time, and reason are required');
+  }
+
+  const doctorExists = await User.exists({ _id: doctorId, role: 'doctor' });
+  if (!doctorExists) {
+    throw new APIError(404, 'Doctor not found');
+  }
+
+  const conflictingAppointment = await Appointment.findOne({
+    doctor: doctorId,
+    date_time: { $gte: new Date(date_time) }
+  });
+
+  if (conflictingAppointment) {
+    throw new APIError(409, 'Doctor has conflicting appointment');
+  }
+
+  const appointment = await Appointment.create({
+    patient: req.patient._id,
+    doctor: doctorId,
+    date_time,
+    reason
+  });
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, appointment, 'Appointment booked successfully'));
+});
+
+// 🧪 Lab Results
+export const getLabResults = asyncHandler(async (req, res) => {
+  const labResults = await lab_test_result.find({ patient: req.patient._id })
+    .populate('technician', 'full_name')
+    .sort({ test_date: -1 });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, labResults, 'Lab results retrieved successfully'));
+});
+
+// 📋 Medical Records
+export const getMedicalRecords = asyncHandler(async (req, res) => {
+  const medicalRecords = await medical_recordModel.find({ patient: req.patient._id })
+    .populate('doctor', 'full_name specialization')
+    .sort({ date_time: -1 });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, medicalRecords, 'Medical records retrieved successfully'));
+});
+
+export const getMedicalRecordById = asyncHandler(async (req, res) => {
+  const medicalRecord = await medical_recordModel.findOne({
+    _id: req.params.recordId,
+    patient: req.patient._id
+  }).populate('doctor', 'full_name specialization');
+
+  if (!medicalRecord) {
+    throw new APIError(404, 'Medical record not found');
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, medicalRecord, 'Medical record retrieved successfully'));
+});
+
+export const updateMedicalRecordById = asyncHandler(async (req, res) => {
+  const { diagnosis, treatment } = req.body;
+
+  if (!diagnosis && !treatment) {
+    throw new APIError(400, 'At least one field (diagnosis or treatment) is required');
+  }
+
+  const medicalRecord = await medical_recordModel.findOneAndUpdate(
+    {
+      _id: req.params.recordId,
+      patient: req.patient._id
+    },
+    { diagnosis, treatment },
+    { new: true, runValidators: true }
+  );
+
+  if (!medicalRecord) {
+    throw new APIError(404, 'Medical record not found or unauthorized');
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, medicalRecord, 'Medical record updated successfully'));
+});
+
+// Optional Admin Endpoints
+export const addPatient = asyncHandler(async (req, res) => {
+  if (req.user?.role !== 'admin') {
+    throw new APIError(403, 'Admin privileges required');
+  }
+
+  const { full_name, dob, gender, contact_info, emergency_contact, password } = req.body;
+
+  const patient = await Patient.create({
+    full_name,
+    dob,
+    gender,
+    contact_info,
+    emergency_contact,
+    password
+  });
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, patient, 'Patient added successfully (admin)'));
+});
+
+export const getPatients = asyncHandler(async (req, res) => {
+  if (req.user?.role !== 'admin') {
+    throw new APIError(403, 'Admin privileges required');
+  }
+
+  const patients = await Patient.find().select('-password -refreshToken');
+  return res
+    .status(200)
+    .json(new ApiResponse(200, patients, 'Patients retrieved successfully'));
+});
