@@ -3,11 +3,11 @@ import { Component, HostListener } from '@angular/core';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
   title = 'CareFlow';
-  isAuthenticated = true; // This controls whether the user is authenticated or not
+  isAuthenticated = false; // This controls whether the user is authenticated or not
 
   opened = false; // This controls whether the sidenav is opened or closed
 

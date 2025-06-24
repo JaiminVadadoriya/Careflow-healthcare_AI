@@ -1,0 +1,13 @@
+@use "../m3-theme.scss" as *;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: var(--mat-app-background-color);
+  color: var(--mat-app-text-color);
+}
