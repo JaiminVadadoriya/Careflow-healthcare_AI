@@ -29,7 +29,6 @@
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
-    "careflow-backend": "file:",
     "cloudinary": "^2.0.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -38,6 +37,6 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.13.2",
     "mongoose-aggregate-paginate-v2": "^1.1.4",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^2.0.1"
   }
 }
