@@ -5,10 +5,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { SharedModule } from '../shared/shared.module';
 
 @Component({
-  selector: 'app-admin-dashboard',
-  standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule, SharedModule],
-  templateUrl: './admin-dashboard.component.html',
-  styleUrls: ['./admin-dashboard.component.css']
+    selector: 'app-admin-dashboard',
+    imports: [CommonModule, MatCardModule, MatIconModule, SharedModule],
+    templateUrl: './admin-dashboard.component.html',
+    styleUrls: ['./admin-dashboard.component.css']
 })
 export class AdminDashboardComponent {}

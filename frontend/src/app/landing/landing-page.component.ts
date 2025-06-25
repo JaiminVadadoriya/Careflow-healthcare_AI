@@ -4,9 +4,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ThemeService } from '../helpers/theme/theme.service';
 
 @Component({
-  selector: 'app-careflow-landing-page',
-  templateUrl: './landing-page.component.html',
-  styleUrls: ['./landing-page.component.scss']
+    selector: 'app-careflow-landing-page',
+    templateUrl: './landing-page.component.html',
+    styleUrls: ['./landing-page.component.scss'],
+    standalone: false
 })
 export class CareflowLandingPageComponent implements OnInit, AfterViewInit {
   private _snackBar = inject(MatSnackBar);

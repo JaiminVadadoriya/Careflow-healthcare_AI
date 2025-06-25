@@ -4,11 +4,10 @@ import { MatIconModule } from '@angular/material/icon';
 import {MatTableModule} from '@angular/material/table';
 
 @Component({
-  selector: 'app-user-table',
-  templateUrl: './app-user-table.component.html',
-  styleUrls: ['./app-user-table.component.scss'],
-  standalone: true,
-  imports: [CommonModule, MatTableModule, MatIconModule]
+    selector: 'app-user-table',
+    templateUrl: './app-user-table.component.html',
+    styleUrls: ['./app-user-table.component.scss'],
+    imports: [CommonModule, MatTableModule, MatIconModule]
 })
 export class AppUserTableComponent implements OnInit {
   @Input() columns: string[] = [];

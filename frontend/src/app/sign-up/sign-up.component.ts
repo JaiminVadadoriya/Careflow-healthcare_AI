@@ -9,19 +9,18 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MyErrorStateMatcher } from '../helpers/error-state-matcher/error-state-matcher';
 
 @Component({
-  selector: 'app-sign-up',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatButtonModule,
-    MatRadioModule
-  ],
-  templateUrl: './sign-up.component.html',
-  styleUrl: './sign-up.component.css'
+    selector: 'app-sign-up',
+    imports: [
+        CommonModule,
+        MatFormFieldModule,
+        MatInputModule,
+        ReactiveFormsModule,
+        MatIconModule,
+        MatButtonModule,
+        MatRadioModule
+    ],
+    templateUrl: './sign-up.component.html',
+    styleUrl: './sign-up.component.css'
 })
 export class SignUpComponent {
 

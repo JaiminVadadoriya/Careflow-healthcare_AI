@@ -1,8 +1,10 @@
-// @tailwind base;
-// @tailwind components;
-// @tailwind utilities;
-@import "tailwindcss";
-@use "../m3-theme.scss" as *;
+// ✅ ALL @use go first
+@use '../m3-theme.scss' as *;
+
+// ✅ Then Tailwind
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 html {
   scroll-behavior: smooth;

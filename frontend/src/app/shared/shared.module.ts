@@ -6,8 +6,8 @@ import { AppCardMetricComponent } from './app-card-metric/app-card-metric.compon
 import { AppUserTableComponent } from './app-user-table/app-user-table.component';
 
 @NgModule({
-  declarations: [],
-  imports: [CommonModule, MatCardModule, MatIconModule, AppCardMetricComponent, AppUserTableComponent],
+  declarations: [AppCardMetricComponent,AppCardMetricComponent],
+  imports: [CommonModule, MatCardModule, MatIconModule,  AppUserTableComponent],
   exports: [AppCardMetricComponent, AppUserTableComponent]
 })
 export class SharedModule {} 
