@@ -1,0 +1,54 @@
+<div class="flex h-screen bg-gray-50">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white shadow-md flex flex-col">
+    <div class="h-16 flex items-center justify-center border-b text-xl font-bold text-primary">Doctor Panel</div>
+    <nav class="flex-1 p-4">
+      <ul class="space-y-2">
+        <li><a class="flex items-center p-2 rounded hover:bg-blue-100" href="#"><mat-icon>event</mat-icon><span class="ml-3">My Schedule</span></a></li>
+        <li><a class="flex items-center p-2 rounded hover:bg-blue-100" href="#"><mat-icon>folder_shared</mat-icon><span class="ml-3">Patient Records</span></a></li>
+        <li><a class="flex items-center p-2 rounded hover:bg-blue-100" href="#"><mat-icon>description</mat-icon><span class="ml-3">Prescriptions</span></a></li>
+        <li><a class="flex items-center p-2 rounded hover:bg-blue-100" href="#"><mat-icon>group</mat-icon><span class="ml-3">Collaborations</span></a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col">
+    <!-- Top Bar -->
+    <header class="h-16 bg-white shadow flex items-center justify-between px-6">
+      <div class="flex items-center space-x-4">
+        <input type="text" placeholder="Quick patient search..." class="border rounded px-2 py-1 focus:outline-none focus:ring w-64" />
+      </div>
+      <div class="flex items-center space-x-4">
+        <mat-icon>mail</mat-icon>
+      </div>
+    </header>
+
+    <!-- Dashboard Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-6">
+      <app-card-metric title="Upcoming appointments" value="6" icon="event"></app-card-metric>
+      <app-card-metric title="Patient waitlist" value="3" icon="hourglass_empty"></app-card-metric>
+      <app-card-metric title="Lab result summaries" value="2" icon="science"></app-card-metric>
+      <app-card-metric title="Prescriptions to review" value="4" icon="assignment"></app-card-metric>
+    </div>
+
+    <!-- Patient Record View (Tabbed) -->
+    <div class="p-6">
+      <h2 class="text-xl font-semibold mb-4">Patient Record</h2>
+      <mat-tab-group>
+        <mat-tab label="Vitals">
+          <div class="p-4">Vitals content goes here...</div>
+        </mat-tab>
+        <mat-tab label="History">
+          <div class="p-4">History content goes here...</div>
+        </mat-tab>
+        <mat-tab label="Lab Results">
+          <div class="p-4">Lab results content goes here...</div>
+        </mat-tab>
+        <mat-tab label="Treatment Plan">
+          <div class="p-4">Treatment plan content goes here...</div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div> 

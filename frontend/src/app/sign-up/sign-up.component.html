@@ -1,121 +1,106 @@
-
-
-<div class="container" fxLayout="row" fxLayoutAlign="center center" >
-  <div class="box" fxLayout="row" fxLayoutAlign="center center">
+<div class="container flex justify-center items-center">
+  <div class="box flex justify-center items-center">
     <form
-      class="login-form"
+      class="login-form w-full max-w-md space-y-4"
       [formGroup]="signInForm"
       (ngSubmit)="onSubmit()"
-      fxLayout="column"
-      fxLayoutAlign="center center"
-      fxLayoutGap="10px"
     >
-      <mat-form-field fxFlexFill>
-        <mat-label>Enter your name</mat-label>
+      <div class="mb-4">
+        <label for="name" class="block text-lg">Enter your name</label>
         <input
-          matInput
+          id="name"
+          class="mt-2 p-2 border border-gray-300 rounded w-full"
           placeholder="Ex. Jaimin Patel"
-          type="name"
+          type="text"
           formControlName="name"
-          [errorStateMatcher]="matcher"
         />
         <mat-icon matPrefix>person</mat-icon>
-        @if (signInForm.controls['name'].hasError('minlength') &&
-        !signInForm.controls['name'].hasError('required')) {
-        <mat-error>Please enter a valid name.</mat-error>
-        } @if (signInForm.controls['email'].hasError('required')) {
-        <mat-error>Name is <strong>required.</strong></mat-error>
-        }
-      </mat-form-field>
-      <div fxLayout="row" fxLayoutAlign="center space-between" fxFill fxLayoutGap="10px">
-        <mat-form-field fxFlex="50">
-          <mat-label>Enter your Email</mat-label>
+        <div *ngIf="signInForm.controls['name'].hasError('minlength') && !signInForm.controls['name'].hasError('required')">
+          <mat-error>Please enter a valid name.</mat-error>
+        </div>
+        <div *ngIf="signInForm.controls['name'].hasError('required')">
+          <mat-error>Name is <strong>required</strong></mat-error>
+        </div>
+      </div>
+
+      <div class="flex space-x-4">
+        <div class="flex-1">
+          <label for="email" class="block text-lg">Enter your Email</label>
           <input
-            matInput
+            id="email"
+            class="mt-2 p-2 border border-gray-300 rounded w-full"
             placeholder="Ex. Nik@gmail.com"
             type="email"
             formControlName="email"
-            [errorStateMatcher]="matcher"
-          />
+            />
+            <!-- [errorStateMatcher]="matcher" -->
           <mat-icon matPrefix>mail</mat-icon>
-          @if (signInForm.controls['email'].hasError('email') &&
-          !signInForm.controls['email'].hasError('required')) {
-          <mat-error>Please enter a valid email address</mat-error>
-          } @if (signInForm.controls['email'].hasError('required')) {
-          <mat-error>Email is <strong>required</strong></mat-error>
-          }
-        </mat-form-field>
-        <mat-form-field fxFlex="50">
-          <mat-label>Enter your phone no.</mat-label>
-          <!-- <app-tel-input formControlName="tel" ></app-tel-input> -->
+          <div *ngIf="signInForm.controls['email'].hasError('email') && !signInForm.controls['email'].hasError('required')">
+            <mat-error>Please enter a valid email address</mat-error>
+          </div>
+          <div *ngIf="signInForm.controls['email'].hasError('required')">
+            <mat-error>Email is <strong>required</strong></mat-error>
+          </div>
+        </div>
+
+        <div class="flex-1">
+          <label for="tel" class="block text-lg">Enter your phone no.</label>
           <input
-            matInput
+            id="tel"
+            class="mt-2 p-2 border border-gray-300 rounded w-full"
             placeholder="Ex. 94*****445"
             type="tel"
             formControlName="tel"
-            [errorStateMatcher]="matcher"
-          />
+            />
+            <!-- [errorStateMatcher]="matcher" -->
           <mat-icon matPrefix>call</mat-icon>
-
-          @if (signInForm.controls['tel'].hasError('required')) {
-          <mat-error>Phone number is <strong>required</strong></mat-error>
-          }
-        </mat-form-field>
-      </div>
-      <div fxLayout="row" fxLayoutAlign="center space-between" fxFill fxLayoutGap="10px">
-        <!-- <mat-form-field fxFlex="50"> -->
-          <div fxLayout="column"  fxLayoutAlign="space-between center" fxFlex="50" fxLayoutGap="10">
-          <mat-label>Enter your gender</mat-label>
-          <mat-radio-group
-          aria-label="Select an option"
-          formControlName="gender"
-          fxLayout="row"
-          >
-            <mat-radio-button value="male">male</mat-radio-button>
-            <mat-radio-button value="female">female</mat-radio-button>
-          </mat-radio-group>
-
-          @if (signInForm.controls['gender'].hasError('required')) {
-          <mat-error>Gender is <strong>required</strong></mat-error>
-          }
+          <div *ngIf="signInForm.controls['tel'].hasError('required')">
+            <mat-error>Phone number is <strong>required</strong></mat-error>
+          </div>
         </div>
-        <!-- </mat-form-field> -->
-        <mat-form-field fxFlex="50">
-          <mat-label>Enter your gardiean no.</mat-label>
-          <!-- <app-tel-input formControlName="tel" ></app-tel-input> -->
+      </div>
+
+      <div class="flex space-x-4">
+        <div class="flex-1">
+          <label for="gender" class="block text-lg">Enter your gender</label>
+          <div class="flex items-center space-x-4">
+            <mat-radio-group
+              aria-label="Select an option"
+              formControlName="gender"
+            >
+              <mat-radio-button value="male">male</mat-radio-button>
+              <mat-radio-button value="female">female</mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div *ngIf="signInForm.controls['gender'].hasError('required')">
+            <mat-error>Gender is <strong>required</strong></mat-error>
+          </div>
+        </div>
+
+        <div class="flex-1">
+          <label for="emergency" class="block text-lg">Enter your guardian no.</label>
           <input
-            matInput
+            id="emergency"
+            class="mt-2 p-2 border border-gray-300 rounded w-full"
             placeholder="Ex. 94*****445"
             type="tel"
             formControlName="emergency"
-            [errorStateMatcher]="matcher"
-          />
+            />
+            <!-- [errorStateMatcher]="matcher" -->
           <mat-icon matPrefix>call</mat-icon>
-
-          @if (signInForm.controls['emergency'].hasError('required')) {
-          <mat-error>Emergency number is <strong>required</strong></mat-error>
-          }
-        </mat-form-field>
+          <div *ngIf="signInForm.controls['emergency'].hasError('required')">
+            <mat-error>Emergency number is <strong>required</strong></mat-error>
+          </div>
+        </div>
       </div>
-      <!-- <mat-form-field>
-          <input
-            matInput
-            placeholder="Password"
-            [type]="hide ? 'password' : 'text'"
-            formControlName="password"
-            required
-            [errorStateMatcher]="matcher"
-          />
-          <mat-icon matSuffix (click)="hide = !hide">{{
-            hide ? "visibility_off" : "visibility"
-          }}</mat-icon>
-          @if (signInForm.controls['password'].hasError('required')){
-          <mat-error>Enter your password</mat-error>
-          }
-        </mat-form-field> -->
-      <button mat-flat-button type="submit" style="width: 100%">Login</button>
+
+      <button
+        mat-flat-button
+        type="submit"
+        class="w-full py-3 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Login
+      </button>
     </form>
   </div>
-  <!-- login image -->
-  <!-- <img src="" alt=""> -->
 </div>

@@ -1,30 +1,50 @@
-<div class="dashboard-container">
-  <!-- Medicine Chart Section -->
-  <div class="chart-section">
-    <h2>Overall Medicine Needed</h2>
-    <canvas baseChart [datasets]="[{ data: chartData, label: 'Medicine Needed', backgroundColor: chartColors }]"
-      [labels]="chartLabels" [options]="{ responsive: true }" [type]="'bar'">
-    </canvas>
-  </div>
+<div class="flex h-screen bg-gray-50">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white shadow-md flex flex-col">
+    <div class="h-16 flex items-center justify-center border-b text-xl font-bold text-primary">Admin Panel</div>
+    <nav class="flex-1 p-4">
+      <ul class="space-y-2">
+        <li><a class="flex items-center p-2 rounded hover:bg-blue-100" href="#"><mat-icon>group</mat-icon><span class="ml-3">Users</span></a></li>
+        <li><a class="flex items-center p-2 rounded hover:bg-blue-100" href="#"><mat-icon>security</mat-icon><span class="ml-3">Roles</span></a></li>
+        <li><a class="flex items-center p-2 rounded hover:bg-blue-100" href="#"><mat-icon>bar_chart</mat-icon><span class="ml-3">Reports</span></a></li>
+        <li><a class="flex items-center p-2 rounded hover:bg-blue-100" href="#"><mat-icon>inventory_2</mat-icon><span class="ml-3">Inventory</span></a></li>
+        <li><a class="flex items-center p-2 rounded hover:bg-blue-100" href="#"><mat-icon>event</mat-icon><span class="ml-3">Appointments</span></a></li>
+        <li><a class="flex items-center p-2 rounded hover:bg-blue-100" href="#"><mat-icon>medical_services</mat-icon><span class="ml-3">Staff</span></a></li>
+      </ul>
+    </nav>
+  </aside>
 
-  <!-- Recent Queries Section -->
-  <div class="queries-section">
-    <h2>Recent Medicine Queries</h2>
-    <div *ngFor="let query of queries" class="">
-      <mat-card appearance="outlined" style="padding: 10px;">
-        <mat-card-title-group>
-          <mat-card-title>{{ query.medicine }}</mat-card-title>
-          <mat-card-subtitle>{{ query.date }}</mat-card-subtitle>
-          <div align="end" class="trend-indicator" [ngClass]="{'up': query.trend === 'up', 'down': query.trend === 'down'}">
-            <canvas baseChart [data]="getTrendData(query.trend)" [type]="'line'" [options]="trendChartOptions">
-            </canvas>
-          </div>
-        </mat-card-title-group>
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col">
+    <!-- Top Bar -->
+    <header class="h-16 bg-white shadow flex items-center justify-between px-6">
+      <div class="flex items-center space-x-4">
+        <mat-icon>notifications</mat-icon>
+        <input type="text" placeholder="Search..." class="border rounded px-2 py-1 focus:outline-none focus:ring w-64" />
+      </div>
+      <div class="flex items-center space-x-4">
+        <mat-icon>account_circle</mat-icon>
+        <mat-icon>settings</mat-icon>
+      </div>
+    </header>
 
-        <!-- <mat-card-actions align="end"> -->
-        <!-- </mat-card-actions> -->
-      </mat-card>
-      <br/>
+    <!-- Dashboard Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-6">
+      <app-card-metric title="Total patients today" value="128" icon="groups"></app-card-metric>
+      <app-card-metric title="Resource utilization" value="82%" icon="pie_chart"></app-card-metric>
+      <app-card-metric title="Staff on shift" value="24" icon="medical_services"></app-card-metric>
+      <app-card-metric title="Low inventory alerts" value="3" icon="warning"></app-card-metric>
+    </div>
+
+    <!-- User Management Table -->
+    <div class="p-6">
+      <h2 class="text-xl font-semibold mb-4">User Management</h2>
+      <app-user-table [columns]="['name', 'email', 'role', 'status']" [data]="[
+        { name: 'Alice', email: 'alice@hospital.com', role: 'Admin', status: 'Active' },
+        { name: 'Bob', email: 'bob@hospital.com', role: 'Doctor', status: 'Active' },
+        { name: 'Carol', email: 'carol@hospital.com', role: 'Nurse', status: 'Inactive' },
+        { name: 'David', email: 'david@hospital.com', role: 'Receptionist', status: 'Active' }
+      ]"></app-user-table>
     </div>
   </div>
 </div>

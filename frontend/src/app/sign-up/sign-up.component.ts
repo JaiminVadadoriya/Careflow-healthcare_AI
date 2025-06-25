@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,13 +13,11 @@ import { MyErrorStateMatcher } from '../helpers/error-state-matcher/error-state-
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
     MatIconModule,
     MatButtonModule,
-    FlexLayoutModule,
     MatRadioModule
   ],
   templateUrl: './sign-up.component.html',

@@ -1,3 +1,7 @@
+// @tailwind base;
+// @tailwind components;
+// @tailwind utilities;
+@import "tailwindcss";
 @use "../m3-theme.scss" as *;
 
 html {
