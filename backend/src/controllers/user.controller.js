@@ -1,4 +1,9 @@
 import User from "../models/user.model.js"; // Import User model
+import Patient from "../models/patient.model.js";
+import Appointment from "../models/appointment.model.js";
+import Inventory from "../models/inventory.model.js";
+import Bed from "../models/bed.model.js";
+import MedicalRecord from "../models/medical_record.model.js";
 import { APIError } from "../utils/api_error_handler.utils.js";
 import ApiResponse from "../utils/api_response.utils.js";
 import { asyncHandler } from "../utils/async_handler.utils.js";
@@ -130,16 +135,27 @@ export const logoutUser = asyncHandler(async (req, res) => {
 });
 
 // Get all users
-export const getUsers = async (req, res) => {
-  try {
-    const users = await User.find(); // Get all users from the database
-    res.json(users);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error fetching users", error: error.message });
+export const getUsers = asyncHandler(async (req, res) => {
+  const users = await User.find().select("-password -refreshToken"); // ✅ Exclude sensitive fields
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Users retrieved successfully", users));
+});
+
+// Delete user
+export const deleteUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const user = await User.findByIdAndDelete(id);
+
+  if (!user) {
+    throw new APIError(404, "User not found");
   }
-};
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "User deleted successfully", {}));
+});
 
 // Refresh access token
 export const refreshAccessToken = asyncHandler(async (req, res) => {
@@ -219,6 +235,75 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
     .json(new ApiResponce(200, req.user, "Current user fetched successfully"));
 });
 
+export const updateUserDetails = asyncHandler(async (req, res) => {
+  const { full_name, email } = req.body;
+  const userId = req.params.id;
+
+  if (!full_name || !email) {
+    throw new APIError(400, "Full name and email are required");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { full_name, email },
+    { new: true }
+  ).select("-password");
+
+  if (!user) {
+    throw new APIError(404, "User not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponce(200, user, "User updated successfully"));
+});
+
+export const updateUserStatus = asyncHandler(async (req, res) => {
+  const { status } = req.body;
+  const userId = req.params.id;
+
+  if (!["active", "inactive"].includes(status)) {
+    throw new APIError(400, "Invalid status value");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { status },
+    { new: true }
+  ).select("-password");
+
+  if (!user) {
+    throw new APIError(404, "User not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponce(200, user, `User status updated to ${status}`));
+});
+
+export const updateUserRole = asyncHandler(async (req, res) => {
+  const { role } = req.body;
+  const userId = req.params.id;
+
+  if (!["admin", "doctor", "nurse", "receptionist"].includes(role)) {
+    throw new APIError(400, "Invalid role value");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { role },
+    { new: true }
+  ).select("-password");
+
+  if (!user) {
+    throw new APIError(404, "User not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponce(200, user, `User role updated to ${role}`));
+});
+
 // Update account details
 export const updateAccountDetails = asyncHandler(async (req, res) => {
   const { fullName, email } = req.body;
@@ -252,7 +337,7 @@ export const getAssignedPatients = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, patients, "Assigned patients retrieved"));
+    .json(new ApiResponse(200, "Assigned patients retrieved", patients));
 });
 
 export const updateMedicalRecord = asyncHandler(async (req, res) => {
@@ -275,7 +360,7 @@ export const updateMedicalRecord = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, medicalRecord, "Medical record updated"));
+    .json(new ApiResponse(200, "Medical record updated", medicalRecord));
 });
 
 export const getDoctorAppointments = asyncHandler(async (req, res) => {
@@ -285,32 +370,33 @@ export const getDoctorAppointments = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, appointments, "Appointments retrieved"));
+    .json(new ApiResponse(200, "Appointments retrieved", appointments));
 });
 
 // 👩‍⚕️ Nurse Controller Methods
 export const addPatientVitals = asyncHandler(async (req, res) => {
   const { patientId } = req.params;
-  const { blood_pressure, heart_rate, temperature, oxygen_saturation } = req.body;
+  const { blood_pressure, heart_rate, temperature, oxygen_saturation } =
+    req.body;
 
   const vitalSigns = {
     blood_pressure,
     heart_rate,
     temperature,
     oxygen_saturation,
-    recorded_by: req.user._id
+    recorded_by: req.user._id,
   };
 
   const medicalRecord = await MedicalRecord.create({
     patient: patientId,
     doctor: req.user._id,
     diagnosis: "Vital Signs Check",
-    treatment: JSON.stringify(vitalSigns)
+    treatment: JSON.stringify(vitalSigns),
   });
 
   return res
     .status(201)
-    .json(new ApiResponse(201, medicalRecord, "Vitals recorded successfully"));
+    .json(new ApiResponse(201, "Vitals recorded successfully", medicalRecord));
 });
 
 export const assignOrReleaseBed = asyncHandler(async (req, res) => {
@@ -321,12 +407,12 @@ export const assignOrReleaseBed = asyncHandler(async (req, res) => {
 
   if (action === "assign") {
     if (bed.is_occupied) throw new APIError(400, "Bed already occupied");
-    
+
     bed.assigned_patient = patientId;
     bed.is_occupied = true;
   } else if (action === "release") {
     if (!bed.is_occupied) throw new APIError(400, "Bed is already unoccupied");
-    
+
     bed.assigned_patient = null;
     bed.is_occupied = false;
   } else {
@@ -336,12 +422,12 @@ export const assignOrReleaseBed = asyncHandler(async (req, res) => {
   await bed.save();
   return res
     .status(200)
-    .json(new ApiResponse(200, bed, `Bed ${action}ed successfully`));
+    .json(new ApiResponse(200, `Bed ${action}ed successfully`, bed));
 });
 
 export const getNursePatientById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  
+
   const patient = await Patient.findById(id)
     .select("-password -refreshToken")
     .populate("assigned_doctor", "full_name role")
@@ -351,14 +437,23 @@ export const getNursePatientById = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, patient, "Patient details retrieved"));
+    .json(new ApiResponse(200, "Patient details retrieved", patient));
 });
 
 // 💁 Receptionist Controller Methods
 export const receptionistRegisterPatient = asyncHandler(async (req, res) => {
-  const { full_name, dob, gender, contact_info, emergency_contact } = req.body;
+  const {
+    full_name,
+    dob,
+    gender,
+    contact_info,
+    emergency_contact,
+    assigned_doctor,
+  } = req.body;
 
-  const existingPatient = await Patient.findOne({ "contact_info.phone": contact_info.phone });
+  const existingPatient = await Patient.findOne({
+    "contact_info.phone": contact_info.phone,
+  });
   if (existingPatient) {
     throw new APIError(409, "Patient with this phone number already exists");
   }
@@ -369,20 +464,36 @@ export const receptionistRegisterPatient = asyncHandler(async (req, res) => {
     gender,
     contact_info,
     emergency_contact,
-    password: "defaultPassword123" // Should implement password reset flow
+    password: "Password123", // Should implement password reset flow
+    assigned_doctor,
   });
 
   return res
     .status(201)
-    .json(new ApiResponse(201, patient, "Patient registered successfully"));
+    .json(new ApiResponse(201, "Patient registered successfully", patient));
 });
+
+
+export const receptionistAllRegisterPatient = async (req, res) => {
+  try {
+    const patients = await Patient.find()
+      .populate('assigned_doctor', 'full_name email') // get doctor info
+      .select('-password -refreshToken'); // remove sensitive data
+
+    res.status(200).json({ success: true, data: patients });
+  } catch (error) {
+    console.error('Error fetching patients for receptionist:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
 
 export const receptionistBookAppointment = asyncHandler(async (req, res) => {
   const { patientId, doctorId, date_time, reason } = req.body;
 
   const existingAppointment = await Appointment.findOne({
     doctor: doctorId,
-    date_time: { $gte: new Date(date_time) }
+    date_time: { $gte: new Date(date_time) },
   });
 
   if (existingAppointment) {
@@ -393,12 +504,53 @@ export const receptionistBookAppointment = asyncHandler(async (req, res) => {
     patient: patientId,
     doctor: doctorId,
     date_time,
-    reason
+    reason,
   });
 
   return res
     .status(201)
-    .json(new ApiResponse(201, appointment, "Appointment booked successfully"));
+    .json(new ApiResponse(201, "Appointment booked successfully", appointment));
+});
+
+export const getAllDoctors = asyncHandler(async (req, res) => {
+  const doctors = await User.find({ role: "doctor" }).select(
+    "-password -refreshToken"
+  );
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Doctors retrieved successfully", doctors));
+});
+
+export const getAllPatients = asyncHandler(async (req, res) => {
+  const patients = await Patient.find()
+    .populate("assigned_doctor", "full_name") // populate doctor's name
+    .select("-password -refreshToken");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Patients retrieved successfully", patients));
+});
+
+export const getNurseAssignedPatients = asyncHandler(async (req, res) => {
+  const patients = await Patient.find({ assigned_nurse: req.user._id })
+    .select("-password -refreshToken")
+    .populate("assigned_doctor", "full_name")
+    .populate("medical_history", "diagnosis date_time");
+  return res.status(200).json(new ApiResponse(200, "Assigned patients retrieved", patients));
+});
+
+export const receptionistUpdateAppointment = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { status, date_time } = req.body;
+  const update = {};
+  if (status) update.status = status;
+  if (date_time) update.date_time = date_time;
+  const appointment = await Appointment.findByIdAndUpdate(id, update, {
+    new: true,
+  });
+  if (!appointment) throw new APIError(404, "Appointment not found");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Appointment updated", appointment));
 });
 
 export const receptionistCheckInPatient = asyncHandler(async (req, res) => {
@@ -414,5 +566,172 @@ export const receptionistCheckInPatient = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, patient, "Patient checked in successfully"));
+    .json(new ApiResponse(200, "Patient checked in successfully", patient));
+});
+
+export const receptionistDischargePatient = asyncHandler(async (req, res) => {
+  const { patientId } = req.params;
+  const patient = await Patient.findByIdAndUpdate(
+    patientId,
+    { current_status: "discharged", discharge_date: new Date() },
+    { new: true }
+  ).select("-password -refreshToken");
+  if (!patient) throw new APIError(404, "Patient not found");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Patient discharged successfully", patient));
+});
+
+// 📊 Admin Report Functions
+export const getDashboardReports = asyncHandler(async (req, res) => {
+  const [userCount, appointmentCount, inventoryCount, bedCount] =
+    await Promise.all([
+      User.countDocuments(),
+      Appointment.countDocuments(),
+      Inventory.countDocuments(),
+      Bed.countDocuments({ is_occupied: true }),
+    ]);
+
+  const dashboardData = {
+    totalUsers: userCount,
+    totalAppointments: appointmentCount,
+    totalInventoryItems: inventoryCount,
+    occupiedBeds: bedCount,
+    recentActivity: [
+      { type: "user", text: `${userCount} total users`, time: new Date() },
+      {
+        type: "appointment",
+        text: `${appointmentCount} total appointments`,
+        time: new Date(),
+      },
+      {
+        type: "inventory",
+        text: `${inventoryCount} inventory items`,
+        time: new Date(),
+      },
+      { type: "bed", text: `${bedCount} beds occupied`, time: new Date() },
+    ],
+  };
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        "Dashboard reports retrieved successfully",
+        dashboardData
+      )
+    );
+});
+
+export const getUserReports = asyncHandler(async (req, res) => {
+  const { startDate, endDate, role } = req.query;
+
+  let query = {};
+  if (startDate && endDate) {
+    query.createdAt = {
+      $gte: new Date(startDate),
+      $lte: new Date(endDate),
+    };
+  }
+  if (role) {
+    query.role = role;
+  }
+
+  const users = await User.find(query).select("-password -refreshToken");
+  const roleStats = await User.aggregate([
+    { $group: { _id: "$role", count: { $sum: 1 } } },
+  ]);
+
+  const reportData = {
+    users,
+    totalUsers: users.length,
+    roleDistribution: roleStats,
+    dateRange: { startDate, endDate },
+  };
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, "User reports retrieved successfully", reportData)
+    );
+});
+
+export const getAppointmentReports = asyncHandler(async (req, res) => {
+  const { startDate, endDate, status } = req.query;
+
+  let query = {};
+  if (startDate && endDate) {
+    query.date_time = {
+      $gte: new Date(startDate),
+      $lte: new Date(endDate),
+    };
+  }
+  if (status) {
+    query.status = status;
+  }
+
+  const appointments = await Appointment.find(query)
+    .populate("patient", "full_name")
+    .populate("doctor", "full_name");
+
+  const statusStats = await Appointment.aggregate([
+    { $group: { _id: "$status", count: { $sum: 1 } } },
+  ]);
+
+  const reportData = {
+    appointments,
+    totalAppointments: appointments.length,
+    statusDistribution: statusStats,
+    dateRange: { startDate, endDate },
+  };
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        "Appointment reports retrieved successfully",
+        reportData
+      )
+    );
+});
+
+export const getInventoryReports = asyncHandler(async (req, res) => {
+  const { type, lowStock } = req.query;
+
+  let query = {};
+  if (type) {
+    query.type = type;
+  }
+  if (lowStock === "true") {
+    query.$expr = { $lt: ["$quantity_available", "$minimum_required"] };
+  }
+
+  const inventory = await Inventory.find(query);
+  const typeStats = await Inventory.aggregate([
+    { $group: { _id: "$type", count: { $sum: 1 } } },
+  ]);
+
+  const lowStockItems = await Inventory.find({
+    $expr: { $lt: ["$quantity_available", "$minimum_required"] },
+  });
+
+  const reportData = {
+    inventory,
+    totalItems: inventory.length,
+    typeDistribution: typeStats,
+    lowStockItems: lowStockItems.length,
+    lowStockItemsList: lowStockItems,
+  };
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        "Inventory reports retrieved successfully",
+        reportData
+      )
+    );
 });

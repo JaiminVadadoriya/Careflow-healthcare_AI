@@ -1,13 +1,46 @@
-import { DOCUMENT } from '@angular/common';
-import { AfterViewInit, Component, HostListener, inject, Inject, OnInit, Renderer2 } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { ThemeService } from '../helpers/theme/theme.service';
+
+import { AfterViewInit, Component, HostListener, inject, Inject, OnInit, Renderer2, DOCUMENT } from '@angular/core';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { ThemeService } from '../shared/theme/theme.service';
+import { DarkModeComponent } from '../helpers/dark-mode-button/dark-mode-button.component';
+import { MatCard, MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { FormsModule } from '@angular/forms';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { CommonModule } from '@angular/common';
+import { ChatbotComponent } from "./chatbot/chatbot.component";
+// import { ThemeService } from '../helpers/theme/theme.service';
+
 
 @Component({
     selector: 'app-careflow-landing-page',
+    imports: [DarkModeComponent, MatFormFieldModule,
+    MatCardModule,
+    MatChipsModule,
+    FormsModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatButtonModule, MatListModule,
+    MatCardModule,
+    MatIconModule,
+    CommonModule,
+    MatDatepickerModule,
+    MatSelectModule,
+    MatSlideToggleModule,
+    MatSnackBarModule,
+    MatGridListModule, ChatbotComponent, ChatbotComponent],
     templateUrl: './landing-page.component.html',
     styleUrls: ['./landing-page.component.scss'],
-    standalone: false
+    standalone: true
 })
 export class CareflowLandingPageComponent implements OnInit, AfterViewInit {
   private _snackBar = inject(MatSnackBar);

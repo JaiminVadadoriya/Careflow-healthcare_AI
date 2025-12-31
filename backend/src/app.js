@@ -6,6 +6,8 @@ import express from "express";
 import appointmentRoutes from "./routes/appointment.routes.js";
 import patientRoutes from "./routes/patient.routes.js";
 import userRoutes from "./routes/user.routes.js";
+import inventoryRoutes from "./routes/inventory.routes.js";
+import bedsRoutes from "./routes/bed.routes.js";
 
 const app = express();
 
@@ -29,6 +31,8 @@ const apiVersion = "v1";
 app.use(`/api/${apiVersion}/users`, userRoutes);
 app.use(`/api/${apiVersion}/appointments`, appointmentRoutes);
 app.use(`/api/${apiVersion}/patients`, patientRoutes);
+app.use(`/api/${apiVersion}/inventory`, inventoryRoutes); // Assuming doctor routes are under userRoutes
+app.use(`/api/${apiVersion}/beds`, bedsRoutes); // Assuming doctor routes are under userRoutes
 
 // app.use(`/api/${apiVersion}/users`, userRouter);
 

@@ -1,0 +1,130 @@
+<dark-mode-button class="fixed top-4 right-4 z-50 text-2xl p-2 bg-gray-200 dark:bg-gray-700 dark:text-white rounded-full shadow-md hover:scale-105 transition"></dark-mode-button>
+
+
+<!-- 🧾 Sign-Up Page Layout -->
+<div
+  class="min-h-screen flex flex-col md:flex-row items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 gap-4 transition-colors duration-500"
+>
+  <!-- 📸 Image Section -->
+  <div class="hidden md:block md:w-1/2">
+    <img
+      src="assets/images/signup.png"
+      alt="Sign Up Illustration"
+      class="rounded-2xl shadow-2xl w-full h-full object-cover"
+    />
+  </div>
+
+  <!-- 📝 Sign-Up Form -->
+  <div
+    class="w-full md:w-1/2 max-w-xl bg-white dark:bg-gray-900 p-10 rounded-3xl shadow-xl transition-all duration-500 ease-in-out animate-fadeIn"
+  >
+    <form class="space-y-6" [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
+      <!-- Header -->
+      <div class="text-center">
+        <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Create an Account</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-300">Sign up and join our community</p>
+      </div>
+
+      <!-- Full Name -->
+      <mat-form-field class="w-full" >
+        <mat-label>Full Name</mat-label>
+        <input
+          matInput
+          placeholder="Ex. Jaimin Patel"
+          formControlName="name"
+        />
+        <mat-icon matPrefix>person</mat-icon>
+        <mat-error *ngIf="signUpForm.controls['name'].hasError('required')">
+          Name is required
+        </mat-error>
+        <mat-error *ngIf="signUpForm.controls['name'].hasError('minlength')">
+          Minimum 2 characters required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Email -->
+      <mat-form-field class="w-full" >
+        <mat-label>Email</mat-label>
+        <input
+          matInput
+          placeholder="Ex. nik@gmail.com"
+          type="email"
+          formControlName="email"
+        />
+        <mat-icon matPrefix>mail</mat-icon>
+        <mat-error *ngIf="signUpForm.controls['email'].hasError('required')">
+          Email is required
+        </mat-error>
+        <mat-error *ngIf="signUpForm.controls['email'].hasError('email')">
+          Invalid email address
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Password -->
+      <mat-form-field class="w-full" >
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          [type]="hidePassword ? 'password' : 'text'"
+          placeholder="Create a strong password"
+          formControlName="password"
+        />
+        <mat-icon matPrefix>lock</mat-icon>
+        <mat-icon matSuffix class="cursor-pointer" (click)="hidePassword = !hidePassword">
+          {{ hidePassword ? 'visibility_off' : 'visibility' }}
+        </mat-icon>
+        <mat-error *ngIf="signUpForm.controls['password'].hasError('required')">
+          Password is required
+        </mat-error>
+        <mat-error *ngIf="signUpForm.controls['password'].hasError('minlength')">
+          Minimum 6 characters required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Phone -->
+      <mat-form-field class="w-full" >
+        <mat-label>Phone</mat-label>
+        <input
+          matInput
+          placeholder="Ex. 94*****445"
+          type="tel"
+          formControlName="phone"
+        />
+        <mat-icon matPrefix>call</mat-icon>
+        <mat-error *ngIf="signUpForm.controls['phone'].hasError('required')">
+          Phone number is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Gender -->
+      <div class="w-full">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Gender</label>
+        <mat-radio-group formControlName="gender" class="flex gap-6">
+          <mat-radio-button value="male">Male</mat-radio-button>
+          <mat-radio-button value="female">Female</mat-radio-button>
+        </mat-radio-group>
+        <mat-error *ngIf="signUpForm.controls['gender'].hasError('required')">
+          Gender is required
+        </mat-error>
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="signUpForm.invalid || loading"
+        class="w-full py-3 rounded-lg font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition duration-300 flex justify-center items-center"
+      >
+        <mat-spinner *ngIf="loading" diameter="20" strokeWidth="3"></mat-spinner>
+        <span *ngIf="!loading">Create Account</span>
+      </button>
+
+      <!-- Already have an account -->
+      <div class="text-center text-sm text-gray-500 dark:text-gray-400">
+        Already have an account?
+        <a routerLink="/login" href="login" class="text-indigo-600 hover:underline">Login here</a>
+      </div>
+    </form>
+  </div>
+</div>

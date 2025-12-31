@@ -1,0 +1,51 @@
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-6">
+  <app-card-metric
+    title="Total patients today"
+    value="128"
+    icon="groups"
+  ></app-card-metric>
+  <app-card-metric
+    title="Resource utilization"
+    value="82%"
+    icon="pie_chart"
+  ></app-card-metric>
+  <app-card-metric
+    title="Staff on shift"
+    value="24"
+    icon="medical_services"
+  ></app-card-metric>
+  <app-card-metric
+    title="Low inventory alerts"
+    value="3"
+    icon="warning"
+  ></app-card-metric>
+</div>
+
+<mat-card *ngIf="loading">Loading users...</mat-card>
+<mat-card *ngIf="error">{{ error }}</mat-card>
+<div class="p-6" *ngIf="!loading && users.length">
+  <h2 class="text-xl font-semibold mb-4">User Management</h2>
+  <app-user-table
+    [columns]="['full_name', 'email', 'role', 'status']"
+    [data]="users"
+    (editUser)="onEdit($event)"
+    (toggleStatus)="onToggleStatus($event)"
+    (promoteUser)="onPromote($event)"
+  ></app-user-table>
+</div>
+
+<!-- <mat-card *ngIf="!loading && users.length">
+  <h2 class="text-lg font-bold mb-4">All Users</h2>
+  <div *ngFor="let user of users" class="p-4 border-b border-gray-200">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="font-semibold">{{ user.full_name }}</p>
+        <p class="text-sm text-gray-600">{{ user.email }}</p>
+        <p class="text-sm text-gray-500 capitalize">{{ user.role }}</p>
+      </div>
+      <mat-icon color="primary" *ngIf="user.role === 'admin'"
+        >verified</mat-icon
+      >
+    </div>
+  </div>
+</mat-card> -->

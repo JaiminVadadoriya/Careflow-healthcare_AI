@@ -26,12 +26,13 @@ import { AppComponent } from './app.component';
 import { HelperModule } from './helpers/helpers.module';
 import { CareflowLandingPageComponent } from './landing/landing-page.component';
 import { SideNavComponent } from "./side-nav/side-nav.component";
+import { HTTP_INTERCEPTORS, provideHttpClient } from '@angular/common/http';
+import { AuthInterceptor } from './core/auth/auth.interceptor';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    CareflowLandingPageComponent
   ],
   imports: [
     BrowserModule,
@@ -59,7 +60,13 @@ import { SideNavComponent } from "./side-nav/side-nav.component";
   providers: [
     provideAnimationsAsync(),
     provideNativeDateAdapter(),
-    HelperModule
+    provideHttpClient(),
+    HelperModule,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

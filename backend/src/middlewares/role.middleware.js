@@ -4,7 +4,7 @@ const checkRole = (requiredRoles=[]) => {
 
       const allowedRoles = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles].includes(role);
       if (!allowedRoles && role !== 'admin') {
-        return res.status(403).json({ message: 'Forbidden: You do not have access to this resource' });
+        return res.status(403).json({ message: `Forbidden: You do not have access to this resource\n your role is ${role}` });
       }
       next();
     };

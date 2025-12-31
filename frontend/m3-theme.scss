@@ -159,12 +159,12 @@ $dark-theme: mat.define-theme((
 ));
 
 // Applying light theme (if applied via class, e.g. body.light-theme)
-body.light-theme { // Or just .light-theme if applied to a div
+html { // Or just .light-theme if applied to a div
   @include mat.all-component-themes($light-theme);
   @include mat.system-level-colors($light-theme);
   @include mat.system-level-typography($light-theme);
 }
-body.dark-theme {
+html.dark {
   @include mat.all-component-themes($dark-theme); // Changed from all-component-colors
   @include mat.system-level-colors($dark-theme);
   @include mat.system-level-typography($dark-theme);

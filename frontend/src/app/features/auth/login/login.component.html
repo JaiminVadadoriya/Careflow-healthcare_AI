@@ -1,0 +1,115 @@
+<!-- 🌗 Toggle Button -->
+<!-- <button
+  (click)="toggleTheme()"
+  class="fixed top-4 right-4 z-50 text-2xl p-2 bg-gray-200 dark:bg-gray-700 dark:text-white rounded-full shadow-md hover:scale-105 transition"
+>
+
+  
+</button> -->
+<dark-mode-button class="fixed top-4 right-4 z-50 text-2xl p-2 bg-gray-200 dark:bg-gray-700 dark:text-white rounded-full shadow-md hover:scale-105 transition"></dark-mode-button>
+
+<!-- 💻 Page Layout -->
+<div
+  class="min-h-screen flex flex-col md:flex-row items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 gap-4 transition-colors duration-500"
+>
+  <!-- 🖼️ Image Section -->
+  <div class="hidden md:block md:w-1/2 ">
+    <img
+      ngSrc="assets/images/login.png"
+      width="1080"
+      height="1080"
+      alt="Login Illustration"
+      class="rounded-2xl shadow-2xl w-full h-full object-cover"
+    />
+  </div>
+
+  <!-- 📄 Login Form -->
+  <div
+    @fadeIn
+    class="w-full md:w-1/2 max-w-md bg-white dark:bg-gray-900 p-10 rounded-3xl shadow-xl transition-all duration-500 ease-in-out"
+  >
+    <form class="space-y-6" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- Header -->
+      <div class="text-center">
+        <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Welcome Back</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-300">Please login to your account</p>
+      </div>
+
+      <!-- Email Field -->
+      <mat-form-field class="w-full" floatLabel="always" >
+        <mat-label>Email</mat-label>
+        <input
+          matInput
+          placeholder="Ex. nik@gmail.com"
+          type="email"
+          formControlName="email"
+          [errorStateMatcher]="matcher"
+          autofocus
+        />
+        <mat-icon matPrefix>mail</mat-icon>
+        @if (loginForm.controls['email'].hasError('email') &&
+        !loginForm.controls['email'].hasError('required')) {
+        <mat-error>Please enter a valid email address</mat-error>
+        } @if (loginForm.controls['email'].hasError('required')) {
+        <mat-error>Email is <strong>required</strong></mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Password Field -->
+      <mat-form-field class="w-full" >
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          placeholder="Password"
+          [type]="hide ? 'password' : 'text'"
+          formControlName="password"
+          [errorStateMatcher]="matcher"
+          required
+        />
+        <mat-icon matPrefix>lock</mat-icon>
+        <mat-icon matSuffix class="cursor-pointer" (click)="hide = !hide">{{
+          hide ? "visibility_off" : "visibility"
+        }}</mat-icon>
+        @if (loginForm.controls['password'].hasError('required')) {
+        <mat-error>Enter your password</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Error Message -->
+      @if (errorMsg) {
+      <div
+        class="text-red-600 text-sm bg-red-100 dark:bg-red-300/10 dark:border dark:border-red-500 dark:text-red-300 rounded p-2 text-center"
+      >
+        {{ errorMsg }}
+      </div>
+      }
+
+      <!-- Submit Button -->
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="loginForm.invalid || loading"
+        class="w-full py-3 rounded-lg font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition duration-300 flex justify-center items-center"
+      >
+        <mat-spinner
+          *ngIf="loading"
+          diameter="20"
+          strokeWidth="3"
+        ></mat-spinner>
+        <span *ngIf="!loading">Login</span>
+      </button>
+
+      <!-- Signup Link -->
+      <!-- <div class="text-center text-sm text-gray-500 dark:text-gray-400">
+        Don’t have an account?
+        <a
+          routerLink="signup"
+          href="signup"
+          class="text-indigo-600 hover:underline"
+          >Sign up</a
+        >
+      </div> -->
+    </form>
+  </div>
+</div>
