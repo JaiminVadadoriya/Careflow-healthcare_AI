@@ -3,7 +3,7 @@ import AuthController from "../controllers/auth.controller.js";
 import UserController from "../controllers/user.controller.js";
 import DoctorController from "../controllers/doctor.controller.js";
 import NurseController from "../controllers/nurse.controller.js";
-import ReceptionistController from "../controllers/receptionist.controller.js";
+// import ReceptionistController from "../controllers/receptionist.controller.js";
 import AdminController from "../controllers/admin.controller.js";
 
 import AuthMiddleware from "../middlewares/auth.middleware.js";
@@ -84,49 +84,9 @@ router.get(
 );
 router.get('/nurse/patients', AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['nurse']), NurseController.getNurseAssignedPatients);
 
-/**
- * 💁 Receptionist Routes
- */
-router.post(
-  "/receptionist/register",
-  AuthMiddleware.authenticate,
-  AuthMiddleware.restrictTo(["receptionist"]),
-  ReceptionistController.registerPatient
-);
-router.post(
-  "/receptionist/appointments",
-  AuthMiddleware.authenticate,
-  ReceptionistController.bookAppointment
-);
-router.get(
-  "/receptionist/appointments",
-  AuthMiddleware.authenticate,
-  AuthMiddleware.restrictTo(["receptionist"]),
-  ReceptionistController.getAllPatients 
-);
-router.patch(
-  "/receptionist/checkin/:patientId",
-  AuthMiddleware.authenticate,
-  AuthMiddleware.restrictTo(["receptionist"]),
-  ReceptionistController.checkInPatient
-);
+// Receptionist routes moved to receptionist.routes.js
 
-router.patch(
-  "/receptionist/appointments/:id",
-  AuthMiddleware.authenticate,
-  AuthMiddleware.restrictTo(["receptionist"]),
-  ReceptionistController.updateAppointment
-);
-
-router.patch(
-  "/receptionist/discharge/:patientId",
-  AuthMiddleware.authenticate,
-  AuthMiddleware.restrictTo(["receptionist"]),
-  ReceptionistController.dischargePatient
-);
-
+// Keep doctors route for general access if needed
 router.get('/doctors', AuthMiddleware.authenticate, DoctorController.getAllDoctors);
-
-router.get('/patients', AuthMiddleware.authenticate, AuthMiddleware.restrictTo([ 'receptionist']), ReceptionistController.getAllPatients);
 
 export default router;

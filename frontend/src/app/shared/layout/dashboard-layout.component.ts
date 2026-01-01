@@ -2,6 +2,7 @@ import { Component, Input, OnInit, HostListener, ElementRef, ViewChild } from '@
 
 import { RouterModule } from '@angular/router';
 import { ThemeService } from '../theme/theme.service';
+import { AuthService } from 'src/app/core/auth/auth.service';
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -30,14 +31,19 @@ import { ThemeService } from '../theme/theme.service';
     
         <!-- User Profile (Sidebar Bottom) -->
         <div class="p-4 border-t border-gray-50 dark:border-gray-800">
-          <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800">
-            <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-              <span class="font-bold text-sm">{{ role.charAt(0).toUpperCase() }}</span>
+          <div class="flex items-center justify-between gap-2 p-3 rounded-xl bg-gray-50 dark:bg-gray-800">
+            <div class="flex items-center gap-3 overflow-hidden">
+                <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex-shrink-0 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                  <span class="font-bold text-sm">{{ role.charAt(0).toUpperCase() }}</span>
+                </div>
+                <div class="overflow-hidden">
+                  <p class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{{ role }}</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 truncate">Online</p>
+                </div>
             </div>
-            <div class="overflow-hidden">
-              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{{ role }}</p>
-              <p class="text-xs text-gray-500 dark:text-gray-400 truncate">Online</p>
-            </div>
+            <button (click)="logout()" class="p-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Sign Out">
+                <span class="material-icons">logout</span>
+            </button>
           </div>
         </div>
       </aside>
@@ -96,16 +102,44 @@ import { ThemeService } from '../theme/theme.service';
         </main>
       </div>
     </div>
-    `
+    <!-- Logout Confirmation Modal -->
+    @if (showLogoutConfirm) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in" style="z-index: 100;">
+        <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-sm w-full border border-gray-100 dark:border-gray-800 transform transition-all scale-100">
+          <div class="p-6 text-center">
+            <div class="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="material-icons text-3xl text-red-500">logout</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Sign Out?</h3>
+            <p class="text-gray-500 dark:text-gray-400 mb-6">Are you sure you want to end your session?</p>
+            
+            <div class="grid grid-cols-2 gap-3">
+              <button (click)="showLogoutConfirm = false" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                Cancel
+              </button>
+              <button (click)="confirmLogout()" class="px-4 py-2.5 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 shadow-lg shadow-red-500/30 transition-all">
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  `
 })
 export class DashboardLayoutComponent implements OnInit {
   @Input() title: string = 'Dashboard';
   @Input() role: string = 'User';
 
   showThemeMenu = false;
+  showLogoutConfirm = false;
   currentTheme: 'light' | 'dark' | 'system' = 'system';
 
-  constructor(private themeService: ThemeService, public eRef: ElementRef) {}
+  constructor(
+    private themeService: ThemeService, 
+    public eRef: ElementRef,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.themeService.theme$.subscribe(theme => {
@@ -131,8 +165,18 @@ export class DashboardLayoutComponent implements OnInit {
     }
   }
 
+  logout() {
+    this.showLogoutConfirm = true;
+  }
+
+  confirmLogout() {
+    this.authService.logout();
+    this.showLogoutConfirm = false; // although redirect happens immediately
+  }
+
   @HostListener('document:click', ['$event'])
   clickout(event: any) {
+    // specific check to close menus if clicked outside
     if (!this.eRef.nativeElement.contains(event.target)) {
       this.showThemeMenu = false;
     }
