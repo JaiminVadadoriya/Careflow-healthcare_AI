@@ -14,6 +14,11 @@ class ReceptionistController {
     return res.status(200).json(new ApiResponse(200, "Patients retrieved successfully", patients));
   });
 
+  getDoctors = asyncHandler(async (req, res) => {
+    const doctors = await ReceptionistService.getDoctors();
+    return res.status(200).json(new ApiResponse(200, "Doctors retrieved successfully", doctors));
+  });
+
   bookAppointment = asyncHandler(async (req, res) => {
     const appointment = await ReceptionistService.bookAppointment(req.body);
     return res.status(201).json(new ApiResponse(201, "Appointment booked successfully", appointment));
@@ -37,6 +42,12 @@ class ReceptionistController {
   dischargePatient = asyncHandler(async (req, res) => {
     const patient = await ReceptionistService.dischargePatient(req.params.patientId);
     return res.status(200).json(new ApiResponse(200, "Patient discharged successfully", patient));
+  });
+
+  getDoctorAvailability = asyncHandler(async (req, res) => {
+    const { date } = req.query;
+    const availability = await ReceptionistService.getDoctorAvailability(req.params.doctorId, date);
+    return res.status(200).json(new ApiResponse(200, "Availability retrieved", availability));
   });
 }
 

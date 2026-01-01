@@ -71,9 +71,17 @@ import { ReceptionistService } from '../receptionist.service';
                           </button>
                         }
                         @if (patient.current_status === 'admitted') {
-                          <span class="text-green-600 dark:text-green-400 flex items-center justify-end gap-1 text-sm font-medium">
-                            <span class="material-icons text-sm">check_circle</span> Checked In
-                          </span>
+                          <div class="flex items-center justify-end gap-2">
+                            <span class="text-green-600 dark:text-green-400 flex items-center gap-1 text-sm font-medium">
+                              <span class="material-icons text-sm">check_circle</span> Checked In
+                            </span>
+                            <button
+                              (click)="discharge(patient)"
+                              class="px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-300 rounded-lg text-xs font-medium transition-colors"
+                              >
+                              Discharge
+                            </button>
+                          </div>
                         }
                       </td>
                     </tr>
@@ -135,6 +143,23 @@ export class CheckinComponent implements OnInit {
         alert('Check-in failed');
       }
     });
+  }
+
+  discharge(patient: any) {
+     if(!confirm('Are you sure you want to discharge ' + patient.full_name + '?')) return;
+
+     const previousStatus = patient.current_status;
+     patient.current_status = 'discharged';
+     
+     this.receptionistService.dischargePatient(patient._id).subscribe({
+        next: () => {
+           // success
+        },
+        error: () => {
+           patient.current_status = previousStatus;
+           alert('Discharge failed');
+        }
+     });
   }
 
   applyFilter() {

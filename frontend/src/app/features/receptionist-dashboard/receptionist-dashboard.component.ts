@@ -51,7 +51,7 @@ import { DashboardService } from 'src/app/core/services/dashboard.service';
                         <app-action-card label="New Patient" description="Register a walk-in" icon="person_add" route="/receptionist/patients" color="blue"></app-action-card>
                         <app-action-card label="Book Appointment" description="Schedule visit" icon="edit_calendar" route="/receptionist/appointments" color="green"></app-action-card>
                         <app-action-card label="Check-In Patient" description="Mark arrival" icon="login" route="/receptionist/checkin" color="yellow"></app-action-card>
-                        <app-action-card label="Find Doctor" description="View doctor availability" icon="search" route="/receptionist/doctors" color="gray"></app-action-card>
+                        <app-action-card label="Find Doctor" description="View doctor availability" icon="search" route="/receptionist/appointments" color="gray"></app-action-card>
                      </div>
                  </div>
 
@@ -60,14 +60,19 @@ import { DashboardService } from 'src/app/core/services/dashboard.service';
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Waiting Room</h3>
                     <!-- TODO: Iterate over real queue data  -->
                     <div class="space-y-3">
-                       <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">#04: John Smith</span>
-                          <span class="text-xs text-orange-500 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded">15m wait</span>
-                       </div>
-                       <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">#05: Alice Doe</span>
-                          <span class="text-xs text-green-500 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded">2m wait</span>
-                       </div>
+                       @for (item of stats?.queue || []; track item) {
+                         <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ item.patientName }}</span>
+                            @if (item.waitTime > 0) {
+                              <span class="text-xs text-orange-500 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded">{{ item.waitTime }}m wait</span>
+                            } @else {
+                               <span class="text-xs text-green-500 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded">On time</span>
+                            }
+                         </div>
+                       }
+                       @if (!stats?.queue?.length) {
+                          <div class="p-4 text-center text-sm text-gray-500 dark:text-gray-400 italic">No patients in waiting room</div>
+                       }
                     </div>
                 </div>
             </div>

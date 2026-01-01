@@ -9,6 +9,7 @@ import userRoutes from "./routes/user.routes.js";
 import inventoryRoutes from "./routes/inventory.routes.js";
 import bedsRoutes from "./routes/bed.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
+import receptionistRoutes from "./routes/receptionist.routes.js";
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use(`/api/${apiVersion}/patients`, patientRoutes);
 app.use(`/api/${apiVersion}/inventory`, inventoryRoutes); // Assuming doctor routes are under userRoutes
 app.use(`/api/${apiVersion}/beds`, bedsRoutes); 
 app.use(`/api/${apiVersion}/dashboard`, dashboardRoutes);
+app.use(`/api/${apiVersion}/receptionist`, receptionistRoutes);
 
 // app.use(`/api/${apiVersion}/users`, userRouter);
 

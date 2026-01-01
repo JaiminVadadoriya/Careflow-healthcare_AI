@@ -121,15 +121,25 @@ class DashboardController {
         }
     });
 
-    // 3. Checked In (Status = 'active' or 'checked-in')
-    // Assuming 'scheduled' is confirmed, 'completed' is done. Let's assume 'confirmed' = check-in for now
+    // 3. Checked In (Status = 'arrived')
     const checkedIn = await Appointment.countDocuments({
-        status: "confirmed",
+        status: "arrived",
          date_time: {
             $gte: startOfDay,
             $lte: endOfDay
         }
     });
+
+    // 4. Waiting Queue (List of arrived patients)
+    const queue = await Appointment.find({
+        status: "arrived",
+        date_time: {
+            $gte: startOfDay,
+            $lte: endOfDay
+        }
+    })
+    .sort({ date_time: 1 })
+    .populate("patient", "full_name");
 
     // 4. New Registrations (Patients created today)
     const newRegistrations = await Patient.countDocuments({
@@ -143,7 +153,11 @@ class DashboardController {
         todaysAppointments,
         currentlyWaiting,
         checkedIn,
-        newRegistrations
+        newRegistrations,
+        queue: queue.map(a => ({
+          patientName: a.patient.full_name,
+          waitTime: Math.floor((new Date() - new Date(a.date_time)) / 60000) // minutes since appointment time
+        }))
     };
 
     return res
