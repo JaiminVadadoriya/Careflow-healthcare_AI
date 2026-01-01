@@ -1,17 +1,50 @@
-import { DOCUMENT } from '@angular/common';
-import { AfterViewInit, Component, HostListener, inject, Inject, OnInit, Renderer2 } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { ThemeService } from '../helpers/theme/theme.service';
+
+import { AfterViewInit, Component, HostListener, inject, OnInit } from '@angular/core';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { DarkModeComponent } from '../helpers/dark-mode-button/dark-mode-button.component';
+import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { FormsModule } from '@angular/forms';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+
+import { ChatbotComponent } from "./chatbot/chatbot.component";
 
 @Component({
-  selector: 'app-careflow-landing-page',
-  templateUrl: './landing-page.component.html',
-  styleUrls: ['./landing-page.component.scss']
+    selector: 'app-careflow-landing-page',
+    imports: [
+    DarkModeComponent,
+    MatFormFieldModule,
+    MatCardModule,
+    MatChipsModule,
+    FormsModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatListModule,
+    MatIconModule,
+    MatDatepickerModule,
+    MatSelectModule,
+    MatSlideToggleModule,
+    MatSnackBarModule,
+    MatGridListModule,
+    ChatbotComponent
+],
+    templateUrl: './landing-page.component.html',
+    styleUrls: ['./landing-page.component.scss'],
+    standalone: true
 })
-export class CareflowLandingPageComponent implements OnInit, AfterViewInit {
+export class CareflowLandingPageComponent implements AfterViewInit {
   private _snackBar = inject(MatSnackBar);
 
-  isDarkTheme = false;
   appointment = {
     name: '',
     date: '',
@@ -20,9 +53,7 @@ export class CareflowLandingPageComponent implements OnInit, AfterViewInit {
   isScrolled = false;
 
   availableSlots = ['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:00 PM'];
-
   snackbarMessage = '';
-    
 
   features = [
     { icon: 'psychology', title: 'AI-Powered Forecasting', description: 'Predict healthcare demands using ML and data.' },
@@ -38,9 +69,7 @@ export class CareflowLandingPageComponent implements OnInit, AfterViewInit {
     { value: '24/7', label: 'System Availability' },
   ];
 
-
   bookAppointment(): void {
-
     this.snackbarMessage = 'Appointment Booked Successfully!';
     this._snackBar.open(this.snackbarMessage, 'Close',)
     setTimeout(() => {
@@ -48,25 +77,10 @@ export class CareflowLandingPageComponent implements OnInit, AfterViewInit {
     }, 3000);
   }
 
-  constructor(private themeService: ThemeService,@Inject(DOCUMENT) private document: Document,
-    private renderer: Renderer2) {
-  }
-  ngOnInit(): void {
-    const storedTheme = localStorage.getItem('theme');
-    if (storedTheme === 'dark') {
-      this.isDarkTheme = true;
-      this.renderer.addClass(this.document.body, 'dark-theme');
-      this.renderer.removeClass(this.document.body, 'light-theme'); // Ensure only one theme class
-    } else {
-      this.isDarkTheme = false;
-      // Ensure light-theme is applied if it's not the default un-classed state
-      this.renderer.addClass(this.document.body, 'light-theme');
-      this.renderer.removeClass(this.document.body, 'dark-theme');
-    }
-  }
+  constructor() {}
+
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    
     this.isScrolled = window.scrollY > 50;
     const sections = document.querySelectorAll('section');
     const scrollY = window.scrollY + window.innerHeight * 0.8;
@@ -74,6 +88,8 @@ export class CareflowLandingPageComponent implements OnInit, AfterViewInit {
     sections.forEach(section => {
       const top = section.getBoundingClientRect().top + window.scrollY;
       if (scrollY > top) {
+        // Only verify 'visible' class if used in CSS. 
+        // Tailwind usually handles this via 'transition' classes in HTML, but here we add class.
         section.classList.add('visible');
       }
     });
@@ -81,18 +97,5 @@ export class CareflowLandingPageComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.onWindowScroll(); // initial reveal
-  }
-
-  toggleTheme(event:any): void {
-    this.isDarkTheme = !this.isDarkTheme;
-    if (this.isDarkTheme) {
-      this.renderer.addClass(this.document.body, 'dark-theme');
-      this.renderer.removeClass(this.document.body, 'light-theme');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      this.renderer.addClass(this.document.body, 'light-theme');
-      this.renderer.removeClass(this.document.body, 'dark-theme');
-      localStorage.setItem('theme', 'light');
-    }
   }
 }

@@ -5,6 +5,7 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
+    "start": "node src/index.js",
     "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js",
     "vibedev": "nodemon -r dotenv/config --experimental-json-modules src/server.js"
   },

@@ -46,7 +46,7 @@ export const registerPatient = asyncHandler(async (req, res) => {
   const createdPatient = await Patient.findById(patient._id).select('-password -refreshToken');
   return res
     .status(201)
-    .json(new ApiResponse(201, createdPatient, 'Patient registered successfully'));
+    .json(new ApiResponse(201, 'Patient registered successfully', createdPatient));
 });
 
 export const loginPatient = asyncHandler(async (req, res) => {
@@ -79,11 +79,11 @@ export const loginPatient = asyncHandler(async (req, res) => {
     .status(200)
     .cookie('accessToken', accessToken, options)
     .cookie('refreshToken', refreshToken, options)
-    .json(new ApiResponse(200, {
+    .json(new ApiResponse(200, 'Login successful', {
       patient: loggedInPatient,
       accessToken,
       refreshToken
-    }, 'Login successful'));
+    }));
 });
 
 // 🔐 Authenticated Routes
@@ -91,7 +91,7 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
   const patient = await Patient.findById(req.patient?._id).select('-password -refreshToken');
   return res
     .status(200)
-    .json(new ApiResponse(200, patient, 'Current patient fetched successfully'));
+    .json(new ApiResponse(200, 'Current patient fetched successfully', patient));
 });
 
 export const updateAccountDetails = asyncHandler(async (req, res) => {
@@ -109,7 +109,7 @@ export const updateAccountDetails = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, updatedPatient, 'Account details updated successfully'));
+    .json(new ApiResponse(200, 'Account details updated successfully', updatedPatient));
 });
 
 // 🏥 Patient Data Management
@@ -130,7 +130,7 @@ export const getPatientData = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, patient, 'Patient data retrieved successfully'));
+    .json(new ApiResponse(200, 'Patient data retrieved successfully', patient));
 });
 
 export const updatePatientData = asyncHandler(async (req, res) => {
@@ -155,7 +155,7 @@ export const updatePatientData = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, updatedPatient, 'Patient data updated successfully'));
+    .json(new ApiResponse(200, 'Patient data updated successfully', updatedPatient));
 });
 
 // 🗓️ Appointments
@@ -166,7 +166,7 @@ export const getAppointments = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, appointments, 'Appointments retrieved successfully'));
+    .json(new ApiResponse(200, 'Appointments retrieved successfully', appointments));
 });
 
 export const postAppointments = asyncHandler(async (req, res) => {
@@ -199,7 +199,7 @@ export const postAppointments = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(201, appointment, 'Appointment booked successfully'));
+    .json(new ApiResponse(201, 'Appointment booked successfully', appointment));
 });
 
 // 🧪 Lab Results
@@ -210,7 +210,7 @@ export const getLabResults = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, labResults, 'Lab results retrieved successfully'));
+    .json(new ApiResponse(200, 'Lab results retrieved successfully', labResults));
 });
 
 // 📋 Medical Records
@@ -221,7 +221,7 @@ export const getMedicalRecords = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, medicalRecords, 'Medical records retrieved successfully'));
+    .json(new ApiResponse(200, 'Medical records retrieved successfully', medicalRecords));
 });
 
 export const getMedicalRecordById = asyncHandler(async (req, res) => {
@@ -236,7 +236,7 @@ export const getMedicalRecordById = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, medicalRecord, 'Medical record retrieved successfully'));
+    .json(new ApiResponse(200, 'Medical record retrieved successfully', medicalRecord));
 });
 
 export const updateMedicalRecordById = asyncHandler(async (req, res) => {
@@ -261,7 +261,7 @@ export const updateMedicalRecordById = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, medicalRecord, 'Medical record updated successfully'));
+    .json(new ApiResponse(200, 'Medical record updated successfully', medicalRecord));
 });
 
 // Optional Admin Endpoints
@@ -283,7 +283,7 @@ export const addPatient = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .json(new ApiResponse(201, patient, 'Patient added successfully (admin)'));
+    .json(new ApiResponse(201, 'Patient added successfully (admin)', patient));
 });
 
 export const getPatients = asyncHandler(async (req, res) => {
@@ -294,5 +294,5 @@ export const getPatients = asyncHandler(async (req, res) => {
   const patients = await Patient.find().select('-password -refreshToken');
   return res
     .status(200)
-    .json(new ApiResponse(200, patients, 'Patients retrieved successfully'));
+    .json(new ApiResponse(200, 'Patients retrieved successfully', patients));
 });

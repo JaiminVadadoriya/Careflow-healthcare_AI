@@ -1,114 +1,183 @@
-<mat-toolbar color="primary">
-  <span class="app-title">CareFlow</span>
-  <span class="spacer"></span>
-  <div class="flex-spacer"></div>
-  <button mat-icon-button (click)="toggleTheme($event)">
-    <mat-icon>{{ isDarkTheme ? "light_mode" : "dark_mode" }}</mat-icon>
-  </button>
-  <button mat-button class="login-btn">Login</button>
-</mat-toolbar>
-
-<!-- <mat-card appearance="raised">
-  <mat-card-content>Simple card</mat-card-content>
-</mat-card> -->
-<div class="hero-section" [ngClass]="{ 'dark-mode': isDarkTheme }">
-  <div class="hero-text">
-    <mat-chip>
-      <mat-chip-avatar>
-        <mat-icon>flash_on</mat-icon>
-      </mat-chip-avatar>
-      Revolutionary Healthcare Management
-    </mat-chip>
-    <h1>
-      <span class="gradient-text">AI-Powered</span><br />
-      Healthcare Resource Management
-    </h1>
-    <p>
-      Transform your healthcare facility with automated AI-powered scheduling
-      and forecasting tools.
-    </p>
-    <div class="hero-buttons">
-      <button mat-raised-button color="primary">
-        <mat-icon>calendar_today</mat-icon> Book Appointment
-      </button>
-      <button mat-button color="primary">Learn More</button>
+<!-- Navbar -->
+<nav class="glass-strong sticky top-0 z-50 px-6 py-4 transition-all duration-300">
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <!-- Logo -->
+    <div class="flex items-center gap-3">
+      <div class="relative w-10 h-10 rounded-xl bg-gradient-bg-primary flex items-center justify-center text-white shadow-lg">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+        </svg>
+      </div>
+      <span class="text-2xl font-bold tracking-tight gradient-text">CareFlow</span>
     </div>
-    <mat-grid-list cols="2" rowHeight="2:1" class="stats" gutterSize="16px">
-      <mat-grid-tile *ngFor="let stat of stats">
-        <mat-card class="stat-item">
-          <mat-card-title class="background-circle">{{
-            stat.value
-          }}</mat-card-title>
-          <mat-card-subtitle>{{ stat.label }}</mat-card-subtitle>
-        </mat-card>
-      </mat-grid-tile>
-    </mat-grid-list>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-4">
+      <dark-mode-button></dark-mode-button>
+      <a href="login" class="btn-primary">
+        <span>Login</span>
+        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+      </a>
+    </div>
   </div>
-</div>
+</nav>
 
-<div class="features-section">
-  <h2 class="section-title gradient-text">Powerful Features</h2>
-  <p class="section-subtitle" color="">
-    AI insights + practical healthcare tools
-  </p>
-  <mat-grid-list cols="2" rowHeight="2:1">
-    <mat-grid-tile
-      *ngFor="let feature of features"
-      class="feature-card mat-elevation-z4"
-    >
-      <mat-card>
-        <mat-icon class="background-circle">{{ feature.icon }}</mat-icon>
-        <h3>{{ feature.title }}</h3>
-        <p>{{ feature.description }}</p>
-      </mat-card>
-    </mat-grid-tile>
-  </mat-grid-list>
-</div>
+<!-- Hero Section -->
+<section class="relative overflow-hidden gradient-bg py-24 px-4 transition-colors duration-300">
+  <!-- Animated Background Elements -->
+  <div class="absolute inset-0 overflow-hidden opacity-30">
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-primary-500 rounded-full blur-3xl animate-pulse-soft"></div>
+    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary-500 rounded-full blur-3xl animate-pulse-soft animation-delay-1000"></div>
+  </div>
 
-<mat-card class="main-card">
-  <mat-card-header>
-    <mat-card-title>Book Your Appointment</mat-card-title>
-    <mat-card-subtitle
-      >Streamlining Healthcare with AI and Dynamic Scheduling</mat-card-subtitle
-    >
-  </mat-card-header>
+  <div class="relative z-10 max-w-7xl mx-auto text-center">
+    <!-- Badge -->
+    <div class="inline-flex items-center px-4 py-2 glass rounded-full text-sm font-medium mb-8 
+                border border-primary-200 dark:border-primary-800 animate-fade-in-down">
+      <span class="relative flex h-2 w-2 mr-2">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
+      </span>
+      <span class="gradient-text font-semibold">AI-Powered Healthcare v2.0</span>
+    </div>
 
-  <mat-card-content>
-    <form class="appointment-form" (ngSubmit)="bookAppointment()">
-      <mat-form-field appearance="fill">
-        <mat-label>Patient Name</mat-label>
-        <input matInput required [(ngModel)]="appointment.name" name="name" />
-      </mat-form-field>
+    <!-- Heading -->
+    <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight animate-fade-in-up">
+      <span class="text-gray-900 dark:text-white">Smart Healthcare</span>
+      <br class="hidden sm:block" />
+      <span class="gradient-text">Management Simplified</span>
+    </h1>
 
-      <mat-form-field appearance="fill">
-        <mat-label>Select Appointment Date</mat-label>
-        <input
-          matInput
-          [matDatepicker]="picker"
-          required
-          [(ngModel)]="appointment.date"
-          name="date"
-        />
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
+    <!-- Description -->
+    <p class="max-w-3xl mx-auto text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-12 leading-relaxed animate-fade-in-up animation-delay-200">
+      Streamline hospital operations with our intelligent platform. From predictive scheduling to resource optimization, 
+      CareFlow brings the future of healthcare to your facility.
+    </p>
 
-      <mat-form-field appearance="fill">
-        <mat-label>Select Time Slot</mat-label>
-        <mat-select [(ngModel)]="appointment.time" name="time" required>
-          <mat-option *ngFor="let slot of availableSlots" [value]="slot">{{
-            slot
-          }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <button mat-raised-button color="primary" type="submit">
-        Book Appointment
+    <!-- CTA Buttons -->
+    <div class="flex flex-col sm:flex-row justify-center gap-4 mb-20 animate-fade-in-up animation-delay-400">
+      <a href="home/#book" class="btn-primary group">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <span>Book Appointment</span>
+        <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+      </a>
+      <button class="btn-outline group">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        <span>Explore Features</span>
       </button>
-    </form>
-  </mat-card-content>
+    </div>
 
-  <!-- <mat-card-footer>
-    <mat-slide-toggle (change)="toggleTheme($event)" [checked]="isDarkTheme">Dark Mode</mat-slide-toggle>
-  </mat-card-footer> -->
-</mat-card>
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto animate-fade-in-up animation-delay-600">
+      @for (stat of stats; track stat) {
+        <div class="card-hover p-6 text-center group">
+          <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-2 group-hover:scale-110 transition-transform">
+            {{ stat.value }}
+          </h2>
+          <p class="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+            {{ stat.label }}
+          </p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-24 px-6 bg-white dark:bg-slate-950 transition-colors duration-300">
+  <div class="max-w-7xl mx-auto">
+    <!-- Section Header -->
+    <div class="max-w-3xl mx-auto text-center mb-16">
+      <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
+        Why Choose <span class="gradient-text">CareFlow</span>?
+      </h2>
+      <p class="text-gray-600 dark:text-gray-400 text-lg">
+        Built with the latest technology to ensure security, speed, and reliability.
+      </p>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      @for (feature of features; track feature) {
+        <div class="card-hover p-8 group">
+          <!-- Icon -->
+          <div class="relative mb-6">
+            <div class="w-14 h-14 rounded-xl bg-primary-100 dark:bg-primary-900/30 
+                        flex items-center justify-center text-primary-600 dark:text-primary-400 
+                        group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+              <mat-icon class="scale-125">{{feature.icon}}</mat-icon>
+            </div>
+            <!-- Glow Effect -->
+            <div class="absolute inset-0 w-14 h-14 rounded-xl bg-primary-500 opacity-0 
+                        group-hover:opacity-20 blur-xl transition-opacity duration-300"></div>
+          </div>
+
+          <!-- Content -->
+          <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-white group-hover:text-primary-600 
+                     dark:group-hover:text-primary-400 transition-colors">
+            {{ feature.title }}
+          </h3>
+          <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+            {{ feature.description }}
+          </p>
+
+          <!-- Hover Arrow -->
+          <div class="mt-4 flex items-center text-primary-600 dark:text-primary-400 
+                      opacity-0 group-hover:opacity-100 transition-opacity">
+            <span class="text-sm font-medium">Learn more</span>
+            <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" 
+                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Appointment/Chatbot Section -->
+<section class="py-24 gradient-bg transition-colors duration-300" id="book">
+  <div class="max-w-5xl mx-auto px-4">
+    <div class="glass-strong rounded-4xl p-8 md:p-12 shadow-soft-lg text-center">
+      <!-- Header -->
+      <div class="mb-10">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl 
+                    bg-gradient-bg-primary text-white mb-6 shadow-glow">
+          <mat-icon class="scale-[2]">smart_toy</mat-icon>
+        </div>
+        <h3 class="text-4xl font-bold gradient-text mb-4">
+          Start Your Journey
+        </h3>
+        <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg">
+          Chat with our AI assistant to book appointments, check symptoms, or get general information instantly.
+        </p>
+      </div>
+
+      <!-- Chatbot Container -->
+      <div class="max-w-2xl mx-auto card rounded-3xl overflow-hidden">
+        <app-chatbot></app-chatbot>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer (Optional) -->
+<footer class="bg-white dark:bg-slate-950 border-t border-gray-200 dark:border-slate-800 py-8 px-6 transition-colors duration-300">
+  <div class="max-w-7xl mx-auto text-center">
+    <p class="text-gray-600 dark:text-gray-400 text-sm">
+      © 2026 CareFlow. All rights reserved. Built with ❤️ for better healthcare.
+    </p>
+  </div>
+</footer>

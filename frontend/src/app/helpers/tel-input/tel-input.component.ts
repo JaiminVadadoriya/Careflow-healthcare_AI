@@ -17,17 +17,16 @@ export class MyTel {
 
 /** Custom `MatFormFieldControl` for telephone number input. */
 @Component({
-  selector: 'app-tel-input',
-  templateUrl: './tel-input.component.html',
-  styleUrl: './tel-input.component.css',
-  providers: [{provide: MatFormFieldControl, useExisting: TelInputComponent}],
-  host: {
-    '[class.example-floating]': 'shouldLabelFloat',
-    '[id]': 'id',
-  },
-  standalone: true,
-  imports: [FormsModule, ReactiveFormsModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-tel-input',
+    templateUrl: './tel-input.component.html',
+    styleUrl: './tel-input.component.css',
+    providers: [{ provide: MatFormFieldControl, useExisting: TelInputComponent }],
+    host: {
+        '[class.example-floating]': 'shouldLabelFloat',
+        '[id]': 'id',
+    },
+    imports: [FormsModule, ReactiveFormsModule],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class TelInputComponent implements ControlValueAccessor, MatFormFieldControl<MyTel>, OnDestroy {

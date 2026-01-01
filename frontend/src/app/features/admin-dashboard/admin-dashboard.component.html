@@ -1,0 +1,73 @@
+<!-- admin-layout.component.html -->
+<div class="flex h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white dark:bg-gray-800 shadow-md flex flex-col">
+    <div class="h-16 flex items-center justify-center border-b dark:border-gray-700 text-xl font-bold text-blue-600 dark:text-blue-400">
+      CareFlow Admin
+    </div>
+    <nav class="flex-1 px-4 py-6 space-y-2">
+      <a
+        routerLink="users"
+        routerLinkActive="bg-blue-100 dark:bg-blue-900"
+        class="flex items-center p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900 transition"
+      >
+        <mat-icon class="mr-3">group</mat-icon>
+        Users
+      </a>
+      <a
+        routerLink="reports"
+        routerLinkActive="bg-blue-100 dark:bg-blue-900"
+        class="flex items-center p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900 transition"
+      >
+        <mat-icon class="mr-3">bar_chart</mat-icon>
+        Reports
+      </a>
+      <a
+        routerLink="inventory"
+        routerLinkActive="bg-blue-100 dark:bg-blue-900"
+        class="flex items-center p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900 transition"
+      >
+        <mat-icon class="mr-3">inventory_2</mat-icon>
+        Inventory
+      </a>
+      <a
+        routerLink="settings"
+        routerLinkActive="bg-blue-100 dark:bg-blue-900"
+        class="flex items-center p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900 transition"
+      >
+        <mat-icon class="mr-3">settings</mat-icon>
+        Settings
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Panel -->
+  <main class="flex-1 flex flex-col overflow-hidden">
+    <!-- Topbar -->
+    <header class="h-16 bg-white dark:bg-gray-800 shadow flex items-center justify-between px-6">
+      <div class="flex items-center space-x-3">
+        <mat-icon>menu</mat-icon>
+        <input
+          type="text"
+          placeholder="Search..."
+          class="px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-sm focus:outline-none focus:ring focus:ring-blue-300 w-64"
+        />
+      </div>
+      <div class="flex items-center gap-3">
+        <button mat-icon-button (click)="toggleTheme()" aria-label="Toggle Theme">
+          <mat-icon>dark_mode</mat-icon>
+        </button>
+        <mat-icon>notifications</mat-icon>
+        <div class="flex items-center gap-2">
+          <mat-icon>account_circle</mat-icon>
+          <span class="hidden md:inline">Admin</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Routed Content -->
+    <section class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-gray-900 transition-all duration-300">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
+</div>

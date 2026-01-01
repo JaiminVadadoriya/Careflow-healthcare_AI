@@ -3,11 +3,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 
 @Component({
-  selector: 'app-side-nav',
-  standalone: true,
-  imports: [MatSidenavModule, MatButtonModule],
-  templateUrl: './side-nav.component.html',
-  styleUrl: './side-nav.component.css'
+    selector: 'app-side-nav',
+    imports: [MatSidenavModule, MatButtonModule],
+    templateUrl: './side-nav.component.html',
+    styleUrl: './side-nav.component.css'
 })
 export class SideNavComponent {
   isOpen: boolean = false; // Track the state of the side nav

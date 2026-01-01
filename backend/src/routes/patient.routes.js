@@ -16,8 +16,7 @@ import {
     updatePatientData
 } from '../controllers/patient.controller.js';
 
-import { verifyJWT } from '../middlewares/auth.middleware.js';
-import checkRole from '../middlewares/role.middleware.js';
+import AuthMiddleware from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
@@ -25,10 +24,14 @@ const router = express.Router();
 router.post('/register', registerPatient);         // Register a new patient
 router.post('/login', loginPatient);               // Patient login
 router.post('/', addPatient);                      // (Optional admin use) Add patient directly
-router.get('/', getPatients);                      // (Optional admin use) View all patients
+
+// Receptionist/Doctor/Patient can view patients
+router.get('/', AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['receptionist', 'doctor', 'admin']), getPatients);
+router.get('/:patientId', AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['receptionist', 'doctor', 'admin', 'patient']), getPatientData);
+router.patch('/:patientId', AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['receptionist', 'doctor', 'admin', 'patient']), updatePatientData);
 
 /* 🔒 Protected Routes (Patient Auth Required) */
-router.use(verifyJWT, checkRole(['patient', 'doctor']));
+router.use(AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['patient', 'doctor']));
 
 router.get('/profile', getCurrentUser);            // Get current user's profile
 router.patch('/update-account', updateAccountDetails); // Update account details
@@ -38,8 +41,7 @@ router.get('/appointments', getAppointments);      // View appointments
 router.post('/appointments', postAppointments);    // Book appointment
 
 /* 🧍 Patient Data */
-router.get('/:patientId', getPatientData);         // View patient data
-router.patch('/:patientId', updatePatientData);    // Update patient data
+// Already handled above
 
 /* 🧪 Lab Results */
 router.get('/lab-results', getLabResults);         // View lab results
