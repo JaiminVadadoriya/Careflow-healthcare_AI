@@ -1,20 +1,20 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+
 import { RouterModule } from '@angular/router';
 import { DashboardLayoutComponent } from 'src/app/shared/layout/dashboard-layout.component';
 import { MetricCardComponent } from 'src/app/shared/ui/metric-card.component';
 import { ActionCardComponent } from 'src/app/shared/ui/action-card.component';
+import { DashboardService } from 'src/app/core/services/dashboard.service';
 
 @Component({
   selector: 'app-doctor-dashboard',
   standalone: true,
   imports: [
-    CommonModule, 
-    RouterModule, 
+    RouterModule,
     DashboardLayoutComponent,
     MetricCardComponent,
     ActionCardComponent
-  ],
+],
   template: `
     <app-dashboard-layout title="Doctor Portal" role="Doctor">
         <ng-container sidebar-items>
@@ -36,10 +36,10 @@ import { ActionCardComponent } from 'src/app/shared/ui/action-card.component';
         <div class="space-y-8">
             <!-- Metrics -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <app-metric-card label="Assigned Patients" value="18" icon="people" color="blue"></app-metric-card>
-                <app-metric-card label="Today's Visits" value="7" icon="event_available" color="green"></app-metric-card>
-                <app-metric-card label="Pending Notes" value="12" icon="description" color="yellow"></app-metric-card>
-                <app-metric-card label="Consultations" value="3" icon="medical_services" color="purple"></app-metric-card>
+                <app-metric-card label="Assigned Patients" [value]="stats?.assignedPatients || 0" icon="people" color="blue"></app-metric-card>
+                <app-metric-card label="Today's Visits" [value]="stats?.todaysVisits || 0" icon="event_available" color="green"></app-metric-card>
+                <app-metric-card label="Pending Notes" [value]="stats?.pendingNotes || 0" icon="description" color="yellow"></app-metric-card>
+                <app-metric-card label="Consultations" [value]="stats?.consultations || 0" icon="medical_services" color="purple"></app-metric-card>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -75,4 +75,15 @@ import { ActionCardComponent } from 'src/app/shared/ui/action-card.component';
     </app-dashboard-layout>
   `
 })
-export class DoctorDashboardComponent {} 
+export class DoctorDashboardComponent implements OnInit {
+  stats: any = {};
+
+  constructor(private dashboardService: DashboardService) {}
+
+  ngOnInit(): void {
+    this.dashboardService.getDoctorStats().subscribe({
+      next: (res) => (this.stats = res.data),
+      error: (err) => console.error(err)
+    });
+  } 
+}

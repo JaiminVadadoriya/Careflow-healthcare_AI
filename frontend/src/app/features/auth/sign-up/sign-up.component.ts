@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import {
   FormBuilder,
@@ -12,11 +12,10 @@ import { DarkModeComponent } from 'src/app/helpers/dark-mode-button/dark-mode-bu
 @Component({
   selector: 'app-sign-up',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     RouterModule,
     DarkModeComponent
-  ],
+],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.css',
   standalone: true,

@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { ModalRef } from 'src/app/shared/ui/modal.service';
 
 @Component({
   selector: 'app-assign-bed-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   template: `
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-[350px] overflow-hidden border border-gray-100 dark:border-gray-700 font-sans">
       <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-blue-50 dark:bg-blue-900/10">

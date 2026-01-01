@@ -1,12 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalRef } from 'src/app/shared/ui/modal.service';
 
 @Component({
   selector: 'app-user-edit-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule],
   template: `
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-[500px] overflow-hidden border border-gray-100 dark:border-gray-700 font-sans">
       <!-- Header -->
@@ -16,7 +16,7 @@ import { ModalRef } from 'src/app/shared/ui/modal.service';
           <span class="material-icons">close</span>
         </button>
       </div>
-
+    
       <!-- Body -->
       <div class="p-6">
         <form [formGroup]="userForm" class="space-y-4">
@@ -24,54 +24,62 @@ import { ModalRef } from 'src/app/shared/ui/modal.service';
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name *</label>
             <input formControlName="full_name" type="text" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="John Doe">
-            <div *ngIf="userForm.get('full_name')?.touched && userForm.get('full_name')?.invalid" class="text-red-500 text-xs mt-1">Name is required</div>
+            @if (userForm.get('full_name')?.touched && userForm.get('full_name')?.invalid) {
+              <div class="text-red-500 text-xs mt-1">Name is required</div>
+            }
           </div>
-
+    
           <!-- Email -->
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
             <input formControlName="email" type="email" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="john@example.com">
-             <div *ngIf="userForm.get('email')?.touched && userForm.get('email')?.invalid" class="text-red-500 text-xs mt-1">Valid email is required</div>
+            @if (userForm.get('email')?.touched && userForm.get('email')?.invalid) {
+              <div class="text-red-500 text-xs mt-1">Valid email is required</div>
+            }
           </div>
-
+    
           <!-- Phone -->
-           <div>
+          <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
             <input formControlName="phone" type="tel" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="+1 234 567 890">
           </div>
-
+    
           <!-- Password -->
-           <div>
+          <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password {{ data ? '(Leave blank to keep current)' : '*' }}</label>
             <input formControlName="password" type="password" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-            <div *ngIf="userForm.get('password')?.touched && userForm.get('password')?.invalid" class="text-red-500 text-xs mt-1">Password is required (min 6 chars)</div>
+            @if (userForm.get('password')?.touched && userForm.get('password')?.invalid) {
+              <div class="text-red-500 text-xs mt-1">Password is required (min 6 chars)</div>
+            }
           </div>
-
+    
           <!-- Role -->
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role *</label>
             <div class="relative">
               <select formControlName="role" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer">
-                 <option *ngFor="let r of roles" [value]="r.value">{{ r.label }}</option>
+                @for (r of roles; track r) {
+                  <option [value]="r.value">{{ r.label }}</option>
+                }
               </select>
               <span class="material-icons absolute right-3 top-2.5 text-gray-400 pointer-events-none text-sm">expand_more</span>
             </div>
           </div>
-
-           <!-- Status -->
+    
+          <!-- Status -->
           <div class="flex items-center gap-3 pt-2">
-             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Status:</label>
-             <button type="button" 
-                (click)="toggleStatus()" 
-                [class]="'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ' + (userForm.get('status')?.value === 'active' ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700')">
-                <span [class]="'inline-block h-4 w-4 transform rounded-full bg-white transition-transform ' + (userForm.get('status')?.value === 'active' ? 'translate-x-6' : 'translate-x-1')"></span>
-             </button>
-             <span class="text-sm font-medium text-gray-600 dark:text-gray-400">{{ userForm.get('status')?.value === 'active' ? 'Active' : 'Inactive' }}</span>
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Status:</label>
+            <button type="button"
+              (click)="toggleStatus()"
+              [class]="'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ' + (userForm.get('status')?.value === 'active' ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700')">
+              <span [class]="'inline-block h-4 w-4 transform rounded-full bg-white transition-transform ' + (userForm.get('status')?.value === 'active' ? 'translate-x-6' : 'translate-x-1')"></span>
+            </button>
+            <span class="text-sm font-medium text-gray-600 dark:text-gray-400">{{ userForm.get('status')?.value === 'active' ? 'Active' : 'Inactive' }}</span>
           </div>
-
+    
         </form>
       </div>
-
+    
       <!-- Footer -->
       <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3">
         <button (click)="onCancel()" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Cancel</button>
@@ -80,7 +88,7 @@ import { ModalRef } from 'src/app/shared/ui/modal.service';
         </button>
       </div>
     </div>
-  `
+    `
 })
 export class UserEditDialogComponent implements OnInit {
   @Input() data: any;

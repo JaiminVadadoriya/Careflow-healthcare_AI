@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
   }
   isScrolled = false;
 
-  @HostListener('window:scroll', ['$event'])
+  @HostListener('window:scroll')
   onWindowScroll() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
     this.isScrolled = scrollTop > 0;

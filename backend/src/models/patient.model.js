@@ -132,6 +132,7 @@ PatientSchema.methods.generateRefreshToken = function () {
 };
 
 // 🔍 Index on phone for faster search
-PatientSchema.index({ "contact_info.phone": 1 }, { unique: true });
+// 🔍 Index on phone for faster search
+// PatientSchema.index({ "contact_info.phone": 1 }, { unique: true });
 
 export default mongoose.model("Patient", PatientSchema);

@@ -1,91 +1,64 @@
 import express from "express";
-import {
-    addPatientVitals,
-    assignOrReleaseBed,
-    createUser,
-    deleteUser,
-    getAssignedPatients,
-    getCurrentUser,
-    getDoctorAppointments,
-    getNursePatientById,
-    getUsers,
-    loginUser,
-    logoutUser,
-    receptionistBookAppointment,
-    receptionistCheckInPatient,
-    receptionistRegisterPatient,
-    receptionistDischargePatient,
-    refreshAccessToken,
-    updateAccountDetails,
-    updateMedicalRecord,
-    updateUserDetails,
-    updateUserRole,
-    updateUserStatus,
-    receptionistUpdateAppointment,
-    getDashboardReports,
-    getUserReports,
-    getAppointmentReports,
-    getAllDoctors,
-    getAllPatients,
-    getInventoryReports,
-    receptionistAllRegisterPatient,
-    getNurseAssignedPatients
-} from "../controllers/user.controller.js"; // These need to exist in your controller
-import { verifyJWT } from "../middlewares/auth.middleware.js";
-import checkRole from "../middlewares/role.middleware.js";
+import AuthController from "../controllers/auth.controller.js";
+import UserController from "../controllers/user.controller.js";
+import DoctorController from "../controllers/doctor.controller.js";
+import NurseController from "../controllers/nurse.controller.js";
+import ReceptionistController from "../controllers/receptionist.controller.js";
+import AdminController from "../controllers/admin.controller.js";
+
+import AuthMiddleware from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
 /**
  * 🔓 Public Routes
  */
-// router.post("/register", createUser); // Usually Admin-only (via frontend UI)
-router.post("/", verifyJWT, checkRole(["admin"]), createUser); // POST /users
+router.post("/", AuthMiddleware.authenticate, AuthMiddleware.restrictTo(["admin"]), AuthController.register); // POST /users
 
-router.post("/login", loginUser); // Login
+router.post("/login", AuthController.login); // Login
 
 /**
  * 🔐 Authenticated Routes
  */
-router.post("/logout", verifyJWT, logoutUser); // Logout
-router.post("/refresh", verifyJWT, refreshAccessToken); // Refresh token
-router.get("/current-user", verifyJWT, getCurrentUser); // Current user info
-router.patch("/me", verifyJWT, updateAccountDetails); // Update user info
+router.post("/logout", AuthMiddleware.authenticate, AuthController.logout); // Logout
+router.post("/refresh", AuthMiddleware.authenticate, AuthController.refreshAccessToken); // Refresh token
+router.get("/current-user", AuthMiddleware.authenticate, UserController.getCurrentUser); // Current user info
+router.patch("/me", AuthMiddleware.authenticate, UserController.updateAccountDetails); // Update user info
 
-router.patch("/:id", verifyJWT, checkRole(["admin"]), updateUserDetails);
-router.patch("/:id/status", verifyJWT, checkRole(["admin"]), updateUserStatus);
-router.patch("/:id/role", verifyJWT, checkRole(["admin"]), updateUserRole);
-router.delete("/:id", verifyJWT, checkRole(["admin"]), deleteUser);
+router.patch("/:id", AuthMiddleware.authenticate, AuthMiddleware.restrictTo(["admin"]), UserController.updateUserDetails);
+router.patch("/:id/status", AuthMiddleware.authenticate, AuthMiddleware.restrictTo(["admin"]), UserController.updateUserStatus);
+router.patch("/:id/role", AuthMiddleware.authenticate, AuthMiddleware.restrictTo(["admin"]), UserController.updateUserRole);
+router.delete("/:id", AuthMiddleware.authenticate, AuthMiddleware.restrictTo(["admin"]), UserController.deleteUser);
 
 /**
  * 👑 Admin Routes
  */
-router.get("/", verifyJWT, checkRole(["admin"]), getUsers); // View all users
-router.get("/reports/dashboard", verifyJWT, checkRole(["admin"]), getDashboardReports); // Dashboard reports
-router.get("/reports/users", verifyJWT, checkRole(["admin"]), getUserReports); // User reports
-router.get("/reports/appointments", verifyJWT, checkRole(["admin"]), getAppointmentReports); // Appointment reports
-router.get("/reports/inventory", verifyJWT, checkRole(["admin"]), getInventoryReports); // Inventory reports
+router.get("/", AuthMiddleware.authenticate, AuthMiddleware.restrictTo(["admin"]), UserController.getUsers); // View all users
+router.get("/reports/dashboard", AuthMiddleware.authenticate, AuthMiddleware.restrictTo(["admin"]), AdminController.getDashboardReports);
+router.get("/reports/users", AuthMiddleware.authenticate, AuthMiddleware.restrictTo(["admin"]), AdminController.getUserReports);
+router.get("/reports/appointments", AuthMiddleware.authenticate, AuthMiddleware.restrictTo(["admin"]), AdminController.getAppointmentReports);
+router.get("/reports/inventory", AuthMiddleware.authenticate, AuthMiddleware.restrictTo(["admin"]), AdminController.getInventoryReports);
 
 /**
  * 👨‍⚕️ Doctor Routes
  */
 router.get(
   "/doctor/patients",
-  verifyJWT,
-  checkRole(["doctor"]),
-  getAssignedPatients
+  AuthMiddleware.authenticate,
+  AuthMiddleware.restrictTo(["doctor"]),
+  DoctorController.getAssignedPatients
 );
 router.patch(
   "/doctor/records/:id",
-  verifyJWT,
-  checkRole(["doctor"]),
-  updateMedicalRecord
+  AuthMiddleware.authenticate,
+  AuthMiddleware.restrictTo(["doctor"]),
+  DoctorController.updateMedicalRecord
 );
 router.get(
   "/doctor/appointments",
-  verifyJWT,
-  checkRole(["doctor"]),
-  getDoctorAppointments
+  AuthMiddleware.authenticate,
+  AuthMiddleware.restrictTo(["doctor"]),
+  DoctorController.getDoctorAppointments
 );
 
 /**
@@ -93,67 +66,67 @@ router.get(
  */
 router.post(
   "/nurse/vitals/:patientId",
-  verifyJWT,
-  checkRole(["nurse"]),
-  addPatientVitals
+  AuthMiddleware.authenticate,
+  AuthMiddleware.restrictTo(["nurse"]),
+  NurseController.addPatientVitals
 );
 router.patch(
   "/nurse/bed-assignment",
-  verifyJWT,
-  checkRole(["nurse"]),
-  assignOrReleaseBed
+  AuthMiddleware.authenticate,
+  AuthMiddleware.restrictTo(["nurse"]),
+  NurseController.assignOrReleaseBed
 );
 router.get(
   "/nurse/patient/:id",
-  verifyJWT,
-  checkRole(["nurse"]),
-  getNursePatientById
+  AuthMiddleware.authenticate,
+  AuthMiddleware.restrictTo(["nurse"]),
+  NurseController.getNursePatientById
 );
-router.get('/nurse/patients', verifyJWT, checkRole(['nurse']), getNurseAssignedPatients);
+router.get('/nurse/patients', AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['nurse']), NurseController.getNurseAssignedPatients);
 
 /**
  * 💁 Receptionist Routes
  */
 router.post(
   "/receptionist/register",
-  verifyJWT,
-  checkRole(["receptionist"]),
-  receptionistRegisterPatient
+  AuthMiddleware.authenticate,
+  AuthMiddleware.restrictTo(["receptionist"]),
+  ReceptionistController.registerPatient
 );
 router.post(
   "/receptionist/appointments",
-  verifyJWT,
-  // checkRole(["receptionist"]),
-  receptionistBookAppointment
+  AuthMiddleware.authenticate,
+  ReceptionistController.bookAppointment
 );
 router.get(
   "/receptionist/appointments",
-  verifyJWT,
-  checkRole(["receptionist"]),
-  receptionistAllRegisterPatient
+  AuthMiddleware.authenticate,
+  AuthMiddleware.restrictTo(["receptionist"]),
+  ReceptionistController.getAllPatients 
 );
 router.patch(
   "/receptionist/checkin/:patientId",
-  verifyJWT,
-  checkRole(["receptionist"]),
-  receptionistCheckInPatient
+  AuthMiddleware.authenticate,
+  AuthMiddleware.restrictTo(["receptionist"]),
+  ReceptionistController.checkInPatient
 );
 
 router.patch(
   "/receptionist/appointments/:id",
-  verifyJWT,
-  checkRole(["receptionist"]),
-  receptionistUpdateAppointment
+  AuthMiddleware.authenticate,
+  AuthMiddleware.restrictTo(["receptionist"]),
+  ReceptionistController.updateAppointment
 );
 
 router.patch(
   "/receptionist/discharge/:patientId",
-  verifyJWT,
-  checkRole(["receptionist"]),
-  receptionistDischargePatient
+  AuthMiddleware.authenticate,
+  AuthMiddleware.restrictTo(["receptionist"]),
+  ReceptionistController.dischargePatient
 );
 
-router.get('/doctors', verifyJWT, getAllDoctors);
+router.get('/doctors', AuthMiddleware.authenticate, DoctorController.getAllDoctors);
 
-router.get('/patients', verifyJWT, checkRole([ 'receptionist']), getAllPatients);
+router.get('/patients', AuthMiddleware.authenticate, AuthMiddleware.restrictTo([ 'receptionist']), ReceptionistController.getAllPatients);
+
 export default router;

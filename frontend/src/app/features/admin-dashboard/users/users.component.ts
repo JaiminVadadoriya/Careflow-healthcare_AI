@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { UsersService } from './users.service';
 import { UserEditDialogComponent } from '../shared/user-edit-dialog/user-edit-dialog.component';
@@ -10,27 +10,26 @@ import { ModalService } from 'src/app/shared/ui/modal.service';
   selector: 'app-users',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule
-  ],
+],
   template: `
     <div class="p-6 max-w-7xl mx-auto">
       <!-- Header -->
       <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <div>
-           <h2 class="text-2xl font-bold text-gray-900 dark:text-white">User Management</h2>
-           <p class="text-sm text-gray-500 dark:text-gray-400">Manage system access and roles</p>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">User Management</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Manage system access and roles</p>
         </div>
         <button
           (click)="openUserDialog()"
           [disabled]="loading"
           class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+          >
           <span class="material-icons text-xl">add</span>
           <span class="font-medium">Add User</span>
         </button>
       </div>
-
+    
       <!-- Filters -->
       <div class="mb-6">
         <div class="relative w-full md:w-96">
@@ -39,104 +38,112 @@ import { ModalService } from 'src/app/shared/ui/modal.service';
             (keyup)="applyFilter($event)"
             placeholder="Search users..."
             class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
-          />
-          <span class="material-icons absolute left-3 top-3.5 text-gray-400">search</span>
+            />
+            <span class="material-icons absolute left-3 top-3.5 text-gray-400">search</span>
+          </div>
         </div>
-      </div>
-
-      <!-- Alert -->
-      <div *ngIf="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-xl mb-6 flex items-center gap-2">
-         <span class="material-icons text-sm">error</span>
-         {{ error }}
-      </div>
-
-      <!-- Loading -->
-      <div *ngIf="loading" class="flex justify-center items-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-
-      <!-- Table -->
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden" *ngIf="!loading">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
-                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Name</th>
-                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Contact</th>
-                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Role</th>
-                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Status</th>
-                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-              <tr *ngFor="let user of filteredUsers" class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                <!-- Name -->
-                <td class="p-4">
-                   <div class="flex items-center gap-3">
-                     <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 font-bold text-xs uppercase">
-                        {{ user.full_name.charAt(0) }}
-                     </div>
-                     <span class="font-medium text-gray-900 dark:text-white">{{ user.full_name }}</span>
-                   </div>
-                </td>
-                
-                <!-- Email/Phone -->
-                <td class="p-4">
-                  <div class="flex flex-col">
-                    <span class="text-sm text-gray-900 dark:text-gray-200">{{ user.email }}</span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ user.phone || 'N/A' }}</span>
-                  </div>
-                </td>
-
-                <!-- Role -->
-                <td class="p-4">
-                  <div class="relative w-32">
-                     <select [(ngModel)]="user.role" (change)="changeRole(user)" 
-                       class="w-full appearance-none bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 py-1.5 pl-3 pr-8 rounded-lg text-sm focus:outline-none focus:border-blue-500 cursor-pointer">
-                        <option *ngFor="let r of roles" [value]="r.value">{{ r.label }}</option>
-                     </select>
-                     <span class="material-icons absolute right-2 top-1.5 text-gray-400 text-sm pointer-events-none">expand_more</span>
-                  </div>
-                </td>
-
-                <!-- Status -->
-                <td class="p-4">
-                   <button (click)="toggleStatus(user)" 
+    
+        <!-- Alert -->
+        @if (error) {
+          <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-xl mb-6 flex items-center gap-2">
+            <span class="material-icons text-sm">error</span>
+            {{ error }}
+          </div>
+        }
+    
+        <!-- Loading -->
+        @if (loading) {
+          <div class="flex justify-center items-center py-12">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        }
+    
+        <!-- Table -->
+        @if (!loading) {
+          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
+                    <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Name</th>
+                    <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Contact</th>
+                    <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Role</th>
+                    <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Status</th>
+                    <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                  @for (user of filteredUsers; track user) {
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                      <!-- Name -->
+                      <td class="p-4">
+                        <div class="flex items-center gap-3">
+                          <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 font-bold text-xs uppercase">
+                            {{ user.full_name.charAt(0) }}
+                          </div>
+                          <span class="font-medium text-gray-900 dark:text-white">{{ user.full_name }}</span>
+                        </div>
+                      </td>
+                      <!-- Email/Phone -->
+                      <td class="p-4">
+                        <div class="flex flex-col">
+                          <span class="text-sm text-gray-900 dark:text-gray-200">{{ user.email }}</span>
+                          <span class="text-xs text-gray-500 dark:text-gray-400">{{ user.phone || 'N/A' }}</span>
+                        </div>
+                      </td>
+                      <!-- Role -->
+                      <td class="p-4">
+                        <div class="relative w-32">
+                          <select [(ngModel)]="user.role" (change)="changeRole(user)"
+                            class="w-full appearance-none bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 py-1.5 pl-3 pr-8 rounded-lg text-sm focus:outline-none focus:border-blue-500 cursor-pointer">
+                            @for (r of roles; track r) {
+                              <option [value]="r.value">{{ r.label }}</option>
+                            }
+                          </select>
+                          <span class="material-icons absolute right-2 top-1.5 text-gray-400 text-sm pointer-events-none">expand_more</span>
+                        </div>
+                      </td>
+                      <!-- Status -->
+                      <td class="p-4">
+                        <button (click)="toggleStatus(user)"
                       [class]="'px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ' + 
                         (user.status === 'active' 
                            ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800' 
                            : 'bg-gray-50 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700')">
-                      <span class="flex items-center gap-1">
-                        <span [class]="'w-1.5 h-1.5 rounded-full ' + (user.status === 'active' ? 'bg-green-500' : 'bg-gray-400')"></span>
-                        {{ user.status === 'active' ? 'Active' : 'Inactive' }}
-                      </span>
-                   </button>
-                </td>
-
-                <!-- Actions -->
-                <td class="p-4 text-right">
-                  <div class="flex items-center justify-end gap-2">
-                    <button (click)="openUserDialog(user)" class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:text-blue-400 dark:hover:bg-blue-900/30 rounded-lg transition-colors" title="Edit">
-                       <span class="material-icons text-[20px]">edit</span>
-                    </button>
-                    <button (click)="confirmDelete(user)" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete">
-                       <span class="material-icons text-[20px]">delete</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <!-- Empty State -->
-              <tr *ngIf="filteredUsers.length === 0">
-                 <td colspan="5" class="p-8 text-center text-gray-500 dark:text-gray-400">
-                    No users found matching your search.
-                 </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                          <span class="flex items-center gap-1">
+                            <span [class]="'w-1.5 h-1.5 rounded-full ' + (user.status === 'active' ? 'bg-green-500' : 'bg-gray-400')"></span>
+                            {{ user.status === 'active' ? 'Active' : 'Inactive' }}
+                          </span>
+                        </button>
+                      </td>
+                      <!-- Actions -->
+                      <td class="p-4 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                          <button (click)="openUserDialog(user)" class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:text-blue-400 dark:hover:bg-blue-900/30 rounded-lg transition-colors" title="Edit">
+                            <span class="material-icons text-[20px]">edit</span>
+                          </button>
+                          <button (click)="confirmDelete(user)" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete">
+                            <span class="material-icons text-[20px]">delete</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                  <!-- Empty State -->
+                  @if (filteredUsers.length === 0) {
+                    <tr>
+                      <td colspan="5" class="p-8 text-center text-gray-500 dark:text-gray-400">
+                        No users found matching your search.
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
       </div>
-    </div>
-  `
+    `
 })
 export class UsersComponent implements OnInit {
   users: any[] = [];

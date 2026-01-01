@@ -1,20 +1,20 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+
 import { RouterModule } from '@angular/router';
 import { DashboardLayoutComponent } from 'src/app/shared/layout/dashboard-layout.component';
 import { MetricCardComponent } from 'src/app/shared/ui/metric-card.component';
 import { ActionCardComponent } from 'src/app/shared/ui/action-card.component';
+import { DashboardService } from 'src/app/core/services/dashboard.service';
 
 @Component({
   selector: 'app-nurse-dashboard',
   standalone: true,
   imports: [
-    CommonModule,
     RouterModule,
     DashboardLayoutComponent,
     MetricCardComponent,
     ActionCardComponent
-  ],
+],
   template: `
     <app-dashboard-layout title="Nurse Station" role="Nurse">
         <!-- Sidebar Items -->
@@ -37,10 +37,10 @@ import { ActionCardComponent } from 'src/app/shared/ui/action-card.component';
         <div class="space-y-8">
             <!-- Metrics -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <app-metric-card label="Ward Capacity" value="34/40" icon="groups" color="blue"></app-metric-card>
-                <app-metric-card label="Critical Alerts" value="2" icon="warning" color="red"></app-metric-card>
-                <app-metric-card label="Vitals Recorded" value="156" icon="monitor_heart" color="green"></app-metric-card>
-                <app-metric-card label="Empty Beds" value="6" icon="bed" color="yellow"></app-metric-card>
+                <app-metric-card label="Ward Capacity" [value]="stats?.wardCapacity || '0/0'" icon="groups" color="blue"></app-metric-card>
+                <app-metric-card label="Critical Alerts" [value]="stats?.criticalAlerts || 0" icon="warning" color="red"></app-metric-card>
+                <app-metric-card label="Vitals Recorded" [value]="stats?.vitalsRecorded || 0" icon="monitor_heart" color="green"></app-metric-card>
+                <app-metric-card label="Empty Beds" [value]="stats?.emptyBeds || 0" icon="bed" color="yellow"></app-metric-card>
             </div>
 
             <!-- Tasks & Actions -->
@@ -80,4 +80,15 @@ import { ActionCardComponent } from 'src/app/shared/ui/action-card.component';
     </app-dashboard-layout>
   `
 })
-export class NurseDashboardComponent {}
+export class NurseDashboardComponent implements OnInit {
+  stats: any = {};
+
+  constructor(private dashboardService: DashboardService) {}
+
+  ngOnInit(): void {
+    this.dashboardService.getNurseStats().subscribe({
+        next: (res) => (this.stats = res.data),
+        error: (err) => console.error(err)
+    });
+  }
+}

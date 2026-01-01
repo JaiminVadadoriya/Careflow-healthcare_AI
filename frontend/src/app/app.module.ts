@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, provideZoneChangeDetection } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -61,6 +61,7 @@ import { AuthInterceptor } from './core/auth/auth.interceptor';
     provideAnimationsAsync(),
     provideNativeDateAdapter(),
     provideHttpClient(),
+    provideZoneChangeDetection({ eventCoalescing: true }),
     HelperModule,
     {
       provide: HTTP_INTERCEPTORS,

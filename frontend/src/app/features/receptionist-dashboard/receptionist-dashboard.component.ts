@@ -1,20 +1,20 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+
 import { RouterModule } from '@angular/router';
 import { DashboardLayoutComponent } from 'src/app/shared/layout/dashboard-layout.component';
 import { MetricCardComponent } from 'src/app/shared/ui/metric-card.component';
 import { ActionCardComponent } from 'src/app/shared/ui/action-card.component';
+import { DashboardService } from 'src/app/core/services/dashboard.service';
 
 @Component({
   selector: 'app-receptionist-dashboard',
   standalone: true,
   imports: [
-    CommonModule, 
-    RouterModule, 
+    RouterModule,
     DashboardLayoutComponent,
     MetricCardComponent,
     ActionCardComponent
-  ],
+],
   template: `
     <app-dashboard-layout title="Front Desk" role="Receptionist">
         <!-- Sidebar -->
@@ -37,10 +37,10 @@ import { ActionCardComponent } from 'src/app/shared/ui/action-card.component';
         <div class="space-y-8">
             <!-- Metrics -->
              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <app-metric-card label="Today's Appointments" value="24" icon="calendar_today" color="blue"></app-metric-card>
-                <app-metric-card label="Currently Waiting" value="5" icon="hourglass_empty" color="yellow"></app-metric-card>
-                <app-metric-card label="Checked In" value="15" icon="check_circle" color="green"></app-metric-card>
-                <app-metric-card label="New Registrations" value="3" icon="person_add" color="purple"></app-metric-card>
+                <app-metric-card label="Today's Appointments" [value]="stats?.todaysAppointments || 0" icon="calendar_today" color="blue"></app-metric-card>
+                <app-metric-card label="Currently Waiting" [value]="stats?.currentlyWaiting || 0" icon="hourglass_empty" color="yellow"></app-metric-card>
+                <app-metric-card label="Checked In" [value]="stats?.checkedIn || 0" icon="check_circle" color="green"></app-metric-card>
+                <app-metric-card label="New Registrations" [value]="stats?.newRegistrations || 0" icon="person_add" color="purple"></app-metric-card>
             </div>
 
             <!-- Front Desk Actions -->
@@ -58,6 +58,7 @@ import { ActionCardComponent } from 'src/app/shared/ui/action-card.component';
                  <!-- Queue Status (Mini) -->
                  <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm h-fit">
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Waiting Room</h3>
+                    <!-- TODO: Iterate over real queue data  -->
                     <div class="space-y-3">
                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                           <span class="text-sm font-medium text-gray-700 dark:text-gray-300">#04: John Smith</span>
@@ -76,4 +77,15 @@ import { ActionCardComponent } from 'src/app/shared/ui/action-card.component';
     </app-dashboard-layout>
   `
 })
-export class ReceptionistDashboardComponent {}
+export class ReceptionistDashboardComponent implements OnInit {
+  stats: any = {};
+
+  constructor(private dashboardService: DashboardService) {}
+
+  ngOnInit(): void {
+    this.dashboardService.getReceptionistStats().subscribe({
+      next: (res) => (this.stats = res.data),
+      error: (err) => console.error(err)
+    });
+  }
+}

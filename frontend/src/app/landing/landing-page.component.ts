@@ -15,30 +15,29 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { CommonModule } from '@angular/common';
+
 import { ChatbotComponent } from "./chatbot/chatbot.component";
 
 @Component({
     selector: 'app-careflow-landing-page',
     imports: [
-      DarkModeComponent, 
-      MatFormFieldModule,
-      MatCardModule,
-      MatChipsModule,
-      FormsModule,
-      MatSidenavModule,
-      MatToolbarModule,
-      MatButtonModule, 
-      MatListModule,
-      MatIconModule,
-      CommonModule,
-      MatDatepickerModule,
-      MatSelectModule,
-      MatSlideToggleModule,
-      MatSnackBarModule,
-      MatGridListModule, 
-      ChatbotComponent
-    ],
+    DarkModeComponent,
+    MatFormFieldModule,
+    MatCardModule,
+    MatChipsModule,
+    FormsModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatListModule,
+    MatIconModule,
+    MatDatepickerModule,
+    MatSelectModule,
+    MatSlideToggleModule,
+    MatSnackBarModule,
+    MatGridListModule,
+    ChatbotComponent
+],
     templateUrl: './landing-page.component.html',
     styleUrls: ['./landing-page.component.scss'],
     standalone: true

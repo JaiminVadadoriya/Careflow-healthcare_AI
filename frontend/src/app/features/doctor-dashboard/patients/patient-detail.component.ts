@@ -1,12 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { ModalRef } from 'src/app/shared/ui/modal.service';
 
 @Component({
   selector: 'app-patient-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   template: `
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-[600px] overflow-hidden border border-gray-100 dark:border-gray-700 font-sans">
       <!-- Header -->
@@ -19,7 +19,7 @@ import { ModalRef } from 'src/app/shared/ui/modal.service';
           <span class="material-icons">close</span>
         </button>
       </div>
-
+    
       <!-- Body -->
       <div class="max-h-[80vh] overflow-y-auto p-6 space-y-6">
         <!-- Basic Info -->
@@ -33,41 +33,43 @@ import { ModalRef } from 'src/app/shared/ui/modal.service';
             <p class="font-medium text-gray-900 dark:text-white">{{ data._id }}</p>
           </div>
         </div>
-
+    
         <!-- Medical History -->
         <div class="border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-           <h3 class="font-bold text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
-             <span class="material-icons text-blue-500 text-sm">history</span>
-             Medical History
-           </h3>
-           <ul class="space-y-2">
-             <li *ngFor="let record of medicalHistory" class="flex items-center gap-2 text-gray-700 dark:text-gray-300 text-sm">
-               <span class="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
-               {{ record }}
-             </li>
-           </ul>
+          <h3 class="font-bold text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
+            <span class="material-icons text-blue-500 text-sm">history</span>
+            Medical History
+          </h3>
+          <ul class="space-y-2">
+            @for (record of medicalHistory; track record) {
+              <li class="flex items-center gap-2 text-gray-700 dark:text-gray-300 text-sm">
+                <span class="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
+                {{ record }}
+              </li>
+            }
+          </ul>
         </div>
-
+    
         <!-- Doctor's Notes -->
         <div>
           <h3 class="font-bold text-gray-800 dark:text-gray-200 mb-2 flex items-center gap-2">
             <span class="material-icons text-blue-500 text-sm">edit_note</span>
             Doctor's Note
           </h3>
-          <textarea 
-            class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none text-sm" 
-            rows="4" 
+          <textarea
+            class="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none text-sm"
+            rows="4"
             [(ngModel)]="note"
-            placeholder="Add clinical observation..."></textarea>
+          placeholder="Add clinical observation..."></textarea>
           <div class="flex justify-end mt-2">
-             <button (click)="saveNote()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
-               Save Note
-             </button>
+            <button (click)="saveNote()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm">
+              Save Note
+            </button>
           </div>
         </div>
       </div>
     </div>
-  `
+    `
 })
 export class PatientDetailComponent implements OnInit {
   @Input() data: any;

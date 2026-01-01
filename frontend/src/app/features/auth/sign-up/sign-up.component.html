@@ -2,126 +2,146 @@
 
 <!-- 🧾 Sign-Up Page Layout -->
 <div class="min-h-screen flex flex-col md:flex-row items-center justify-center bg-gray-50 dark:bg-gray-900 p-6 gap-8 transition-colors duration-500 font-sans">
-  
+
   <!-- 📸 Image Section -->
   <div class="hidden md:block w-1/2 max-w-2xl">
-     <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-gray-800 h-full">
-         <img
-           src="assets/images/signup.png"
-           alt="Sign Up Illustration"
-           class="w-full h-full object-cover transform hover:scale-105 transition duration-700"
-         />
-         <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
-            <div class="text-white">
-               <h2 class="text-3xl font-bold mb-2">Join CareFlow Community</h2>
-               <p class="text-gray-200">Start your journey towards better healthcare management today.</p>
-            </div>
-         </div>
-     </div>
-  </div>
-
-  <!-- 📝 Sign-Up Form -->
-  <div class="w-full md:w-1/2 max-w-xl animate-fadeIn">
-    <div class="bg-white dark:bg-gray-800 p-8 sm:p-10 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-300">
-       
-       <div class="text-center mb-8">
-         <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Create an Account</h2>
-         <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Sign up and join our community</p>
-       </div>
-
-      <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" class="space-y-5">
-        
-         <!-- Full Name -->
-         <div class="space-y-1">
-             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
-             <input 
-               type="text" 
-               formControlName="name"
-               placeholder="Jaimin Patel"
-               class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-900 border border-transparent focus:bg-white dark:focus:bg-gray-800 border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-gray-900 dark:text-gray-100 transition-all outline-none"
-             />
-             <p *ngIf="signUpForm.get('name')?.invalid && signUpForm.get('name')?.touched" class="text-xs text-red-500 pl-1">Name is required (min 2 chars)</p>
-         </div>
-
-         <!-- Email -->
-         <div class="space-y-1">
-             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
-             <input 
-               type="email" 
-               formControlName="email"
-               placeholder="name@company.com"
-               class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-900 border border-transparent focus:bg-white dark:focus:bg-gray-800 border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-gray-900 dark:text-gray-100 transition-all outline-none"
-             />
-             <p *ngIf="signUpForm.get('email')?.invalid && signUpForm.get('email')?.touched" class="text-xs text-red-500 pl-1">Valid email is required</p>
-         </div>
-
-         <!-- Password -->
-         <div class="space-y-1">
-             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
-             <div class="relative">
-                 <input 
-                   [type]="hidePassword ? 'password' : 'text'" 
-                   formControlName="password"
-                   placeholder="Create a strong password"
-                   class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-900 border border-transparent focus:bg-white dark:focus:bg-gray-800 border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-gray-900 dark:text-gray-100 transition-all outline-none pr-10"
-                 />
-                 <button type="button" (click)="hidePassword = !hidePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                    <svg *ngIf="hidePassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                    <svg *ngIf="!hidePassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
-                 </button>
-             </div>
-             <p *ngIf="signUpForm.get('password')?.invalid && signUpForm.get('password')?.touched" class="text-xs text-red-500 pl-1">Password required (min 6 chars)</p>
-         </div>
-
-         <!-- Phone -->
-         <div class="space-y-1">
-             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</label>
-             <input 
-               type="tel" 
-               formControlName="phone"
-               placeholder="9876543210"
-               class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-900 border border-transparent focus:bg-white dark:focus:bg-gray-800 border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-gray-900 dark:text-gray-100 transition-all outline-none"
-             />
-             <p *ngIf="signUpForm.get('phone')?.invalid && signUpForm.get('phone')?.touched" class="text-xs text-red-500 pl-1">Phone is required</p>
-         </div>
-
-         <!-- Gender -->
-         <div class="space-y-2">
-             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Gender</label>
-             <div class="flex gap-4">
-                 <label class="flex-1 cursor-pointer">
-                     <input type="radio" formControlName="gender" value="male" class="peer sr-only">
-                     <div class="p-3 text-center rounded-xl bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all hover:bg-gray-200 dark:hover:bg-gray-800">
-                         Male
-                     </div>
-                 </label>
-                 <label class="flex-1 cursor-pointer">
-                     <input type="radio" formControlName="gender" value="female" class="peer sr-only">
-                     <div class="p-3 text-center rounded-xl bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 peer-checked:pink-600 peer-checked:bg-pink-600 peer-checked:text-white peer-checked:border-pink-600 transition-all hover:bg-gray-200 dark:hover:bg-gray-800">
-                         Female
-                     </div>
-                 </label>
-             </div>
-             <p *ngIf="signUpForm.get('gender')?.invalid && signUpForm.get('gender')?.touched" class="text-xs text-red-500 pl-1">Gender is required</p>
-         </div>
-
-         <!-- Submit Button -->
-         <button
-           type="submit"
-           [disabled]="signUpForm.invalid || loading"
-           class="w-full py-4 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-600/30 flex justify-center items-center gap-2 mt-4"
-         >
-           <svg *ngIf="loading" class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-           <span>{{ loading ? 'Creating Account...' : 'Create Account' }}</span>
-         </button>
-
-      </form>
-      
-      <!-- Already have an account -->
-      <div class="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
-        Already have an account? <a routerLink="/login" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">Login here</a>
+    <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-gray-800 h-full">
+      <img
+        src="assets/images/signup.png"
+        alt="Sign Up Illustration"
+        class="w-full h-full object-cover transform hover:scale-105 transition duration-700"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
+          <div class="text-white">
+            <h2 class="text-3xl font-bold mb-2">Join CareFlow Community</h2>
+            <p class="text-gray-200">Start your journey towards better healthcare management today.</p>
+          </div>
+        </div>
       </div>
-
     </div>
-  </div>
-</div>
+
+    <!-- 📝 Sign-Up Form -->
+    <div class="w-full md:w-1/2 max-w-xl animate-fadeIn">
+      <div class="bg-white dark:bg-gray-800 p-8 sm:p-10 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-300">
+
+        <div class="text-center mb-8">
+          <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Create an Account</h2>
+          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Sign up and join our community</p>
+        </div>
+
+        <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" class="space-y-5">
+
+          <!-- Full Name -->
+          <div class="space-y-1">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
+            <input
+              type="text"
+              formControlName="name"
+              placeholder="Jaimin Patel"
+              autocomplete="name"
+              class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-900 border border-transparent focus:bg-white dark:focus:bg-gray-800 border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-gray-900 dark:text-gray-100 transition-all outline-none"
+              />
+              @if (signUpForm.get('name')?.invalid && signUpForm.get('name')?.touched) {
+                <p class="text-xs text-red-500 pl-1">Name is required (min 2 chars)</p>
+              }
+            </div>
+
+            <!-- Email -->
+            <div class="space-y-1">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
+              <input
+                type="email"
+                formControlName="email"
+                placeholder="name@company.com"
+                autocomplete="email"
+                class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-900 border border-transparent focus:bg-white dark:focus:bg-gray-800 border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-gray-900 dark:text-gray-100 transition-all outline-none"
+                />
+                @if (signUpForm.get('email')?.invalid && signUpForm.get('email')?.touched) {
+                  <p class="text-xs text-red-500 pl-1">Valid email is required</p>
+                }
+              </div>
+
+              <!-- Password -->
+              <div class="space-y-1">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+                <div class="relative">
+                  <input
+                    [type]="hidePassword ? 'password' : 'text'"
+                    formControlName="password"
+                    placeholder="Create a strong password"
+                    autocomplete="new-password"
+                    class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-900 border border-transparent focus:bg-white dark:focus:bg-gray-800 border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-gray-900 dark:text-gray-100 transition-all outline-none pr-10"
+                    />
+                    <button type="button" (click)="hidePassword = !hidePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                      @if (hidePassword) {
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                      }
+                      @if (!hidePassword) {
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                      }
+                    </button>
+                  </div>
+                  @if (signUpForm.get('password')?.invalid && signUpForm.get('password')?.touched) {
+                    <p class="text-xs text-red-500 pl-1">Password required (min 6 chars)</p>
+                  }
+                </div>
+
+                <!-- Phone -->
+                <div class="space-y-1">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</label>
+                  <input
+                    type="tel"
+                    formControlName="phone"
+                    placeholder="9876543210"
+                    autocomplete="tel"
+                    class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-900 border border-transparent focus:bg-white dark:focus:bg-gray-800 border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-gray-900 dark:text-gray-100 transition-all outline-none"
+                    />
+                    @if (signUpForm.get('phone')?.invalid && signUpForm.get('phone')?.touched) {
+                      <p class="text-xs text-red-500 pl-1">Phone is required</p>
+                    }
+                  </div>
+
+                  <!-- Gender -->
+                  <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Gender</label>
+                    <div class="flex gap-4">
+                      <label class="flex-1 cursor-pointer">
+                        <input type="radio" formControlName="gender" value="male" class="peer sr-only">
+                        <div class="p-3 text-center rounded-xl bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all hover:bg-gray-200 dark:hover:bg-gray-800">
+                          Male
+                        </div>
+                      </label>
+                      <label class="flex-1 cursor-pointer">
+                        <input type="radio" formControlName="gender" value="female" class="peer sr-only">
+                        <div class="p-3 text-center rounded-xl bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 peer-checked:pink-600 peer-checked:bg-pink-600 peer-checked:text-white peer-checked:border-pink-600 transition-all hover:bg-gray-200 dark:hover:bg-gray-800">
+                          Female
+                        </div>
+                      </label>
+                    </div>
+                    @if (signUpForm.get('gender')?.invalid && signUpForm.get('gender')?.touched) {
+                      <p class="text-xs text-red-500 pl-1">Gender is required</p>
+                    }
+                  </div>
+
+                  <!-- Submit Button -->
+                  <button
+                    type="submit"
+                    [disabled]="signUpForm.invalid || loading"
+                    class="w-full py-4 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-600/30 flex justify-center items-center gap-2 mt-4"
+                    >
+                    @if (loading) {
+                      <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    }
+                    <span>{{ loading ? 'Creating Account...' : 'Create Account' }}</span>
+                  </button>
+
+                </form>
+
+                <!-- Already have an account -->
+                <div class="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
+                  Already have an account? <a routerLink="/login" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">Login here</a>
+                </div>
+
+              </div>
+            </div>
+          </div>
