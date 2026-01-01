@@ -49,5 +49,5 @@ npm start
 -   **Runtime**: Node.js v22
 -   **Language**: JavaScript (Backend), TypeScript (Frontend)
 -   **Database**: MongoDB
--   **Frontend Framework**: Angular 18
+-   **Frontend Framework**: Angular 21
 -   **Styling**: SCSS/CSS, Tailwind, Material 3
