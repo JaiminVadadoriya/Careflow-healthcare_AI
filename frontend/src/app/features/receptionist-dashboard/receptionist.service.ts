@@ -1,52 +1,62 @@
 import { Injectable } from '@angular/core';
-import { AppService } from 'src/app/app.service';
+import { HttpClient } from '@angular/common/http';
+import { BaseDataService } from 'src/app/core/base-data.service';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class ReceptionistService {
-  constructor(private appService: AppService) {}
-
-  registerPatient(data: any) {
-    return this.appService.postData('/users/receptionist/register', data);
+export class ReceptionistService extends BaseDataService<any> {
+  constructor(http: HttpClient) {
+    super(http, '/users/receptionist');
   }
 
-  bookAppointment(data: any) {
-    return this.appService.postData('/users/receptionist/appointments', data);
+  registerPatient(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/users/receptionist/register`, data, { headers: this.getHeaders() });
   }
 
-  checkInPatient(patientId: string) {
-    return this.appService.patchData(`/users/receptionist/checkin/${patientId}`, {});
+  bookAppointment(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/users/receptionist/appointments`, data, { headers: this.getHeaders() });
   }
 
-  getPatients() {
-    return this.appService.getData('/users/patients');
+  checkInPatient(patientId: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/users/receptionist/checkin/${patientId}`, {}, { headers: this.getHeaders() });
   }
 
-  getAppointments() {
-    // You may need to filter by receptionist or show all
-    return this.appService.getData('/users/receptionist/appointments');
+  getPatients(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/patients`, { headers: this.getHeaders() });
   }
 
-  dischargePatient(patientId: string) {
-    return this.appService.patchData(`/users/receptionist/checkout/${patientId}`, {});
-  }
-  cancelAppointment(appointmentId: string) {
-    return this.appService.patchData(`/users/receptionist/appointments/${appointmentId}`, { status: 'cancelled' });
-  }
-  rescheduleAppointment(appointmentId: string, date_time: string) {
-    return this.appService.patchData(`/users/receptionist/appointments/${appointmentId}`, { date_time });
-  }
-  updatePatient(patientId: string, data: any) {
-    return this.appService.patchData(`/patient/${patientId}`, data);
-  }
-  getDoctors() {
-    return this.appService.getData('/users/doctors');
+  getAppointments(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/receptionist/appointments`, { headers: this.getHeaders() });
   }
 
-  updateAppointment(appointmentId: string, data: any) {
-    return this.appService.patchData(`/users/receptionist/appointments/${appointmentId}`, data);
+  dischargePatient(patientId: string): Observable<any> {
+    // Note: Typo in original 'checkout' endpoint vs 'discharge' in other places. Assuming 'discharge' based on code from controller.
+    // Original service code had 'checkout', but controller has 'discharge' -> `receptionistDischargePatient`
+    // Router map: `/receptionist/discharge/:patientId` -> `ReceptionistController.dischargePatient`
+    return this.http.patch(`${this.apiUrl}/users/receptionist/discharge/${patientId}`, {}, { headers: this.getHeaders() });
   }
 
-  dichargePatientFromAppointment(patientId: string) {
-    return this.appService.patchData(`/users/receptionist/discharge/${patientId}`, {}); 
-  }  
-} 
+  cancelAppointment(appointmentId: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/users/receptionist/appointments/${appointmentId}`, { status: 'cancelled' }, { headers: this.getHeaders() });
+  }
+
+  rescheduleAppointment(appointmentId: string, date_time: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/users/receptionist/appointments/${appointmentId}`, { date_time }, { headers: this.getHeaders() });
+  }
+
+  updatePatient(patientId: string, data: any): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/patient/${patientId}`, data, { headers: this.getHeaders() });
+  }
+
+  getDoctors(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/doctors`, { headers: this.getHeaders() });
+  }
+
+  updateAppointment(appointmentId: string, data: any): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/users/receptionist/appointments/${appointmentId}`, data, { headers: this.getHeaders() });
+  }
+
+  dichargePatientFromAppointment(patientId: string): Observable<any> {
+      return this.http.patch(`${this.apiUrl}/users/receptionist/discharge/${patientId}`, {}, { headers: this.getHeaders() }); 
+  }
+}

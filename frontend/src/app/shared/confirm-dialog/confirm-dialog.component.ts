@@ -1,31 +1,33 @@
-import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
+import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ModalRef } from '../ui/modal.service';
 
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule],
+  imports: [CommonModule],
   template: `
-    <div class="p-6">
-      <h2 class="text-xl font-bold mb-4">Confirm</h2>
-      <p class="mb-6">{{ data.message }}</p>
-      <div class="flex gap-2 justify-end">
-        <button mat-button (click)="onCancel()">Cancel</button>
-        <button mat-raised-button color="warn" (click)="onConfirm()">Delete</button>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-sm w-full overflow-hidden border border-gray-100 dark:border-gray-700">
+      <div class="p-6">
+        <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">Confirm</h2>
+        <p class="mb-6 text-gray-600 dark:text-gray-300">{{ data?.message }}</p>
+        <div class="flex gap-3 justify-end">
+          <button (click)="onCancel()" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+          <button (click)="onConfirm()" class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors shadow-lg shadow-red-500/30">Delete</button>
+        </div>
       </div>
     </div>
   `
 })
 export class ConfirmDialogComponent {
-  constructor(
-    private dialogRef: MatDialogRef<ConfirmDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  @Input() data: any;
+  modalRef!: ModalRef;
+
   onConfirm() {
-    this.dialogRef.close(true);
+    this.modalRef.close(true);
   }
+
   onCancel() {
-    this.dialogRef.close(false);
+    this.modalRef.close(false);
   }
 } 

@@ -1,11 +1,96 @@
 <!-- Navbar -->
-<nav class="bg-blue-600 text-white flex justify-between items-center px-6 py-4 shadow">
-  <span class="text-2xl font-bold tracking-wide">CareFlow</span>
+<nav class="bg-white/80 dark:bg-gray-950/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100 dark:border-gray-800 px-6 py-4 flex justify-between items-center transition-colors duration-300">
+  <div class="flex items-center gap-2">
+    <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
+    </div>
+    <span class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">CareFlow</span>
+  </div>
   <div class="flex items-center gap-4">
     <dark-mode-button></dark-mode-button>
-    <a href="login" class="border border-white rounded px-4 py-1 hover:bg-white hover:text-blue-600 transition">Login</a>
+    <a href="login" class="px-5 py-2 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium hover:opacity-90 transition-opacity">Login</a>
   </div>
 </nav>
+
+<!-- Hero Section -->
+<section class="bg-gray-50 dark:bg-gray-950 text-center py-24 px-4 transition-colors duration-300">
+  <div class="inline-flex items-center px-4 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium rounded-full text-sm mb-6 border border-blue-100 dark:border-blue-800/50">
+    <span class="relative flex h-2 w-2 mr-2">
+      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+      <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+    </span>
+    AI-Powered Healthcare v2.0
+  </div>
+
+  <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-8 text-gray-900 dark:text-white leading-tight">
+    Smart Healthcare <br class="hidden sm:block" />
+    <span class="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 text-transparent bg-clip-text">Management Simplified</span>
+  </h1>
+
+  <p class="max-w-2xl mx-auto text-lg text-gray-600 dark:text-gray-400 mb-10 leading-relaxed">
+    Streamline hospital operations with our intelligent platform. From predictive scheduling to resource optimization, CareFlow brings the future of healthcare to your facility.
+  </p>
+
+  <div class="flex flex-col sm:flex-row justify-center gap-4 mb-20">
+    <a href="home/#book" class="px-8 py-4 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+      Book Appointment
+    </a>
+    <button class="px-8 py-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+      Explore Features
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto">
+    <div *ngFor="let stat of stats" class="p-6 rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm hover:border-blue-100 dark:hover:border-blue-900/50 transition-colors group">
+      <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{{ stat.value }}</h2>
+      <p class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{{ stat.label }}</p>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-24 px-6 bg-white dark:bg-gray-900 text-center transition-colors duration-300 border-t border-gray-100 dark:border-gray-800">
+  <div class="max-w-3xl mx-auto mb-16">
+    <h2 class="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">Why Choose CareFlow?</h2>
+    <p class="text-gray-600 dark:text-gray-400 text-lg">
+      Built with the latest technology to ensure security, speed, and reliability.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+    <div *ngFor="let feature of features" class="group p-8 rounded-2xl bg-gray-50 dark:bg-gray-800/50 hover:bg-white dark:hover:bg-gray-800 border border-transparent hover:border-gray-100 dark:hover:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-300 text-left">
+      <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-6 group-hover:scale-110 transition-transform">
+        <mat-icon>{{feature.icon}}</mat-icon>
+      </div>
+      <h3 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">{{ feature.title }}</h3>
+      <p class="text-gray-600 dark:text-gray-400 leading-relaxed">{{ feature.description }}</p>
+    </div>
+  </div>
+</section>
+
+<!-- Appointment/Chatbot Section -->
+<section class="py-24 bg-gray-50 dark:bg-gray-950 transition-colors duration-300" id="book">
+  <div class="max-w-4xl mx-auto px-4">
+    <div class="bg-white dark:bg-gray-900 rounded-3xl p-8 md:p-12 shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-gray-800 text-center">
+      <div class="mb-10">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 mb-6">
+          <mat-icon class="scale-150">smart_toy</mat-icon>
+        </div>
+        <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Start Your Journey</h3>
+        <p class="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+          Chat with our AI assistant to book appointments, check symptoms, or get general information instantly.
+        </p>
+      </div>
+      
+      <!-- Embedding Chatbot -->
+      <div class="max-w-md mx-auto bg-gray-50 dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+         <app-chatbot></app-chatbot>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- Hero Section -->
 <section class="bg-gray-100 dark:bg-gray-900 text-center py-16 px-4">

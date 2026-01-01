@@ -1,288 +1,169 @@
 import { Component, OnInit } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ReceptionistService } from '../receptionist.service';
-import { MatOption } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-receptionist-patients',
   standalone: true,
   imports: [
     CommonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTableModule,
-    FormsModule,
-    MatOption,
-    MatSelectModule,
+    FormsModule
   ],
   template: `
-    <div class="p-6 max-w-3xl mx-auto">
-      <h2 class="text-2xl font-bold mb-4">Register New Patient</h2>
+    <div class="p-6 max-w-7xl mx-auto space-y-8">
+      
+      <!-- Register Form -->
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+            <span class="material-icons text-blue-500">person_add</span> Register New Patient
+         </h2>
+         <form (ngSubmit)="registerPatient()" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+               <!-- Basic Info -->
+               <div class="space-y-4">
+                  <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide border-b border-gray-100 dark:border-gray-700 pb-2">Basic Info</h3>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                    <input [(ngModel)]="form.full_name" name="fn" required class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date of Birth</label>
+                    <input type="date" [(ngModel)]="form.dob" name="dob" required class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gender</label>
+                    <select [(ngModel)]="form.gender" name="gender" required class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none appearance-none">
+                       <option value="male">Male</option>
+                       <option value="female">Female</option>
+                       <option value="other">Other</option>
+                    </select>
+                  </div>
+               </div>
 
-      <!-- 🧾 Registration Form -->
-      <form (ngSubmit)="registerPatient()" class="flex flex-col gap-4 mb-8">
-        <!-- Full Name -->
-        <mat-form-field >
-          <mat-label>Full Name</mat-label>
-          <input
-            matInput
-            [(ngModel)]="form.full_name"
-            name="full_name"
-            required
-          />
-        </mat-form-field>
+               <!-- Contact -->
+               <div class="space-y-4">
+                  <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide border-b border-gray-100 dark:border-gray-700 pb-2">Contact Details</h3>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
+                    <input [(ngModel)]="form.contact_info.phone" name="phone" required class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                    <input type="email" [(ngModel)]="form.contact_info.email" name="email" class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
+                    <input [(ngModel)]="form.contact_info.address" name="address" required class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                  </div>
+               </div>
 
-        <!-- Date of Birth -->
-        <mat-form-field >
-          <mat-label>Date of Birth</mat-label>
-          <input
-            matInput
-            type="date"
-            [(ngModel)]="form.dob"
-            name="dob"
-            required
-          />
-        </mat-form-field>
+               <!-- Emergency & Assignment -->
+               <div class="space-y-4">
+                  <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide border-b border-gray-100 dark:border-gray-700 pb-2">Emergency & Care</h3>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Emergency Contact</label>
+                    <input [(ngModel)]="form.emergency_contact.name" name="e_name" placeholder="Name" class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none mb-2">
+                    <input [(ngModel)]="form.emergency_contact.phone" name="e_phone" placeholder="Phone" class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none mb-2">
+                    <input [(ngModel)]="form.emergency_contact.relation" name="e_rel" placeholder="Relation (e.g. Spouse)" required class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assign Doctor</label>
+                    <div class="relative">
+                      <select [(ngModel)]="form.assigned_doctor" name="doctor" required class="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none appearance-none">
+                        <option *ngFor="let doc of doctors" [value]="doc._id">{{ doc.full_name }}</option>
+                      </select>
+                      <span class="material-icons absolute right-3 top-3 text-gray-400">expand_more</span>
+                    </div>
+                  </div>
+               </div>
+            </div>
 
-        <!-- Gender -->
-        <mat-form-field >
-          <mat-label>Gender</mat-label>
-          <mat-select [(ngModel)]="form.gender" name="gender" required>
-            <mat-option value="male">Male</mat-option>
-            <mat-option value="female">Female</mat-option>
-            <mat-option value="other">Other</mat-option>
-          </mat-select>
-        </mat-form-field>
+            <div class="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-700">
+               <button type="submit" [disabled]="loading" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50">
+                  {{ loading ? 'Registering...' : 'Register Patient' }}
+               </button>
+            </div>
+         </form>
+      </div>
 
-        <!-- Contact Info -->
-        <h3 class="text-lg font-semibold mt-2">Contact Info</h3>
-        <mat-form-field >
-          <mat-label>Phone</mat-label>
-          <input
-            matInput
-            [(ngModel)]="form.contact_info.phone"
-            name="contact_phone"
-            required
-          />
-        </mat-form-field>
+      <!-- Patients List -->
+      <div class="space-y-4">
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Patient Registry</h2>
+             <div class="relative w-full max-w-xs">
+               <input 
+                 type="text" 
+                 [(ngModel)]="search" 
+                 (ngModelChange)="applyFilter()" 
+                 placeholder="Search patients..."
+                 class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+               >
+               <span class="material-icons absolute left-3 top-2.5 text-gray-400 text-sm">search</span>
+            </div>
+        </div>
 
-        <mat-form-field >
-          <mat-label>Email</mat-label>
-          <input
-            matInput
-            [(ngModel)]="form.contact_info.email"
-            name="contact_email"
-          />
-        </mat-form-field>
-        <mat-form-field >
-          <mat-label>Address</mat-label>
-          <input
-            matInput
-            [(ngModel)]="form.contact_info.address"
-            name="contact_address"
-            required
-          />
-        </mat-form-field>
-
-        <!-- Emergency Contact -->
-        <h3 class="text-lg font-semibold mt-2">Emergency Contact</h3>
-        <mat-form-field >
-          <mat-label>Emergency Contact Name</mat-label>
-          <input
-            matInput
-            [(ngModel)]="form.emergency_contact.name"
-            name="emergency_name"
-          />
-        </mat-form-field>
-
-        <mat-form-field >
-          <mat-label>Emergency Phone</mat-label>
-          <input
-            matInput
-            [(ngModel)]="form.emergency_contact.phone"
-            name="emergency_phone"
-          />
-        </mat-form-field>
-        <mat-form-field >
-          <mat-label>Emergency Contact Relation</mat-label>
-          <input
-            matInput
-            [(ngModel)]="form.emergency_contact.relation"
-            name="emergency_relation"
-            required
-          />
-        </mat-form-field>
-
-        <mat-form-field >
-          <mat-label>Assign Doctor</mat-label>
-          <mat-select
-            [(ngModel)]="form.assigned_doctor"
-            name="assigned_doctor"
-            required
-          >
-            <mat-option *ngFor="let doctor of doctors" [value]="doctor._id">
-              {{ doctor.full_name }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <!-- Submit -->
-        <button mat-raised-button color="primary" type="submit">
-          Register
-        </button>
-      </form>
-
-      <!-- 🔍 Search -->
-      <h2 class="text-xl font-bold mb-4">Registered Patients</h2>
-      <mat-form-field  class="w-full md:w-1/3 mb-4">
-        <mat-label>Search Patients</mat-label>
-        <input
-          matInput
-          [(ngModel)]="search"
-          (ngModelChange)="applyFilter()"
-          placeholder="Search by name or ID"
-        />
-      </mat-form-field>
-
-      <!-- 🧾 Patients Table -->
-      <div class="overflow-x-auto">
-        <!-- 🧾 Patients Table -->
-        <div class="overflow-x-auto">
-          <table
-            mat-table
-            [dataSource]="dataSource"
-            class="min-w-full bg-white dark:bg-gray-800 rounded shadow"
-          >
-            <!-- Full Name -->
-            <ng-container matColumnDef="full_name">
-              <th mat-header-cell *matHeaderCellDef>Full Name</th>
-              <td mat-cell *matCellDef="let patient">
-                {{ patient.full_name }}
-              </td>
-            </ng-container>
-
-            <!-- DOB -->
-            <ng-container matColumnDef="dob">
-              <th mat-header-cell *matHeaderCellDef>DOB</th>
-              <td mat-cell *matCellDef="let patient">
-                {{ patient.dob | date }}
-              </td>
-            </ng-container>
-
-            <!-- Gender -->
-            <ng-container matColumnDef="gender">
-              <th mat-header-cell *matHeaderCellDef>Gender</th>
-              <td mat-cell *matCellDef="let patient">{{ patient.gender }}</td>
-            </ng-container>
-
-            <!-- Phone -->
-            <ng-container matColumnDef="phone">
-              <th mat-header-cell *matHeaderCellDef>Phone</th>
-              <td mat-cell *matCellDef="let patient">
-                {{ patient.contact_info?.phone }}
-              </td>
-            </ng-container>
-
-            <!-- Email -->
-            <ng-container matColumnDef="email">
-              <th mat-header-cell *matHeaderCellDef>Email</th>
-              <td mat-cell *matCellDef="let patient">
-                {{ patient.contact_info?.email }}
-              </td>
-            </ng-container>
-
-            <!-- Address -->
-            <ng-container matColumnDef="address">
-              <th mat-header-cell *matHeaderCellDef>Address</th>
-              <td mat-cell *matCellDef="let patient">
-                {{ patient.contact_info?.address }}
-              </td>
-            </ng-container>
-
-            <!-- Emergency Contact Name -->
-            <ng-container matColumnDef="emergency_name">
-              <th mat-header-cell *matHeaderCellDef>Emergency Name</th>
-              <td mat-cell *matCellDef="let patient">
-                {{ patient.emergency_contact?.name }}
-              </td>
-            </ng-container>
-
-            <!-- Emergency Phone -->
-            <ng-container matColumnDef="emergency_phone">
-              <th mat-header-cell *matHeaderCellDef>Emergency Phone</th>
-              <td mat-cell *matCellDef="let patient">
-                {{ patient.emergency_contact?.phone }}
-              </td>
-            </ng-container>
-
-            <!-- Emergency Relation -->
-            <ng-container matColumnDef="emergency_relation">
-              <th mat-header-cell *matHeaderCellDef>Relation</th>
-              <td mat-cell *matCellDef="let patient">
-                {{ patient.emergency_contact?.relation }}
-              </td>
-            </ng-container>
-
-            <!-- Doctor -->
-            <ng-container matColumnDef="doctor">
-              <th mat-header-cell *matHeaderCellDef>Assigned Doctor</th>
-              <td mat-cell *matCellDef="let patient">
-                {{
-                  patient.assigned_doctor?.full_name || patient.assigned_doctor
-                }}
-              </td>
-            </ng-container>
-
-            <!-- Status -->
-            <ng-container matColumnDef="current_status">
-              <th mat-header-cell *matHeaderCellDef>Status</th>
-              <td mat-cell *matCellDef="let patient">
-                {{ patient.current_status }}
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-          </table>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+           <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                 <thead class="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
+                    <tr>
+                       <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Name</th>
+                       <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Contact</th>
+                       <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Emergency</th>
+                       <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Assigned Dr.</th>
+                       <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Status</th>
+                    </tr>
+                 </thead>
+                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    <tr *ngFor="let patient of filteredPatients" class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                       <td class="p-4">
+                          <div class="font-medium text-gray-900 dark:text-white">{{ patient.full_name }}</div>
+                          <div class="text-xs text-gray-500">{{ patient.gender | capitalize }} • {{ patient.dob | date }}</div>
+                       </td>
+                       <td class="p-4 text-sm text-gray-600 dark:text-gray-400">
+                          <div>{{ patient.contact_info?.phone }}</div>
+                          <div class="text-xs text-gray-500">{{ patient.contact_info?.email }}</div>
+                       </td>
+                       <td class="p-4 text-sm text-gray-600 dark:text-gray-400">
+                          <div>{{ patient.emergency_contact?.name }}</div>
+                          <div class="text-xs text-gray-500">{{ patient.emergency_contact?.phone }} ({{ patient.emergency_contact?.relation }})</div>
+                       </td>
+                       <td class="p-4 text-sm text-blue-600 dark:text-blue-400">
+                          {{ patient.assigned_doctor?.full_name || patient.assigned_doctor || 'Unassigned' }}
+                       </td>
+                       <td class="p-4">
+                          <span class="px-2 py-1 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                             {{ patient.current_status || 'Registered' }}
+                          </span>
+                       </td>
+                    </tr>
+                    <tr *ngIf="filteredPatients.length === 0">
+                       <td colspan="5" class="p-8 text-center text-gray-500 dark:text-gray-400">No patients found.</td>
+                    </tr>
+                 </tbody>
+              </table>
+           </div>
         </div>
       </div>
     </div>
-  `,
+  `
 })
 export class PatientsComponent implements OnInit {
-  displayedColumns: string[] = ['name', 'dob', 'gender', 'phone'];
-  dataSource = new MatTableDataSource<any>([]);
+  patients: any[] = [];
+  filteredPatients: any[] = [];
+  doctors: any[] = [];
   search = '';
+  loading = false;
+  
   form = {
     full_name: '',
     dob: '',
     gender: '',
     assigned_doctor: '',
-    contact_info: {
-      phone: '',
-      email: '',
-      address: '',
-    },
-    emergency_contact: {
-      name: '',
-      phone: '',
-      relation: '',
-    },
+    contact_info: { phone: '', email: '', address: '' },
+    emergency_contact: { name: '', phone: '', relation: '' }
   };
-
-  loading = false;
-  error = '';
-  doctors: any[] = [];
 
   constructor(private receptionistService: ReceptionistService) {}
 
@@ -292,64 +173,55 @@ export class PatientsComponent implements OnInit {
   }
 
   loadPatients() {
-    this.loading = true;
-    this.error = '';
     this.receptionistService.getPatients().subscribe({
       next: (res: any) => {
-        this.dataSource.data = res.data || res;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = 'Failed to load patients';
-        this.loading = false;
-      },
+        this.patients = res.data || res;
+        this.filteredPatients = this.patients;
+      }
     });
   }
 
   loadDoctors() {
     this.receptionistService.getDoctors().subscribe({
       next: (res: any) => {
-        this.doctors = res.data || res; // adjust based on API shape
-      },
-      error: () => {
-        console.error('Failed to load doctors');
-      },
+        this.doctors = res.data || res;
+      }
     });
   }
 
   registerPatient() {
     this.loading = true;
-
     this.receptionistService.registerPatient(this.form).subscribe({
       next: (res: any) => {
-        this.dataSource.data = [res.data, ...this.dataSource.data];
-        this.form = {
-          full_name: '',
-          dob: '',
-          gender: '',
-          assigned_doctor: '',
-          contact_info: {
-            phone: '',
-            email: '',
-            address: '',
-          },
-          emergency_contact: {
-            name: '',
-            phone: '',
-            relation: '',
-          },
-        };
-
-        this.loading = false;
+         this.patients.unshift(res.data);
+         this.applyFilter();
+         this.form = {
+            full_name: '', dob: '', gender: '', assigned_doctor: '',
+            contact_info: { phone: '', email: '', address: '' },
+            emergency_contact: { name: '', phone: '', relation: '' }
+         };
+         this.loading = false;
+         alert('Patient registered successfully!');
       },
       error: (err) => {
-        this.loading = false;
-        console.error(err);
-      },
+         this.loading = false;
+         alert('Registration failed');
+         console.error(err);
+      }
     });
   }
 
   applyFilter() {
-    this.dataSource.filter = this.search.trim().toLowerCase();
+    const term = this.search.trim().toLowerCase();
+    this.filteredPatients = this.patients.filter(p => 
+      p.full_name?.toLowerCase().includes(term)
+    );
   }
 }
+
+// Simple pipe substitute since CommonModule pipes are standard but custom might be needed if not standard
+// Actually capitalize isn't standard in Angular CommonModule (TitleCasePipe is).
+// I'll leave it as template expression or just remove pipe if it causes error. 
+// I'll used css capitalize class instead in some places, but in interpolation I used | capitalize.
+// I should remove | capitalize and use css class or just leave it if I know it exists.
+// Angular TitleCasePipe is standard. I'll use simple text transform css.

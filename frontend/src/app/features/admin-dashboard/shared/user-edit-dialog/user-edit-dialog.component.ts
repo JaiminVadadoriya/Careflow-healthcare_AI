@@ -1,124 +1,143 @@
-import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ModalRef } from 'src/app/shared/ui/modal.service';
 
 @Component({
   selector: 'app-user-edit-dialog',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatIconModule,
-    CommonModule
-  ],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   template: `
-    <h2 mat-dialog-title>{{ data ? 'Edit User' : 'Add User' }}</h2>
-    <form [formGroup]="form" (ngSubmit)="onSave()" class="p-4 flex flex-col gap-4">
-      <mat-form-field >
-        <mat-label>Full Name</mat-label>
-        <input matInput formControlName="full_name" required>
-        <mat-icon matSuffix>person</mat-icon>
-        <mat-error *ngIf="form.get('full_name')?.hasError('required')">Name is required</mat-error>
-      </mat-form-field>
-      
-      <mat-form-field >
-        <mat-label>Email</mat-label>
-        <input matInput formControlName="email" required type="email">
-        <mat-icon matSuffix>email</mat-icon>
-        <mat-error *ngIf="form.get('email')?.hasError('required')">Email is required</mat-error>
-        <mat-error *ngIf="form.get('email')?.hasError('email')">Invalid email</mat-error>
-      </mat-form-field>
-      
-      <mat-form-field >
-        <mat-label>Phone</mat-label>
-        <input matInput formControlName="phone" type="tel">
-        <mat-icon matSuffix>phone</mat-icon>
-      </mat-form-field>
-      
-      <mat-form-field  *ngIf="!data">
-        <mat-label>Password</mat-label>
-        <input matInput formControlName="password" type="password" required>
-        <mat-icon matSuffix>lock</mat-icon>
-        <mat-error *ngIf="form.get('password')?.hasError('required')">Password is required</mat-error>
-        <mat-error *ngIf="form.get('password')?.hasError('minlength')">Password must be at least 6 characters</mat-error>
-      </mat-form-field>
-      
-      <mat-form-field >
-        <mat-label>Role</mat-label>
-        <mat-select formControlName="role" required>
-          <mat-option value="admin">Admin</mat-option>
-          <mat-option value="doctor">Doctor</mat-option>
-          <mat-option value="nurse">Nurse</mat-option>
-          <mat-option value="receptionist">Receptionist</mat-option>
-          <mat-option value="inventory">Inventory</mat-option>
-        </mat-select>
-        <mat-icon matSuffix>work</mat-icon>
-        <mat-error *ngIf="form.get('role')?.hasError('required')">Role is required</mat-error>
-      </mat-form-field>
-      
-      <mat-form-field >
-        <mat-label>Status</mat-label>
-        <mat-select formControlName="status" required>
-          <mat-option value="active">Active</mat-option>
-          <mat-option value="inactive">Inactive</mat-option>
-        </mat-select>
-        <mat-icon matSuffix>toggle_on</mat-icon>
-        <mat-error *ngIf="form.get('status')?.hasError('required')">Status is required</mat-error>
-      </mat-form-field>
-      
-      <div class="flex gap-2 justify-end mt-4">
-        <button mat-button type="button" (click)="onCancel()">Cancel</button>
-        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading">
-          <mat-icon *ngIf="loading" class="animate-spin">refresh</mat-icon>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-[500px] overflow-hidden border border-gray-100 dark:border-gray-700 font-sans">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ data ? 'Edit User' : 'Add User' }}</h2>
+        <button (click)="onCancel()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="p-6">
+        <form [formGroup]="userForm" class="space-y-4">
+          <!-- Full Name -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name *</label>
+            <input formControlName="full_name" type="text" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="John Doe">
+            <div *ngIf="userForm.get('full_name')?.touched && userForm.get('full_name')?.invalid" class="text-red-500 text-xs mt-1">Name is required</div>
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
+            <input formControlName="email" type="email" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="john@example.com">
+             <div *ngIf="userForm.get('email')?.touched && userForm.get('email')?.invalid" class="text-red-500 text-xs mt-1">Valid email is required</div>
+          </div>
+
+          <!-- Phone -->
+           <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
+            <input formControlName="phone" type="tel" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="+1 234 567 890">
+          </div>
+
+          <!-- Password -->
+           <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password {{ data ? '(Leave blank to keep current)' : '*' }}</label>
+            <input formControlName="password" type="password" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+            <div *ngIf="userForm.get('password')?.touched && userForm.get('password')?.invalid" class="text-red-500 text-xs mt-1">Password is required (min 6 chars)</div>
+          </div>
+
+          <!-- Role -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role *</label>
+            <div class="relative">
+              <select formControlName="role" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer">
+                 <option *ngFor="let r of roles" [value]="r.value">{{ r.label }}</option>
+              </select>
+              <span class="material-icons absolute right-3 top-2.5 text-gray-400 pointer-events-none text-sm">expand_more</span>
+            </div>
+          </div>
+
+           <!-- Status -->
+          <div class="flex items-center gap-3 pt-2">
+             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Status:</label>
+             <button type="button" 
+                (click)="toggleStatus()" 
+                [class]="'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ' + (userForm.get('status')?.value === 'active' ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700')">
+                <span [class]="'inline-block h-4 w-4 transform rounded-full bg-white transition-transform ' + (userForm.get('status')?.value === 'active' ? 'translate-x-6' : 'translate-x-1')"></span>
+             </button>
+             <span class="text-sm font-medium text-gray-600 dark:text-gray-400">{{ userForm.get('status')?.value === 'active' ? 'Active' : 'Inactive' }}</span>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3">
+        <button (click)="onCancel()" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Cancel</button>
+        <button (click)="onSave()" [disabled]="userForm.invalid" class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-blue-500/30">
           {{ data ? 'Update' : 'Create' }}
         </button>
       </div>
-    </form>
+    </div>
   `
 })
-export class UserEditDialogComponent {
-  form: FormGroup;
-  loading = false;
+export class UserEditDialogComponent implements OnInit {
+  @Input() data: any;
+  modalRef!: ModalRef;
+  userForm: FormGroup;
   
-  constructor(
-    private fb: FormBuilder,
-    private dialogRef: MatDialogRef<UserEditDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
-    this.form = this.fb.group({
-      full_name: [data?.full_name || '', Validators.required],
-      email: [data?.email || '', [Validators.required, Validators.email]],
-      phone: [data?.phone || ''],
-      password: [data ? '' : '', data ? [] : [Validators.required, Validators.minLength(6)]],
-      role: [data?.role || '', Validators.required],
-      status: [data?.status || 'active', Validators.required]
+  roles = [
+    { value: 'admin', label: 'Admin'},
+    { value: 'doctor', label: 'Doctor'},
+    { value: 'nurse', label: 'Nurse'},
+    { value: 'receptionist', label: 'Receptionist'},
+    { value: 'inventory', label: 'Inventory'},
+  ];
+
+  constructor(private fb: FormBuilder) {
+    this.userForm = this.fb.group({
+      full_name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phone: [''],
+      password: [''], // Validators added dynamically
+      role: ['doctor', Validators.required],
+      status: ['active', Validators.required]
     });
   }
-  
+
+  ngOnInit() {
+    if (this.data) {
+      this.userForm.patchValue(this.data);
+      // Logic: Password optional on edit
+      this.userForm.get('password')?.clearValidators();
+      this.userForm.get('password')?.updateValueAndValidity();
+    } else {
+      // Logic: Password required on create
+      this.userForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+      this.userForm.get('password')?.updateValueAndValidity();
+    }
+  }
+
+  toggleStatus() {
+     const current = this.userForm.get('status')?.value;
+     this.userForm.patchValue({ status: current === 'active' ? 'inactive' : 'active' });
+  }
+
   onSave() {
-    if (this.form.valid) {
-      const formData = { ...this.form.value };
+    if (this.userForm.valid) {
+      const formData = { ...this.userForm.value };
       
       // Remove password if editing and password is empty
       if (this.data && !formData.password) {
         delete formData.password;
       }
       
-      this.dialogRef.close(formData);
+      this.modalRef.close(formData);
     }
   }
-  
+
   onCancel() {
-    this.dialogRef.close();
+    this.modalRef.close();
   }
 }

@@ -1,97 +1,78 @@
 import { Component } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { DashboardLayoutComponent } from 'src/app/shared/layout/dashboard-layout.component';
+import { MetricCardComponent } from 'src/app/shared/ui/metric-card.component';
+import { ActionCardComponent } from 'src/app/shared/ui/action-card.component';
 
 @Component({
   selector: 'app-doctor-dashboard',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatCardModule, MatButtonModule, RouterModule],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    DashboardLayoutComponent,
+    MetricCardComponent,
+    ActionCardComponent
+  ],
   template: `
-    <div class="flex min-h-screen bg-gray-50 dark:bg-gray-900">
-      <!-- Sidebar -->
-      <aside class="w-64 bg-white dark:bg-gray-800 shadow-lg flex flex-col">
-        <div class="h-16 flex items-center justify-center border-b dark:border-gray-700">
-          <span class="text-2xl font-bold text-blue-600">CareFlow</span>
-        </div>
-        <nav class="flex-1 p-4 space-y-2">
-          <a routerLink="/doctor" routerLinkActive="bg-blue-100 dark:bg-blue-900" class="block px-4 py-2 rounded hover:bg-blue-50 dark:hover:bg-blue-900 text-gray-700 dark:text-gray-200 font-medium"><mat-icon>dashboard</mat-icon> Dashboard</a>
-          <a routerLink="/doctor/patients" routerLinkActive="bg-blue-100 dark:bg-blue-900" class="block px-4 py-2 rounded hover:bg-blue-50 dark:hover:bg-blue-900 text-gray-700 dark:text-gray-200 font-medium"><mat-icon>people</mat-icon> Patients</a>
-          <a routerLink="/doctor/appointments" routerLinkActive="bg-blue-100 dark:bg-blue-900" class="block px-4 py-2 rounded hover:bg-blue-50 dark:hover:bg-blue-900 text-gray-700 dark:text-gray-200 font-medium"><mat-icon>event</mat-icon> Appointments</a>
-          <a routerLink="/doctor/notes" routerLinkActive="bg-blue-100 dark:bg-blue-900" class="block px-4 py-2 rounded hover:bg-blue-50 dark:hover:bg-blue-900 text-gray-700 dark:text-gray-200 font-medium"><mat-icon>note</mat-icon> Notes</a>
-        </nav>
-      </aside>
-      <!-- Main Content -->
-      <div class="flex-1 flex flex-col">
-        <!-- Topbar -->
-        <header class="h-16 flex items-center justify-between px-6 bg-white dark:bg-gray-800 shadow border-b dark:border-gray-700">
-          <div class="flex items-center gap-4">
-            <button class="md:hidden p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"><mat-icon>menu</mat-icon></button>
-            <span class="text-lg font-semibold text-gray-800 dark:text-gray-100">Doctor Dashboard</span>
-          </div>
-          <div class="flex items-center gap-4">
-            <button (click)="toggleTheme()" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"><mat-icon>dark_mode</mat-icon></button>
-            <div class="flex items-center gap-2">
-              <mat-icon>account_circle</mat-icon>
-              <span class="text-gray-700 dark:text-gray-200">Dr. Smith</span>
+    <app-dashboard-layout title="Doctor Portal" role="Doctor">
+        <ng-container sidebar-items>
+          <a routerLink="/doctor" routerLinkActive="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <span class="material-icons text-[20px]">dashboard</span> <span>Dashboard</span>
+          </a>
+          <a routerLink="/doctor/patients" routerLinkActive="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <span class="material-icons text-[20px]">people</span> <span>My Patients</span>
+          </a>
+          <a routerLink="/doctor/appointments" routerLinkActive="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <span class="material-icons text-[20px]">calendar_month</span> <span>Schedule</span>
+          </a>
+          <a routerLink="/doctor/notes" routerLinkActive="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <span class="material-icons text-[20px]">edit_note</span> <span>Clinical Notes</span>
+          </a>
+        </ng-container>
+
+        <!-- Main Content -->
+        <div class="space-y-8">
+            <!-- Metrics -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <app-metric-card label="Assigned Patients" value="18" icon="people" color="blue"></app-metric-card>
+                <app-metric-card label="Today's Visits" value="7" icon="event_available" color="green"></app-metric-card>
+                <app-metric-card label="Pending Notes" value="12" icon="description" color="yellow"></app-metric-card>
+                <app-metric-card label="Consultations" value="3" icon="medical_services" color="purple"></app-metric-card>
             </div>
-          </div>
-        </header>
-        <!-- Dashboard Content -->
-        <main class="flex-1 p-8 overflow-y-auto">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <!-- Metrics Cards -->
-            <mat-card class="flex flex-col items-center p-6 bg-blue-50 dark:bg-blue-900">
-              <mat-icon class="text-blue-600 text-4xl mb-2">people</mat-icon>
-              <div class="text-2xl font-bold">18</div>
-              <div class="text-gray-600 dark:text-gray-300">Patients</div>
-            </mat-card>
-            <mat-card class="flex flex-col items-center p-6 bg-green-50 dark:bg-green-900">
-              <mat-icon class="text-green-600 text-4xl mb-2">event</mat-icon>
-              <div class="text-2xl font-bold">7</div>
-              <div class="text-gray-600 dark:text-gray-300">Appointments</div>
-            </mat-card>
-            <mat-card class="flex flex-col items-center p-6 bg-yellow-50 dark:bg-yellow-900">
-              <mat-icon class="text-yellow-600 text-4xl mb-2">note</mat-icon>
-              <div class="text-2xl font-bold">12</div>
-              <div class="text-gray-600 dark:text-gray-300">Notes</div>
-            </mat-card>
-            <mat-card class="flex flex-col items-center p-6 bg-purple-50 dark:bg-purple-900">
-              <mat-icon class="text-purple-600 text-4xl mb-2">chat</mat-icon>
-              <div class="text-2xl font-bold">3</div>
-              <div class="text-gray-600 dark:text-gray-300">Collaborations</div>
-            </mat-card>
-          </div>
-          <!-- Quick Links -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <mat-card class="flex items-center gap-4 p-4 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-800" routerLink="/doctor/patients">
-              <mat-icon class="text-blue-600">people</mat-icon>
-              <span class="font-medium">View Patients</span>
-            </mat-card>
-            <mat-card class="flex items-center gap-4 p-4 cursor-pointer hover:bg-green-100 dark:hover:bg-green-800" routerLink="/doctor/appointments">
-              <mat-icon class="text-green-600">event</mat-icon>
-              <span class="font-medium">View Appointments</span>
-            </mat-card>
-            <mat-card class="flex items-center gap-4 p-4 cursor-pointer hover:bg-yellow-100 dark:hover:bg-yellow-800" routerLink="/doctor/notes">
-              <mat-icon class="text-yellow-600">note</mat-icon>
-              <span class="font-medium">Manage Notes</span>
-            </mat-card>
-            <mat-card class="flex items-center gap-4 p-4 cursor-pointer hover:bg-purple-100 dark:hover:bg-purple-800" routerLink="/doctor/collaboration">
-              <mat-icon class="text-purple-600">chat</mat-icon>
-              <span class="font-medium">Collaborate</span>
-            </mat-card>
-          </div>
-          <!-- Placeholder for child routes -->
-          <router-outlet></router-outlet>
-        </main>
-      </div>
-    </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                 <!-- Actions -->
+                 <div class="lg:col-span-2 space-y-6">
+                      <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Daily Operations</h2>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <app-action-card label="View Patient List" description="Access medical records" icon="people" route="/doctor/patients" color="blue"></app-action-card>
+                        <app-action-card label="My Schedule" description="Manage appointments" icon="calendar_month" route="/doctor/appointments" color="green"></app-action-card>
+                        <app-action-card label="Write Notes" description="Update clinical documentation" icon="edit_note" route="/doctor/notes" color="yellow"></app-action-card>
+                        <app-action-card label="Collaboration" description="Chat with other staff" icon="forum" route="/doctor/collaboration" color="purple"></app-action-card>
+                      </div>
+                 </div>
+
+                 <!-- Upcoming Schedule (Mini) -->
+                 <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm h-fit">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Upcoming</h3>
+                    <div class="space-y-4">
+                        <div class="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500">
+                           <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">10:00 AM - Consultation</p>
+                           <p class="text-xs text-gray-500 dark:text-gray-400">Sarah Johnson - Room 302</p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 border-l-4 border-gray-300">
+                           <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">11:30 AM - Follow-up</p>
+                           <p class="text-xs text-gray-500 dark:text-gray-400">Michael Brown - Room 104</p>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+          
+            <router-outlet></router-outlet>
+        </div>
+    </app-dashboard-layout>
   `
 })
-export class DoctorDashboardComponent {
-  toggleTheme() {
-    document.body.classList.toggle('dark');
-  }
-} 
+export class DoctorDashboardComponent {} 

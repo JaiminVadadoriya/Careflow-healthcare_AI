@@ -1,115 +1,105 @@
 <!-- 🌗 Toggle Button -->
-<!-- <button
-  (click)="toggleTheme()"
-  class="fixed top-4 right-4 z-50 text-2xl p-2 bg-gray-200 dark:bg-gray-700 dark:text-white rounded-full shadow-md hover:scale-105 transition"
->
-
-  
-</button> -->
 <dark-mode-button class="fixed top-4 right-4 z-50 text-2xl p-2 bg-gray-200 dark:bg-gray-700 dark:text-white rounded-full shadow-md hover:scale-105 transition"></dark-mode-button>
 
 <!-- 💻 Page Layout -->
-<div
-  class="min-h-screen flex flex-col md:flex-row items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 gap-4 transition-colors duration-500"
->
-  <!-- 🖼️ Image Section -->
-  <div class="hidden md:block md:w-1/2 ">
-    <img
-      ngSrc="assets/images/login.png"
-      width="1080"
-      height="1080"
-      alt="Login Illustration"
-      class="rounded-2xl shadow-2xl w-full h-full object-cover"
-    />
+<div class="min-h-screen flex flex-col md:flex-row items-center justify-center bg-gray-50 dark:bg-gray-900 p-6 gap-8 transition-colors duration-500 font-sans">
+  
+  <!-- 🖼️ Image Section (Hidden on mobile) -->
+  <div class="hidden md:block w-1/2 max-w-2xl">
+    <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white dark:border-gray-800">
+       <img
+         ngSrc="assets/images/login.png"
+         width="1080"
+         height="1080"
+         alt="Login Illustration"
+         class="w-full h-full object-cover transform hover:scale-105 transition duration-700"
+         priority
+       />
+       <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
+          <div class="text-white">
+             <h2 class="text-3xl font-bold mb-2">Welcome to CareFlow</h2>
+             <p class="text-gray-200">The future of healthcare management is here.</p>
+          </div>
+       </div>
+    </div>
   </div>
 
   <!-- 📄 Login Form -->
-  <div
-    @fadeIn
-    class="w-full md:w-1/2 max-w-md bg-white dark:bg-gray-900 p-10 rounded-3xl shadow-xl transition-all duration-500 ease-in-out"
-  >
-    <form class="space-y-6" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <!-- Header -->
-      <div class="text-center">
-        <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Welcome Back</h2>
-        <p class="text-sm text-gray-500 dark:text-gray-300">Please login to your account</p>
-      </div>
+  <div @fadeIn class="w-full md:w-1/2 max-w-md">
+    <div class="bg-white dark:bg-gray-800 p-8 sm:p-10 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-300">
+       
+       <div class="mb-10 text-center">
+         <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
+         </div>
+         <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Welcome Back</h2>
+         <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Please sign in to access your dashboard</p>
+       </div>
 
-      <!-- Email Field -->
-      <mat-form-field class="w-full" floatLabel="always" >
-        <mat-label>Email</mat-label>
-        <input
-          matInput
-          placeholder="Ex. nik@gmail.com"
-          type="email"
-          formControlName="email"
-          [errorStateMatcher]="matcher"
-          autofocus
-        />
-        <mat-icon matPrefix>mail</mat-icon>
-        @if (loginForm.controls['email'].hasError('email') &&
-        !loginForm.controls['email'].hasError('required')) {
-        <mat-error>Please enter a valid email address</mat-error>
-        } @if (loginForm.controls['email'].hasError('required')) {
-        <mat-error>Email is <strong>required</strong></mat-error>
-        }
-      </mat-form-field>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        
+        <!-- Email Field -->
+        <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
+            <div class="relative">
+                <input 
+                  type="email" 
+                  formControlName="email"
+                  placeholder="name@company.com"
+                  [ngClass]="{'border-red-500 focus:ring-red-500': submitted && loginForm.get('email')?.invalid}"
+                  class="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+                />
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                </div>
+            </div>
+            <p *ngIf="submitted && loginForm.get('email')?.hasError('required')" class="text-xs text-red-500 mt-1">Email is required</p>
+            <p *ngIf="submitted && loginForm.get('email')?.hasError('email')" class="text-xs text-red-500 mt-1">Please enter a valid email</p>
+        </div>
 
-      <!-- Password Field -->
-      <mat-form-field class="w-full" >
-        <mat-label>Password</mat-label>
-        <input
-          matInput
-          placeholder="Password"
-          [type]="hide ? 'password' : 'text'"
-          formControlName="password"
-          [errorStateMatcher]="matcher"
-          required
-        />
-        <mat-icon matPrefix>lock</mat-icon>
-        <mat-icon matSuffix class="cursor-pointer" (click)="hide = !hide">{{
-          hide ? "visibility_off" : "visibility"
-        }}</mat-icon>
-        @if (loginForm.controls['password'].hasError('required')) {
-        <mat-error>Enter your password</mat-error>
-        }
-      </mat-form-field>
+        <!-- Password Field -->
+        <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+            <div class="relative">
+                <input 
+                  [type]="hide ? 'password' : 'text'" 
+                  formControlName="password"
+                  placeholder="••••••••"
+                  class="w-full pl-10 pr-10 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-400 dark:placeholder-gray-500"
+                />
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                </div>
+                <button type="button" (click)="hide = !hide" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                    <svg *ngIf="hide" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                    <svg *ngIf="!hide" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                </button>
+            </div>
+            <p *ngIf="submitted && loginForm.get('password')?.hasError('required')" class="text-xs text-red-500 mt-1">Password is required</p>
+        </div>
 
-      <!-- Error Message -->
-      @if (errorMsg) {
-      <div
-        class="text-red-600 text-sm bg-red-100 dark:bg-red-300/10 dark:border dark:border-red-500 dark:text-red-300 rounded p-2 text-center"
-      >
-        {{ errorMsg }}
-      </div>
-      }
+        <!-- Error Alert -->
+        <div *ngIf="errorMsg" class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm flex items-center gap-2">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>{{ errorMsg }}</span>
+        </div>
 
-      <!-- Submit Button -->
-      <button
-        mat-flat-button
-        color="primary"
-        type="submit"
-        [disabled]="loginForm.invalid || loading"
-        class="w-full py-3 rounded-lg font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition duration-300 flex justify-center items-center"
-      >
-        <mat-spinner
-          *ngIf="loading"
-          diameter="20"
-          strokeWidth="3"
-        ></mat-spinner>
-        <span *ngIf="!loading">Login</span>
-      </button>
-
-      <!-- Signup Link -->
-      <!-- <div class="text-center text-sm text-gray-500 dark:text-gray-400">
-        Don’t have an account?
-        <a
-          routerLink="signup"
-          href="signup"
-          class="text-indigo-600 hover:underline"
-          >Sign up</a
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="loading"
+          class="w-full py-4 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-600/30 flex justify-center items-center gap-2"
         >
-      </div> -->
-    </form>
+          <svg *ngIf="loading" class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          <span>{{ loading ? 'Signing in...' : 'Sign In' }}</span>
+        </button>
+        
+        <!-- Signup Link -->
+        <p class="text-center text-sm text-gray-500 dark:text-gray-400">
+           Don't have an account? <a routerLink="/signup" class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">Sign up</a>
+        </p>
+
+      </form>
+    </div>
   </div>
 </div>

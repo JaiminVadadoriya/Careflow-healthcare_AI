@@ -1,10 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { DoctorService } from '../doctor.service';
 
 @Component({
@@ -12,35 +8,68 @@ import { DoctorService } from '../doctor.service';
   standalone: true,
   imports: [
     CommonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatCardModule,
     FormsModule
   ],
   template: `
-    <div class="p-6 max-w-2xl mx-auto">
-      <h2 class="text-2xl font-bold mb-4">Patient Notes</h2>
-      <mat-card class="mb-4" *ngFor="let note of notes; let i = index">
-        <div class="flex justify-between items-center mb-2">
-          <div class="font-semibold">Note #{{ i + 1 }}</div>
-          <button mat-button color="primary" (click)="editNote(i)">Edit</button>
-        </div>
-        <div class="text-gray-700">{{ note.text }}</div>
-        <div class="text-xs text-gray-400 mt-2">{{ note.date }}</div>
-      </mat-card>
-      <mat-card>
-        <form (ngSubmit)="addOrUpdateNote()" class="flex flex-col gap-4">
-          <mat-form-field >
-            <mat-label>New Note</mat-label>
-            <textarea matInput [(ngModel)]="noteText" name="noteText" required></textarea>
-          </mat-form-field>
-          <div class="flex gap-2 justify-end">
-            <button mat-button type="button" (click)="resetForm()">Cancel</button>
-            <button mat-raised-button color="primary" type="submit">{{ editIndex === -1 ? 'Add Note' : 'Update Note' }}</button>
-          </div>
+    <div class="p-6 max-w-4xl mx-auto">
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Patient Notes</h2>
+
+      <!-- Add/Edit Note Form -->
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{{ editIndex === -1 ? 'Add New Note' : 'Edit Note' }}</h3>
+        <form (ngSubmit)="addOrUpdateNote()">
+           <div class="mb-4">
+             <textarea 
+               [(ngModel)]="noteText" 
+               name="noteText" 
+               required
+               rows="4"
+               class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-y placeholder-gray-400"
+               placeholder="Enter clinical notes, observations, or updates..."
+             ></textarea>
+           </div>
+           
+           <div class="flex justify-end gap-3">
+             <button type="button" (click)="resetForm()" *ngIf="noteText" class="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors bg-transparent font-medium">Clear</button>
+             <button type="submit" [disabled]="!noteText.trim() || loading" class="px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                <span class="material-icons text-sm" *ngIf="!loading">save</span>
+                <span class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" *ngIf="loading"></span>
+                {{ editIndex === -1 ? 'Save Note' : 'Update Note' }}
+             </button>
+           </div>
         </form>
-      </mat-card>
+      </div>
+
+      <!-- Notes List -->
+      <div class="space-y-4">
+        <div *ngIf="loading && notes.length === 0" class="flex justify-center py-8">
+           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+
+        <div *ngFor="let note of notes; let i = index" class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow relative group">
+           <!-- Header -->
+           <div class="flex justify-between items-start mb-3">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-xs">
+                  {{ i + 1 }}
+                </div>
+                <span class="text-xs text-gray-400 font-medium">{{ note.date || 'Just now' }}</span>
+              </div>
+              <button (click)="editNote(i)" class="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
+                <span class="material-icons text-[20px]">edit</span>
+              </button>
+           </div>
+           
+           <!-- Content -->
+           <div class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap pl-10">{{ note.text }}</div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!loading && notes.length === 0" class="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
+           <span class="material-icons text-4xl text-gray-300 dark:text-gray-600 mb-2">note_add</span>
+           <p class="text-gray-500 dark:text-gray-400">No notes found for this patient.</p>
+        </div>
+      </div>
     </div>
   `
 })
@@ -68,7 +97,7 @@ export class NotesComponent implements OnInit {
         this.notes = res.data?.notes || [];
         this.loading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         this.error = 'Failed to load notes';
         this.loading = false;
       }
@@ -76,6 +105,8 @@ export class NotesComponent implements OnInit {
   }
 
   addOrUpdateNote() {
+    if (!this.noteText.trim()) return;
+
     if (this.editIndex === -1) {
       this.loading = true;
       this.doctorService.addNoteToPatient(this.patientId, { text: this.noteText }).subscribe({
@@ -86,10 +117,11 @@ export class NotesComponent implements OnInit {
         },
         error: () => {
           this.loading = false;
+          alert('Failed to save note');
         }
       });
     } else {
-      // For edit, you may need a separate endpoint
+      // Local update for now as instructed, or assumed API pattern
       this.notes[this.editIndex].text = this.noteText;
       this.editIndex = -1;
       this.noteText = '';
@@ -99,10 +131,12 @@ export class NotesComponent implements OnInit {
   editNote(i: number) {
     this.noteText = this.notes[i].text;
     this.editIndex = i;
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   resetForm() {
     this.noteText = '';
     this.editIndex = -1;
   }
-} 
+}

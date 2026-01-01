@@ -1,60 +1,89 @@
 import { Component, OnInit } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ReceptionistService } from '../receptionist.service';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-receptionist-checkin',
   standalone: true,
   imports: [
     CommonModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTableModule,
-    FormsModule,
-    MatFormField,
-    MatLabel,
-    
+    FormsModule
   ],
   template: `
-    <div class="p-6 max-w-3xl mx-auto">
-      <h2 class="text-2xl font-bold mb-4">Patient Check-In</h2>
-      <mat-form-field  class="w-full md:w-1/3 mb-4">
-        <mat-label>Search Patients</mat-label>
-        <input matInput [(ngModel)]="search" (ngModelChange)="applyFilter()" placeholder="Search by name or ID">
-      </mat-form-field>
-      <div class="overflow-x-auto">
-        <table mat-table [dataSource]="dataSource" class="min-w-full bg-white dark:bg-gray-800 rounded shadow">
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Name</th>
-            <td mat-cell *matCellDef="let patient">{{ patient.full_name }}</td>
-          </ng-container>
-          <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>Status</th>
-            <td mat-cell *matCellDef="let patient">{{ patient.current_status || 'Not Admitted' }}</td>
-          </ng-container>
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
-            <td mat-cell *matCellDef="let patient">
-              <button mat-button color="primary" (click)="checkIn(patient)" *ngIf="patient.current_status !== 'admitted'">Check-In</button>
-              <span *ngIf="patient.current_status === 'admitted'" class="text-green-600">Admitted</span>
-            </td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
+    <div class="p-6 max-w-5xl mx-auto">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+           <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Patient Check-In</h2>
+           <p class="text-sm text-gray-500 dark:text-gray-400">Mark patients as arrived for their appointments</p>
+        </div>
+        
+        <!-- Search -->
+        <div class="relative w-full max-w-xs">
+           <input 
+             type="text" 
+             [(ngModel)]="search" 
+             (ngModelChange)="applyFilter()" 
+             placeholder="Search by name or ID..."
+             class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
+           >
+           <span class="material-icons absolute left-3 top-3 text-gray-400">search</span>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="loading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+
+      <!-- Table -->
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden" *ngIf="!loading">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
+              <tr>
+                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Name</th>
+                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Status</th>
+                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+               <tr *ngFor="let patient of filteredPatients" class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                 <td class="p-4 font-medium text-gray-900 dark:text-white">{{ patient.full_name }}</td>
+                 <td class="p-4">
+                    <span [class]="'px-2.5 py-1 rounded-full text-xs font-medium border ' + 
+                       (patient.current_status === 'admitted' 
+                          ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800' 
+                          : 'bg-gray-50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700')">
+                       {{ patient.current_status === 'admitted' ? 'Admitted' : (patient.current_status || 'Not Admitted') }}
+                    </span>
+                 </td>
+                 <td class="p-4 text-right">
+                    <button 
+                       *ngIf="patient.current_status !== 'admitted'"
+                       (click)="checkIn(patient)"
+                       class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm"
+                    >
+                       Check In
+                    </button>
+                    <span *ngIf="patient.current_status === 'admitted'" class="text-green-600 dark:text-green-400 flex items-center justify-end gap-1 text-sm font-medium">
+                       <span class="material-icons text-sm">check_circle</span> Checked In
+                    </span>
+                 </td>
+               </tr>
+               <tr *ngIf="filteredPatients.length === 0">
+                 <td colspan="3" class="p-8 text-center text-gray-500 dark:text-gray-400">No patients found.</td>
+               </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   `
 })
 export class CheckinComponent implements OnInit {
-  displayedColumns: string[] = ['name', 'status', 'actions'];
-  dataSource = new MatTableDataSource<any>([]);
+  patients: any[] = [];
+  filteredPatients: any[] = [];
   search = '';
   loading = false;
   error = '';
@@ -70,10 +99,11 @@ export class CheckinComponent implements OnInit {
     this.error = '';
     this.receptionistService.getPatients().subscribe({
       next: (res: any) => {
-        this.dataSource.data = res.data || res;
+        this.patients = res.data || res;
+        this.filteredPatients = this.patients;
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.error = 'Failed to load patients';
         this.loading = false;
       }
@@ -81,19 +111,27 @@ export class CheckinComponent implements OnInit {
   }
 
   checkIn(patient: any) {
-    this.loading = true;
+    // Optimistic update
+    const previousStatus = patient.current_status;
+    patient.current_status = 'admitted';
+
     this.receptionistService.checkInPatient(patient._id).subscribe({
       next: () => {
-        patient.current_status = 'admitted';
-        this.loading = false;
+        // success
       },
       error: () => {
-        this.loading = false;
+        // revert
+        patient.current_status = previousStatus;
+        alert('Check-in failed');
       }
     });
   }
 
   applyFilter() {
-    this.dataSource.filter = this.search.trim().toLowerCase();
+    const term = this.search.trim().toLowerCase();
+    this.filteredPatients = this.patients.filter(p => 
+       p.full_name?.toLowerCase().includes(term) ||
+       p._id?.toLowerCase().includes(term)
+    );
   }
-} 
+}

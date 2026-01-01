@@ -1,95 +1,79 @@
 import { Component } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { DarkModeComponent } from "../../helpers/dark-mode-button/dark-mode-button.component";
+import { RouterModule } from '@angular/router';
+import { DashboardLayoutComponent } from 'src/app/shared/layout/dashboard-layout.component';
+import { MetricCardComponent } from 'src/app/shared/ui/metric-card.component';
+import { ActionCardComponent } from 'src/app/shared/ui/action-card.component';
 
 @Component({
   selector: 'app-receptionist-dashboard',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatCardModule, MatButtonModule, RouterModule, DarkModeComponent],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    DashboardLayoutComponent,
+    MetricCardComponent,
+    ActionCardComponent
+  ],
   template: `
-    <div class="flex min-h-screen bg-gray-50 dark:bg-gray-900">
-      <!-- Sidebar -->
-      <aside class="w-64 bg-white dark:bg-gray-800 shadow-lg flex flex-col">
-        <div class="h-16 flex items-center justify-center border-b dark:border-gray-700">
-          <span class="text-2xl font-bold text-blue-600">CareFlow</span>
-        </div>
-        <nav class="flex-1 p-4 space-y-2">
-          <a routerLink="/receptionist" routerLinkActive="bg-blue-100 dark:bg-blue-900" class="block px-4 py-2 rounded hover:bg-blue-50 dark:hover:bg-blue-900 text-gray-700 dark:text-gray-200 font-medium"><mat-icon>dashboard</mat-icon> Dashboard</a>
-          <a routerLink="/receptionist/patients" routerLinkActive="bg-blue-100 dark:bg-blue-900" class="block px-4 py-2 rounded hover:bg-blue-50 dark:hover:bg-blue-900 text-gray-700 dark:text-gray-200 font-medium"><mat-icon>people</mat-icon> Patients</a>
-          <a routerLink="/receptionist/appointments" routerLinkActive="bg-blue-100 dark:bg-blue-900" class="block px-4 py-2 rounded hover:bg-blue-50 dark:hover:bg-blue-900 text-gray-700 dark:text-gray-200 font-medium"><mat-icon>event</mat-icon> Appointments</a>
-          <a routerLink="/receptionist/checkin" routerLinkActive="bg-blue-100 dark:bg-blue-900" class="block px-4 py-2 rounded hover:bg-blue-50 dark:hover:bg-blue-900 text-gray-700 dark:text-gray-200 font-medium"><mat-icon>login</mat-icon> Check-In/Out</a>
-        </nav>
-      </aside>
-      <!-- Main Content -->
-      <div class="flex-1 flex flex-col">
-        <!-- Topbar -->
-        <header class="h-16 flex items-center justify-between px-6 bg-white dark:bg-gray-800 shadow border-b dark:border-gray-700">
-          <div class="flex items-center gap-4">
-            <button class="md:hidden p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"><mat-icon>menu</mat-icon></button>
-            <span class="text-lg font-semibold text-gray-800 dark:text-gray-100">Receptionist Dashboard</span>
-          </div>
-          <div class="flex items-center gap-4">
-            <!-- <button (click)="toggleTheme()" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"><mat-icon>dark_mode</mat-icon></button> -->
-            <dark-mode-button></dark-mode-button>
-            <div class="flex items-center gap-2">
-              <mat-icon>account_circle</mat-icon>
-              <span class="text-gray-700 dark:text-gray-200">Receptionist</span>
+    <app-dashboard-layout title="Front Desk" role="Receptionist">
+        <!-- Sidebar -->
+        <ng-container sidebar-items>
+          <a routerLink="/receptionist" routerLinkActive="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold" [routerLinkActiveOptions]="{exact: true}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <span class="material-icons text-[20px]">dashboard</span> <span>Dashboard</span>
+          </a>
+          <a routerLink="/receptionist/patients" routerLinkActive="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <span class="material-icons text-[20px]">person_add</span> <span>Registration</span>
+          </a>
+          <a routerLink="/receptionist/appointments" routerLinkActive="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <span class="material-icons text-[20px]">calendar_today</span> <span>Appointments</span>
+          </a>
+          <a routerLink="/receptionist/checkin" routerLinkActive="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <span class="material-icons text-[20px]">door_front</span> <span>Admissions</span>
+          </a>
+        </ng-container>
+
+        <!-- Main Content -->
+        <div class="space-y-8">
+            <!-- Metrics -->
+             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <app-metric-card label="Today's Appointments" value="24" icon="calendar_today" color="blue"></app-metric-card>
+                <app-metric-card label="Currently Waiting" value="5" icon="hourglass_empty" color="yellow"></app-metric-card>
+                <app-metric-card label="Checked In" value="15" icon="check_circle" color="green"></app-metric-card>
+                <app-metric-card label="New Registrations" value="3" icon="person_add" color="purple"></app-metric-card>
             </div>
-          </div>
-        </header>
-        <!-- Dashboard Content -->
-        <main class="flex-1 p-8 overflow-y-auto">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <!-- Metrics Cards -->
-            <mat-card class="flex flex-col items-center p-6 bg-blue-50 dark:bg-blue-900">
-              <mat-icon class="text-blue-600 text-4xl mb-2">people</mat-icon>
-              <div class="text-2xl font-bold">24</div>
-              <div class="text-gray-600 dark:text-gray-300">Patients</div>
-            </mat-card>
-            <mat-card class="flex flex-col items-center p-6 bg-green-50 dark:bg-green-900">
-              <mat-icon class="text-green-600 text-4xl mb-2">event</mat-icon>
-              <div class="text-2xl font-bold">15</div>
-              <div class="text-gray-600 dark:text-gray-300">Appointments</div>
-            </mat-card>
-            <mat-card class="flex flex-col items-center p-6 bg-yellow-50 dark:bg-yellow-900">
-              <mat-icon class="text-yellow-600 text-4xl mb-2">login</mat-icon>
-              <div class="text-2xl font-bold">8</div>
-              <div class="text-gray-600 dark:text-gray-300">Check-Ins</div>
-            </mat-card>
-            <mat-card class="flex flex-col items-center p-6 bg-purple-50 dark:bg-purple-900">
-              <mat-icon class="text-purple-600 text-4xl mb-2">assignment</mat-icon>
-              <div class="text-2xl font-bold">3</div>
-              <div class="text-gray-600 dark:text-gray-300">Shifts</div>
-            </mat-card>
-          </div>
-          <!-- Quick Links -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <mat-card class="flex items-center gap-4 p-4 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-800" routerLink="/receptionist/patients">
-              <mat-icon class="text-blue-600">people</mat-icon>
-              <span class="font-medium">Register Patient</span>
-            </mat-card>
-            <mat-card class="flex items-center gap-4 p-4 cursor-pointer hover:bg-green-100 dark:hover:bg-green-800" routerLink="/receptionist/appointments">
-              <mat-icon class="text-green-600">event</mat-icon>
-              <span class="font-medium">Book Appointment</span>
-            </mat-card>
-            <mat-card class="flex items-center gap-4 p-4 cursor-pointer hover:bg-yellow-100 dark:hover:bg-yellow-800" routerLink="/receptionist/checkin">
-              <mat-icon class="text-yellow-600">login</mat-icon>
-              <span class="font-medium">Check-In/Out</span>
-            </mat-card>
-          </div>
-          <!-- Placeholder for child routes -->
-          <router-outlet></router-outlet>
-        </main>
-      </div>
-    </div>
+
+            <!-- Front Desk Actions -->
+             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                 <div class="lg:col-span-2 space-y-6">
+                     <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Quick Actions</h2>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <app-action-card label="New Patient" description="Register a walk-in" icon="person_add" route="/receptionist/patients" color="blue"></app-action-card>
+                        <app-action-card label="Book Appointment" description="Schedule visit" icon="edit_calendar" route="/receptionist/appointments" color="green"></app-action-card>
+                        <app-action-card label="Check-In Patient" description="Mark arrival" icon="login" route="/receptionist/checkin" color="yellow"></app-action-card>
+                        <app-action-card label="Find Doctor" description="View doctor availability" icon="search" route="/receptionist/doctors" color="gray"></app-action-card>
+                     </div>
+                 </div>
+
+                 <!-- Queue Status (Mini) -->
+                 <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm h-fit">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Waiting Room</h3>
+                    <div class="space-y-3">
+                       <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">#04: John Smith</span>
+                          <span class="text-xs text-orange-500 bg-orange-50 dark:bg-orange-900/20 px-2 py-1 rounded">15m wait</span>
+                       </div>
+                       <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">#05: Alice Doe</span>
+                          <span class="text-xs text-green-500 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded">2m wait</span>
+                       </div>
+                    </div>
+                </div>
+            </div>
+          
+            <router-outlet></router-outlet>
+        </div>
+    </app-dashboard-layout>
   `
 })
-export class ReceptionistDashboardComponent {
-  toggleTheme() {
-    document.body.classList.toggle('dark');
-  }
-} 
+export class ReceptionistDashboardComponent {}

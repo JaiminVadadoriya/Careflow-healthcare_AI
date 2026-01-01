@@ -2,85 +2,83 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NurseService } from '../nurse.service';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-vitals',
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <h2>🩺 Enter Patient Vitals</h2>
+    <div class="p-6 max-w-2xl mx-auto">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-8">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+           <span class="material-icons text-blue-600 dark:text-blue-400">monitor_heart</span> Record Vitals
+        </h2>
 
-<div *ngIf="successMessage" class="alert alert-success">
-  {{ successMessage }}
-</div>
-<div *ngIf="errorMessage" class="alert alert-danger">
-  {{ errorMessage }}
-</div>
+        <!-- Alerts -->
+        <div *ngIf="successMessage" class="mb-6 p-4 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-xl border border-green-200 dark:border-green-800 flex items-center gap-2">
+           <span class="material-icons text-xl">check_circle</span> {{ successMessage }}
+        </div>
+        <div *ngIf="errorMessage" class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-xl border border-red-200 dark:border-red-800 flex items-center gap-2">
+           <span class="material-icons text-xl">error</span> {{ errorMessage }}
+        </div>
 
-<form (ngSubmit)="submitVitals()">
-  <label>
-    Patient ID:
-    <input type="text" [(ngModel)]="patientId" name="patientId" required />
-  </label><br />
+        <form (ngSubmit)="submitVitals()" class="space-y-5">
+           <!-- Patient ID -->
+           <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Patient ID</label>
+              <input 
+                type="text" 
+                [(ngModel)]="patientId" 
+                name="patientId" 
+                required 
+                placeholder="Enter Patient ID"
+                class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              />
+           </div>
 
-  <label>
-    Blood Pressure:
-    <input type="text" [(ngModel)]="vitals.blood_pressure" name="blood_pressure" required />
-  </label><br />
+           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <!-- BP -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Blood Pressure</label>
+                <input type="text" [(ngModel)]="vitals.blood_pressure" name="bp" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="120/80">
+              </div>
+              <!-- HR -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Heart Rate (bpm)</label>
+                <input type="number" [(ngModel)]="vitals.heart_rate" name="hr" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="72">
+              </div>
+              <!-- Temp -->
+               <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Temperature (°C)</label>
+                <input type="number" step="0.1" [(ngModel)]="vitals.temperature" name="temp" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="36.5">
+              </div>
+              <!-- O2 -->
+               <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Oxygen Saturation (%)</label>
+                <input type="number" [(ngModel)]="vitals.oxygen_saturation" name="o2" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="98">
+              </div>
+           </div>
 
-  <label>
-    Heart Rate (bpm):
-    <input type="number" [(ngModel)]="vitals.heart_rate" name="heart_rate" required />
-  </label><br />
-
-  <label>
-    Temperature (°C):
-    <input type="number" step="0.1" [(ngModel)]="vitals.temperature" name="temperature" required />
-  </label><br />
-
-  <label>
-    Oxygen Saturation (%):
-    <input type="number" [(ngModel)]="vitals.oxygen_saturation" name="oxygen_saturation" required />
-  </label><br />
-
-  <button type="submit">Submit Vitals</button>
-</form>
-
-  `,
-  styles: [`form {
-  max-width: 500px;
-  margin-top: 20px;
-}
-input {
-  width: 100%;
-  padding: 6px;
-  margin: 5px 0 10px 0;
-}
-.alert {
-  padding: 10px;
-  margin: 10px 0;
-}
-.alert-success {
-  background-color: #d4edda;
-  border-left: 5px solid #28a745;
-}
-.alert-danger {
-  background-color: #f8d7da;
-  border-left: 5px solid #dc3545;
-}
-`]
+           <div class="pt-4">
+              <button 
+                type="submit" 
+                [disabled]="!patientId || loading"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                 {{ loading ? 'Saving...' : 'Submit Vitals' }}
+              </button>
+           </div>
+        </form>
+      </div>
+    </div>
+  `
 })
 export class VitalsComponent {
   patientId = '';
-  vitals = {
-    blood_pressure: '',
-    heart_rate: '',
-    temperature: '',
-    oxygen_saturation: ''
-  };
+  vitals = { blood_pressure: '', heart_rate: '', temperature: '', oxygen_saturation: '' };
   successMessage = '';
   errorMessage = '';
+  loading = false;
 
   constructor(private nurseService: NurseService) {}
 
@@ -90,22 +88,25 @@ export class VitalsComponent {
       return;
     }
 
+    this.loading = true;
+    this.successMessage = '';
+    this.errorMessage = '';
+
     this.nurseService.addPatientVitals(this.patientId, this.vitals).subscribe({
-      next: (res: any) => {
+      next: () => {
         this.successMessage = 'Vitals submitted successfully.';
-        this.errorMessage = '';
-        this.vitals = {
-          blood_pressure: '',
-          heart_rate: '',
-          temperature: '',
-          oxygen_saturation: ''
-        };
-        this.patientId = '';
+        this.resetForm();
+        this.loading = false;
       },
-      error: (err: HttpErrorResponse) => {
-        this.successMessage = '';
+      error: (err) => {
         this.errorMessage = err.error?.message || 'Submission failed.';
+        this.loading = false;
       }
     });
+  }
+
+  resetForm() {
+    this.vitals = { blood_pressure: '', heart_rate: '', temperature: '', oxygen_saturation: '' };
+    this.patientId = '';
   }
 }

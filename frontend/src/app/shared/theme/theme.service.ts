@@ -6,30 +6,42 @@ import { Injectable } from '@angular/core';
 })
 export class ThemeService {
   private readonly themeKey = 'theme';
+  private mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+  constructor() {
+    // Listen for system theme changes
+    this.mediaQuery.addEventListener('change', () => {
+      if (this.getCurrentTheme() === 'system') {
+        this.applyTheme('system');
+      }
+    });
+  }
 
   initTheme() {
-    const userTheme = localStorage.getItem(this.themeKey);
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    if (userTheme === 'dark' || (!userTheme && systemPrefersDark)) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    const savedTheme = this.getCurrentTheme();
+    this.applyTheme(savedTheme);
   }
 
   setTheme(theme: 'light' | 'dark' | 'system') {
-    if (theme === 'system') {
-      localStorage.removeItem(this.themeKey);
-      this.initTheme();
-      return;
-    }
-
     localStorage.setItem(this.themeKey, theme);
-    document.documentElement.classList.toggle('dark', theme === 'dark');
+    this.applyTheme(theme);
   }
 
   getCurrentTheme(): 'light' | 'dark' | 'system' {
-    return (localStorage.getItem(this.themeKey) as any) || 'system';
+    const theme = localStorage.getItem(this.themeKey);
+    return (theme as 'light' | 'dark' | 'system') || 'system';
+  }
+
+  private applyTheme(theme: 'light' | 'dark' | 'system') {
+    const root = document.documentElement;
+    const isDark =
+      theme === 'dark' ||
+      (theme === 'system' && this.mediaQuery.matches);
+
+    if (isDark) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
   }
 }

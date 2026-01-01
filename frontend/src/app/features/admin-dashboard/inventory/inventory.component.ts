@@ -1,238 +1,125 @@
-import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
-import { InventoryService } from './inventory.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatCardModule } from '@angular/material/card';
+import { FormsModule } from '@angular/forms';
+import { InventoryService } from './inventory.service';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
-import { catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { ModalService } from 'src/app/shared/ui/modal.service';
 
 @Component({
-  selector: 'app-admin-inventory',
+  selector: 'app-inventory',
   standalone: true,
-  imports: [
-    CommonModule, 
-    ReactiveFormsModule,
-    MatTableModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDialogModule,
-    MatProgressSpinnerModule,
-    MatCardModule
-  ],
+  imports: [CommonModule, FormsModule],
   template: `
-    <div class="p-6">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold">Inventory Management</h2>
-        <button mat-raised-button color="primary" (click)="resetForm()" [disabled]="loading">
-          <mat-icon>add</mat-icon>
-          Add New Item
+    <div class="p-6 max-w-7xl mx-auto">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-8">
+        <div>
+           <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Inventory Management</h2>
+           <p class="text-sm text-gray-500 dark:text-gray-400">Track medicine stock and equipment</p>
+        </div>
+        <button
+          (click)="openInventoryDialog()"
+          class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-500/30"
+        >
+          <span class="material-icons text-xl">add</span>
+          <span class="font-medium">Add Item</span>
         </button>
       </div>
 
-      <!-- Add/Edit Form -->
-      <mat-card class="mb-6" *ngIf="showForm">
-        <mat-card-header>
-          <mat-card-title>{{ editMode ? 'Edit' : 'Add' }} Inventory Item</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <form [formGroup]="inventoryForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            <mat-form-field >
-              <mat-label>Name</mat-label>
-              <input matInput formControlName="name" required>
-              <mat-error *ngIf="inventoryForm.get('name')?.hasError('required')">Name is required</mat-error>
-            </mat-form-field>
-
-            <mat-form-field >
-              <mat-label>Type</mat-label>
-              <mat-select formControlName="type" required>
-                <mat-option value="medicine">Medicine</mat-option>
-                <mat-option value="equipment">Equipment</mat-option>
-                <mat-option value="supplies">Supplies</mat-option>
-              </mat-select>
-              <mat-error *ngIf="inventoryForm.get('type')?.hasError('required')">Type is required</mat-error>
-            </mat-form-field>
-
-            <mat-form-field >
-              <mat-label>Quantity Available</mat-label>
-              <input matInput type="number" formControlName="quantity_available" required min="0">
-              <mat-error *ngIf="inventoryForm.get('quantity_available')?.hasError('required')">Quantity is required</mat-error>
-              <mat-error *ngIf="inventoryForm.get('quantity_available')?.hasError('min')">Quantity must be 0 or greater</mat-error>
-            </mat-form-field>
-
-            <mat-form-field >
-              <mat-label>Minimum Required</mat-label>
-              <input matInput type="number" formControlName="minimum_required" required min="0">
-              <mat-error *ngIf="inventoryForm.get('minimum_required')?.hasError('required')">Minimum required is required</mat-error>
-              <mat-error *ngIf="inventoryForm.get('minimum_required')?.hasError('min')">Minimum required must be 0 or greater</mat-error>
-            </mat-form-field>
-
-            <mat-form-field >
-              <mat-label>Expiry Date</mat-label>
-              <input matInput type="date" formControlName="expiry_date">
-            </mat-form-field>
-
-            <mat-form-field >
-              <mat-label>Supplier Name</mat-label>
-              <input matInput formControlName="supplier_name">
-            </mat-form-field>
-
-            <mat-form-field >
-              <mat-label>Supplier Contact</mat-label>
-              <input matInput formControlName="supplier_contact">
-            </mat-form-field>
-
-            <div class="flex gap-2 items-end">
-              <button mat-raised-button color="primary" type="submit" [disabled]="inventoryForm.invalid || loading">
-                <mat-icon *ngIf="loading" class="animate-spin">refresh</mat-icon>
-                {{ editMode ? 'Update' : 'Add' }}
-              </button>
-              <button mat-button type="button" (click)="cancelEdit()">Cancel</button>
-            </div>
-          </form>
-        </mat-card-content>
-      </mat-card>
-
-      <!-- Loading Spinner -->
-      <div *ngIf="loading" class="flex justify-center items-center py-8">
-        <mat-spinner></mat-spinner>
+      <!-- Filters -->
+      <div class="mb-6 flex gap-4">
+        <div class="relative w-full md:w-96">
+          <input
+            type="text"
+            (keyup)="applyFilter($event)"
+            placeholder="Search inventory..."
+            class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
+          />
+          <span class="material-icons absolute left-3 top-3.5 text-gray-400">search</span>
+        </div>
       </div>
 
-      <!-- Error Message -->
-      <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-        {{ error }}
+      <!-- Loading -->
+      <div *ngIf="loading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
 
-      <!-- Inventory Table -->
-      <mat-card *ngIf="!loading">
-        <mat-card-content>
-          <table mat-table [dataSource]="inventoryList" class="min-w-full">
-            <!-- Name Column -->
-            <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef>Name</th>
-              <td mat-cell *matCellDef="let item">{{ item.name }}</td>
-            </ng-container>
+      <!-- Table -->
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden" *ngIf="!loading">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
+                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Item Name</th>
+                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Category</th>
+                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Stock</th>
+                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Unit Price</th>
+                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+              <tr *ngFor="let item of filteredInventory" class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                <!-- Name -->
+                <td class="p-4">
+                  <span class="font-medium text-gray-900 dark:text-white">{{ item.name }}</span>
+                </td>
+                
+                <!-- Category -->
+                <td class="p-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400">
+                    {{ item.category }}
+                  </span>
+                </td>
 
-            <!-- Type Column -->
-            <ng-container matColumnDef="type">
-              <th mat-header-cell *matHeaderCellDef>Type</th>
-              <td mat-cell *matCellDef="let item">
-                <span class="px-2 py-1 rounded text-xs font-medium"
-                      [ngClass]="{
-                        'bg-blue-100 text-blue-800': item.type === 'medicine',
-                        'bg-green-100 text-green-800': item.type === 'equipment',
-                        'bg-yellow-100 text-yellow-800': item.type === 'supplies'
-                      }">
-                  {{ item.type | titlecase }}
-                </span>
-              </td>
-            </ng-container>
+                <!-- Stock -->
+                <td class="p-4">
+                  <div class="flex items-center gap-2">
+                     <span [class]="'font-bold ' + (item.stock < 10 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-gray-200')">
+                       {{ item.stock }}
+                     </span>
+                     <span *ngIf="item.stock < 10" class="text-xs text-red-500">(Low)</span>
+                  </div>
+                </td>
 
-            <!-- Quantity Column -->
-            <ng-container matColumnDef="quantity">
-              <th mat-header-cell *matHeaderCellDef>Quantity</th>
-              <td mat-cell *matCellDef="let item">
-                <span [ngClass]="{'text-red-600 font-bold': item.quantity_available < item.minimum_required}">
-                  {{ item.quantity_available }}
-                </span>
-                <span *ngIf="item.quantity_available < item.minimum_required" 
-                      class="ml-2 text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
-                  Low Stock!
-                </span>
-              </td>
-            </ng-container>
+                <!-- Price -->
+                <td class="p-4">
+                   <span class="text-gray-900 dark:text-gray-200">\${{ item.price }}</span>
+                </td>
 
-            <!-- Min Required Column -->
-            <ng-container matColumnDef="minRequired">
-              <th mat-header-cell *matHeaderCellDef>Min Required</th>
-              <td mat-cell *matCellDef="let item">{{ item.minimum_required }}</td>
-            </ng-container>
-
-            <!-- Expiry Column -->
-            <ng-container matColumnDef="expiry">
-              <th mat-header-cell *matHeaderCellDef>Expiry Date</th>
-              <td mat-cell *matCellDef="let item">
-                {{ item.expiry_date ? (item.expiry_date | date:'yyyy-MM-dd') : '-' }}
-              </td>
-            </ng-container>
-
-            <!-- Supplier Column -->
-            <ng-container matColumnDef="supplier">
-              <th mat-header-cell *matHeaderCellDef>Supplier</th>
-              <td mat-cell *matCellDef="let item">
-                <div *ngIf="item.supplier_info?.name">
-                  <div class="font-medium">{{ item.supplier_info.name }}</div>
-                  <div class="text-xs text-gray-500">{{ item.supplier_info.contact }}</div>
-                </div>
-                <span *ngIf="!item.supplier_info?.name">-</span>
-              </td>
-            </ng-container>
-
-            <!-- Actions Column -->
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef>Actions</th>
-              <td mat-cell *matCellDef="let item">
-                <button mat-icon-button color="primary" (click)="editItem(item)" [disabled]="loading">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button color="warn" (click)="confirmDelete(item)" [disabled]="loading">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                <!-- Actions -->
+                <td class="p-4 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    <button (click)="openInventoryDialog(item)" class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:text-blue-400 dark:hover:bg-blue-900/30 rounded-lg transition-colors" title="Edit">
+                       <span class="material-icons text-[20px]">edit</span>
+                    </button>
+                    <button (click)="confirmDelete(item)" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete">
+                       <span class="material-icons text-[20px]">delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <!-- Empty State -->
+              <tr *ngIf="filteredInventory.length === 0">
+                 <td colspan="5" class="p-8 text-center text-gray-500 dark:text-gray-400">
+                    No items found.
+                 </td>
+              </tr>
+            </tbody>
           </table>
-
-          <div *ngIf="inventoryList.length === 0" class="text-center py-8 text-gray-500">
-            No inventory items found.
-          </div>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </div>
     </div>
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  `
 })
 export class InventoryComponent implements OnInit {
-  inventoryList: any[] = [];
-  inventoryForm: FormGroup;
-  editMode = false;
-  editingId: string | null = null;
+  inventory: any[] = [];
+  filteredInventory: any[] = [];
   loading = false;
-  error = '';
-  showForm = false;
-  displayedColumns: string[] = ['name', 'type', 'quantity', 'minRequired', 'expiry', 'supplier', 'actions'];
 
   constructor(
     private inventoryService: InventoryService,
-    private fb: FormBuilder,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar
-  ) {
-    this.inventoryForm = this.fb.group({
-      name: ['', Validators.required],
-      type: ['', Validators.required],
-      quantity_available: [0, [Validators.required, Validators.min(0)]],
-      minimum_required: [0, [Validators.required, Validators.min(0)]],
-      expiry_date: [''],
-      supplier_name: [''],
-      supplier_contact: ['']
-    });
-  }
+    private modalService: ModalService
+  ) {}
 
   ngOnInit() {
     this.loadInventory();
@@ -240,111 +127,60 @@ export class InventoryComponent implements OnInit {
 
   loadInventory() {
     this.loading = true;
-    this.error = '';
-    this.inventoryService.getInventoryList().pipe(
-      catchError((err) => {
-        this.error = err.error?.message || 'Failed to load inventory';
-        this.snackBar.open(this.error, 'Close', { duration: 3000 });
-        return of({ data: [] });
-      })
-    ).subscribe((res: any) => {
-      this.inventoryList = res.data || [];
-      this.loading = false;
+    this.inventoryService.getInventoryList().subscribe({
+      next: (res: any) => {
+        const data = res.data || res;
+        this.inventory = data;
+        this.filteredInventory = data;
+        this.loading = false;
+      },
+      error: (err: any) => {
+        console.error('Failed to load inventory', err);
+        this.loading = false;
+      }
     });
   }
 
-  onSubmit() {
-    if (this.inventoryForm.valid) {
-      this.loading = true;
-      const formValue = this.inventoryForm.value;
-      const payload = {
-        name: formValue.name,
-        type: formValue.type,
-        quantity_available: formValue.quantity_available,
-        minimum_required: formValue.minimum_required,
-        expiry_date: formValue.expiry_date || undefined,
-        supplier_info: {
-          name: formValue.supplier_name,
-          contact: formValue.supplier_contact
-        }
-      };
-
-      if (this.editMode && this.editingId) {
-        this.inventoryService.updateInventoryItem(this.editingId, payload).subscribe({
-          next: (res: any) => {
-            this.snackBar.open('Inventory item updated successfully', 'Close', { duration: 2000 });
-            this.loadInventory();
-            this.cancelEdit();
-          },
-          error: (err) => {
-            this.snackBar.open(err.error?.message || 'Failed to update inventory item', 'Close', { duration: 3000 });
-            this.loading = false;
-          }
-        });
-      } else {
-        this.inventoryService.addInventoryItem(payload).subscribe({
-          next: (res: any) => {
-            this.snackBar.open('Inventory item added successfully', 'Close', { duration: 2000 });
-            this.loadInventory();
-            this.resetForm();
-          },
-          error: (err) => {
-            this.snackBar.open(err.error?.message || 'Failed to add inventory item', 'Close', { duration: 3000 });
-            this.loading = false;
-          }
-        });
-      }
+  applyFilter(event: any) {
+    const filterValue = (event.target as HTMLInputElement).value.toLowerCase().trim();
+    if (!filterValue) {
+      this.filteredInventory = this.inventory;
+    } else {
+      this.filteredInventory = this.inventory.filter((item: any) => 
+         item.name?.toLowerCase().includes(filterValue) || 
+         item.category?.toLowerCase().includes(filterValue)
+      );
     }
   }
 
-  editItem(item: any) {
-    this.editMode = true;
-    this.editingId = item._id;
-    this.showForm = true;
-    this.inventoryForm.patchValue({
-      name: item.name,
-      type: item.type,
-      quantity_available: item.quantity_available,
-      minimum_required: item.minimum_required,
-      expiry_date: item.expiry_date ? item.expiry_date.substring(0, 10) : '',
-      supplier_name: item.supplier_info?.name || '',
-      supplier_contact: item.supplier_info?.contact || ''
-    });
+  openInventoryDialog(item?: any) {
+    // Placeholder for Inventory Edit Dialog logic (Assume mostly same as User logic)
+    // For now logging
+    console.log('Open Inventory Dialog', item);
   }
 
   confirmDelete(item: any) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: { message: `Are you sure you want to delete ${item.name}?` },
-      width: '400px'
+    const modalRef = this.modalService.open(ConfirmDialogComponent, {
+      data: {
+        message: `Are you sure you want to delete ${item.name}?`,
+      }
     });
-    dialogRef.afterClosed().subscribe(result => {
+
+    modalRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         this.loading = true;
         this.inventoryService.deleteInventoryItem(item._id).subscribe({
           next: () => {
-            this.snackBar.open('Inventory item deleted successfully', 'Close', { duration: 2000 });
-            this.loadInventory();
+             this.inventory = this.inventory.filter(i => i._id !== item._id);
+             this.filteredInventory = [...this.inventory];
+             this.loading = false;
           },
-          error: (err) => {
-            this.snackBar.open(err.error?.message || 'Failed to delete inventory item', 'Close', { duration: 3000 });
-            this.loading = false;
+          error: (err: any) => {
+             console.error('Delete failed', err);
+             this.loading = false;
           }
         });
       }
     });
   }
-
-  cancelEdit() {
-    this.editMode = false;
-    this.editingId = null;
-    this.showForm = false;
-    this.inventoryForm.reset();
-  }
-
-  resetForm() {
-    this.editMode = false;
-    this.editingId = null;
-    this.showForm = true;
-    this.inventoryForm.reset();
-  }
-} 
+}

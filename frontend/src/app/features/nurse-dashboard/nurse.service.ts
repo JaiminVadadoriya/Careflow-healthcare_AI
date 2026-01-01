@@ -1,32 +1,35 @@
 import { Injectable } from '@angular/core';
-import { AppService } from 'src/app/app.service';
+import { HttpClient } from '@angular/common/http';
+import { BaseDataService } from 'src/app/core/base-data.service';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class NurseService {
-  constructor(private appService: AppService) {}
-
-  getAssignedPatients() {
-    // You may need a dedicated endpoint for nurse-assigned patients
-    return this.appService.getData('/users/nurse/patients');
+export class NurseService extends BaseDataService<any> {
+  constructor(http: HttpClient) {
+    super(http, '/users/nurse');
   }
 
-  getPatientDetails(id: string) {
-    return this.appService.getData(`/users/nurse/patient/${id}`);
+  getAssignedPatients(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/nurse/patients`, { headers: this.getHeaders() });
   }
 
-  addPatientVitals(patientId: string, data: any) {
-    return this.appService.postData(`/users/nurse/vitals/${patientId}`, data);
+  getPatientDetails(id: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/nurse/patient/${id}`, { headers: this.getHeaders() });
   }
 
-  assignOrReleaseBed(data: any) {
-    return this.appService.patchData('/users/nurse/bed-assignment', data);
+  addPatientVitals(patientId: string, data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/users/nurse/vitals/${patientId}`, data, { headers: this.getHeaders() });
   }
 
-  getAllBeds() {
-    return this.appService.getData('/beds');
+  assignOrReleaseBed(data: any): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/users/nurse/bed-assignment`, data, { headers: this.getHeaders() });
   }
 
-  getAvailableBeds() {
-    return this.appService.getData('/beds/available');
+  getAllBeds(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/beds`, { headers: this.getHeaders() });
   }
-} 
+
+  getAvailableBeds(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/beds/available`, { headers: this.getHeaders() });
+  }
+}

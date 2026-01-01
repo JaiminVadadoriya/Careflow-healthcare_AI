@@ -1,27 +1,76 @@
-# CareFlow
+# CareFlow Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.3.
+The frontend for the CareFlow Hospital Management System is a modern **Angular 18** application designed with **Material 3 Expressive** aesthetics and utility-first styling via **Tailwind CSS**. It interacts with the CareFlow Backend API to provide a comprehensive dashboard for hospital staff and patients.
 
-## Development server
+## 🏗 Architecture
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+The frontend uses strict OOP principles to ensure code reuse and maintainability:
 
-## Code scaffolding
+-   **BaseDataService**: Generic abstract class (`src/app/core/base-data.service.ts`) encapsulating common HTTP CRUD operations. All feature services extend this.
+-   **DashboardLayoutComponent**: Reusable layout shell (`src/app/shared/layout/dashboard-layout.component.ts`) using Composition (Content Projection) to render Sidebar, Topbar, and Theme toggles uniformly across all dashboards.
+-   **Guards**: `RoleGuard` ensures role-based route protection.
+-   **Standalone Components**: Fully utilizes Angular's Standalone Component architecture (no NgModules for features).
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Tech Stack
+-   **Framework**: Angular 18+
+-   **Styling**: SCSS, Angular Material 3, Tailwind CSS
+-   **State/Data**: RxJS, Services
+-   **Build**: Angular CLI (with customized budgets)
 
-## Build
+## 🚀 Getting Started
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### Prerequisites
+-   Node.js (v18+ recommended)
+-   Angular CLI (`npm install -g @angular/cli`)
 
-## Running unit tests
+### Installation
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+1.  Navigate to the frontend directory:
+    ```bash
+    cd frontend
+    ```
 
-## Running end-to-end tests
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+3.  Environment Configuration:
+    -   Check `src/environments/environment.ts` to ensure `apiUrl` points to your backend (default `http://localhost:8000/api/v1`).
 
-## Further help
+### Running the Application
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+-   **Development Server**:
+    ```bash
+    npm start
+    # or
+    ng serve
+    ```
+    Navigate to `http://localhost:4200/`. The app automatically reloads on changes.
+
+-   **Production Build**:
+    ```bash
+    npm run build
+    ```
+    Artifacts will be stored in `dist/`.
+
+## 📂 Project Structure
+
+```
+src/
+├── app/
+│   ├── core/           # Singleton services, Guards, Interceptors
+│   │   ├── auth/       # AuthService, RoleGuard
+│   │   └── base-data.service.ts # Base Generic Service
+│   ├── features/       # Feature Modules (Pages)
+│   │   ├── admin-dashboard/
+│   │   ├── doctor-dashboard/
+│   │   ├── nurse-dashboard/
+│   │   └── receptionist-dashboard/
+│   ├── shared/         # Reusable Components (Layout, UI)
+│   │   └── layout/     # DashboardLayoutComponent
+│   └── app.routes.ts   # Main Routing Config
+├── assets/             # Images, Icons
+├── styles.css         # Global Styles (Tailwind imports)
+└── m3-theme.scss       # Angular Material 3 Theme Definition
+```

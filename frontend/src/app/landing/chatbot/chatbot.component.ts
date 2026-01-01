@@ -13,78 +13,9 @@ import { ReceptionistService } from '../../features/receptionist-dashboard/recep
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatSelectModule,
+    FormsModule
   ],
-  template: `
-    <div class="chat-window p-4 max-w-lg mx-auto">
-      <div *ngFor="let m of messages">
-        <p [ngClass]="{ user: m.from === 'user', bot: m.from === 'bot' }">
-          {{ m.text }}
-        </p>
-        <ng-container *ngIf="m.buttons">
-          <button *ngFor="let b of m.buttons" (click)="handleAction(b.value)">
-            {{ b.text }}
-          </button>
-        </ng-container>
-        <ng-container *ngIf="m.select">
-          <mat-form-field>
-            <mat-select
-              [(value)]="selectedValue"
-              (selectionChange)="handleAction($event.value)"
-            >
-              <mat-option
-                *ngFor="let opt of m.select.options"
-                [value]="opt.value"
-                >{{ opt.label }}</mat-option
-              >
-            </mat-select>
-          </mat-form-field>
-        </ng-container>
-      </div>
-
-      <mat-form-field class="w-full" *ngIf="askInput">
-        <input
-          matInput
-          [(ngModel)]="userInput"
-          placeholder="{{ inputPlaceholder }}"
-          (keydown.enter)="submitInput()"
-        />
-        <button mat-icon-button matSuffix (click)="submitInput()">
-          <mat-icon>send</mat-icon>
-        </button>
-      </mat-form-field>
-    </div>
-  `,
-  styles: [
-    `
-      .bot {
-        background: #f1f1f1;
-        padding: 8px;
-        border-radius: 4px;
-        margin-bottom: 8px;
-      }
-      .user {
-        background: #d2e7ff;
-        padding: 8px;
-        border-radius: 4px;
-        margin-bottom: 8px;
-        text-align: right;
-      }
-      .chat-window {
-        max-height: 80vh;
-        overflow-y: auto;
-      }
-      button {
-        margin-right: 8px;
-        margin-bottom: 8px;
-      }
-    `,
-  ],
+  templateUrl: './chatbot.component.html',
 })
 export class ChatbotComponent implements OnInit {
   messages: any[] = [];
@@ -115,6 +46,11 @@ export class ChatbotComponent implements OnInit {
 
   userMessage(text: string) {
     this.messages.push({ from: 'user', text });
+  }
+
+  handleSelect(event: Event) {
+    const value = (event.target as HTMLSelectElement).value;
+    this.handleAction(value);
   }
 
   handleAction(value: any) {

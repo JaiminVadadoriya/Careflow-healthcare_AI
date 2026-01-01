@@ -1,75 +1,37 @@
-<table
-  mat-table
-  [dataSource]="data"
-  class="w-full min-w-full rounded-lg border border-gray-200 bg-white shadow-sm"
->
-  <!-- Dynamic columns -->
-  <ng-container *ngFor="let column of columns" [matColumnDef]="column">
-    <th
-      mat-header-cell
-      *matHeaderCellDef
-      class="px-4 py-2 text-left text-sm font-semibold text-gray-700 border-b border-gray-300 uppercase tracking-wide"
-    >
-      {{ column | titlecase }}
-    </th>
-    <td
-      mat-cell
-      *matCellDef="let element"
-      class="px-4 py-3 text-gray-900 text-sm border-b border-gray-100"
-    >
-      {{ element[column] }}
-    </td>
-  </ng-container>
-
-  <!-- Actions column -->
-  <ng-container matColumnDef="actions">
-    <th
-      mat-header-cell
-      *matHeaderCellDef
-      class="px-4 py-2 text-left text-sm font-semibold text-gray-700 border-b border-gray-300 uppercase tracking-wide"
-    >
-      Actions
-    </th>
-    <td
-      mat-cell
-      *matCellDef="let element"
-      class="px-4 py-3 border-b border-gray-100 flex space-x-2"
-    >
-      <button
-        mat-icon-button
-        aria-label="Edit"
-        class="rounded-full p-2 hover:bg-blue-100 text-blue-600 transition"
-        color="primary"
-        (click)="editUser.emit(element)"
-      >
-        <mat-icon>edit</mat-icon>
-      </button>
-      <button
-        mat-icon-button
-        aria-label="Block"
-        class="rounded-full p-2 hover:bg-red-100 text-red-600 transition"
-        color="warn"
-        (click)="toggleStatus.emit(element)"
-      >
-        <mat-icon>block</mat-icon>
-      </button>
-      <button
-        mat-icon-button
-        aria-label="Manage"
-        class="rounded-full p-2 hover:bg-green-100 text-green-600 transition"
-        color="accent"
-        (click)="promoteUser.emit(element)"
-      >
-        <mat-icon>supervisor_account</mat-icon>
-      </button>
-    </td>
-  </ng-container>
-
-  <!-- Header & rows -->
-  <tr mat-header-row *matHeaderRowDef="displayedColumns" class="bg-gray-50"></tr>
-  <tr
-    mat-row
-    *matRowDef="let row; columns: displayedColumns"
-    class="hover:bg-gray-50 cursor-pointer transition"
-  ></tr>
-</table>
+<div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+  <table class="w-full text-left border-collapse">
+    <thead class="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
+      <tr>
+        <th *ngFor="let column of columns" class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+           {{ column | titlecase }}
+        </th>
+        <th class="px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-right">
+           Actions
+        </th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+       <tr *ngFor="let element of data" class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+          <td *ngFor="let column of columns" class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+             {{ element[column] }}
+          </td>
+          <td class="px-4 py-3 text-right flex justify-end gap-2">
+             <button (click)="editUser.emit(element)" class="bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 p-2 rounded-full transition-colors" title="Edit">
+                <span class="material-icons text-sm">edit</span>
+             </button>
+             <button (click)="toggleStatus.emit(element)" class="bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 p-2 rounded-full transition-colors" title="Block/Unblock">
+                <span class="material-icons text-sm">block</span>
+             </button>
+             <button (click)="promoteUser.emit(element)" class="bg-green-50 hover:bg-green-100 dark:bg-green-900/20 dark:hover:bg-green-900/40 text-green-600 dark:text-green-400 p-2 rounded-full transition-colors" title="Promote">
+                <span class="material-icons text-sm">supervisor_account</span>
+             </button>
+          </td>
+       </tr>
+       <tr *ngIf="data.length === 0">
+          <td [attr.colspan]="columns.length + 1" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400 italic">
+             No data available.
+          </td>
+       </tr>
+    </tbody>
+  </table>
+</div>

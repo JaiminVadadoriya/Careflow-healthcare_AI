@@ -1,254 +1,160 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { UsersService } from './users.service';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatOptionModule } from '@angular/material/core';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { UsersService } from './users.service';
 import { UserEditDialogComponent } from '../shared/user-edit-dialog/user-edit-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
-import { CommonModule } from '@angular/common';
+import { ModalService } from 'src/app/shared/ui/modal.service';
 
 @Component({
   selector: 'app-users',
   standalone: true,
   imports: [
-    MatTableModule,
-    MatPaginatorModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatOptionModule,
-    MatSlideToggleModule,
-    MatIconModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatProgressSpinnerModule,
-    FormsModule,
     CommonModule,
+    FormsModule
   ],
   template: `
-    <div class="p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-bold">User Management</h2>
+    <div class="p-6 max-w-7xl mx-auto">
+      <!-- Header -->
+      <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div>
+           <h2 class="text-2xl font-bold text-gray-900 dark:text-white">User Management</h2>
+           <p class="text-sm text-gray-500 dark:text-gray-400">Manage system access and roles</p>
+        </div>
         <button
-          mat-raised-button
-          color="primary"
           (click)="openUserDialog()"
           [disabled]="loading"
+          class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <mat-icon>add</mat-icon>
-          Add User
+          <span class="material-icons text-xl">add</span>
+          <span class="font-medium">Add User</span>
         </button>
       </div>
 
-      <mat-form-field  class="w-full md:w-1/3 mb-4">
-        <mat-label>Search Users</mat-label>
-        <input
-          matInput
-          (keyup)="applyFilter($event)"
-          placeholder="Search by name, email, or role"
-        />
-        <mat-icon matSuffix>search</mat-icon>
-      </mat-form-field>
-
-      <div *ngIf="loading" class="flex justify-center items-center py-8">
-        <mat-spinner></mat-spinner>
+      <!-- Filters -->
+      <div class="mb-6">
+        <div class="relative w-full md:w-96">
+          <input
+            type="text"
+            (keyup)="applyFilter($event)"
+            placeholder="Search users..."
+            class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
+          />
+          <span class="material-icons absolute left-3 top-3.5 text-gray-400">search</span>
+        </div>
       </div>
 
-      <div
-        *ngIf="error"
-        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
-      >
-        {{ error }}
+      <!-- Alert -->
+      <div *ngIf="error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-xl mb-6 flex items-center gap-2">
+         <span class="material-icons text-sm">error</span>
+         {{ error }}
       </div>
 
-      <div class="overflow-x-auto" *ngIf="!loading">
-        <table
-          mat-table
-          [dataSource]="dataSource"
-          class="min-w-full rounded-xl overflow-hidden shadow-md border border-gray-200 dark:border-gray-700"
-        >
-          <!-- Header Cell Styling -->
-          <ng-container matColumnDef="name">
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="bg-gray-100 dark:bg-gray-700 text-left px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-100"
-            >
-              Name
-            </th>
-            <td
-              mat-cell
-              *matCellDef="let user"
-              class="px-4 py-3 text-sm text-gray-800 dark:text-gray-200"
-            >
-              {{ user.full_name }}
-            </td>
-            <!-- Name -->
-          </ng-container>
-          <!-- Email -->
-          <ng-container matColumnDef="email">
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="bg-gray-100 dark:bg-gray-700 text-left px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-100"
-            >
-              Email
-            </th>
-            <td
-              mat-cell
-              *matCellDef="let user"
-              class="px-4 py-3 text-sm text-gray-800 dark:text-gray-200"
-            >
-              {{ user.email }}
-            </td>
-          </ng-container>
-          <!-- Phone -->
-          <ng-container matColumnDef="phone">
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="bg-gray-100 dark:bg-gray-700 text-left px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-100"
-            >
-              Phone
-            </th>
-            <td
-              mat-cell
-              *matCellDef="let user"
-              class="px-4 py-3 text-sm text-gray-800 dark:text-gray-200"
-            >
-              {{ user.phone || 'N/A' }}
-            </td>
-          </ng-container>
-          <!-- Role -->
-          <ng-container matColumnDef="role">
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="bg-gray-100 dark:bg-gray-700 text-left px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-100"
-            >
-              Role
-            </th>
-            <td
-              mat-cell
-              *matCellDef="let user"
-              class="px-4 py-3 text-sm text-gray-800 dark:text-gray-200"
-            >
-              <mat-select
-                [(value)]="user.role"
-                (selectionChange)="changeRole(user)"
-                class="min-w-[150px]"
-              >
-                <mat-option *ngFor="let r of roles" [value]="r.value">
-                  <mat-icon class="mr-2 text-sm">{{ r.icon }}</mat-icon>
-                  {{ r.label }}
-                </mat-option>
-              </mat-select>
-            </td>
-          </ng-container>
-          <!-- Status -->
-          <ng-container matColumnDef="status">
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="bg-gray-100 dark:bg-gray-700 text-left px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-100"
-            >
-              Status
-            </th>
-            <td
-              mat-cell
-              *matCellDef="let user"
-              class="px-4 py-3 text-sm text-gray-800 dark:text-gray-200"
-            >
-              <mat-slide-toggle
-                [(ngModel)]="user.status"
-                (change)="changeStatus(user)"
-                class="!ml-2"
-                [checked]="user.status === 'active'"
-                color="primary"
-              >
-                {{ user.status === 'active' ? 'Active' : 'Inactive' }}
-              </mat-slide-toggle>
-            </td>
-          </ng-container>
-          <!-- Actions -->
-          <ng-container matColumnDef="actions">
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              class="bg-gray-100 dark:bg-gray-700 text-left px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-100"
-            >
-              Actions
-            </th>
-            <td
-              mat-cell
-              *matCellDef="let user"
-              class="px-4 py-3 text-sm text-gray-800 dark:text-gray-200"
-            >
-              <button
-                mat-icon-button
-                color="primary"
-                (click)="openUserDialog(user)"
-                [disabled]="loading"
-              >
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button
-                mat-icon-button
-                color="warn"
-                (click)="confirmDelete(user)"
-                [disabled]="loading"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
-            </td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
-        <mat-paginator [pageSize]="10" showFirstLastButtons></mat-paginator>
+      <!-- Loading -->
+      <div *ngIf="loading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+
+      <!-- Table -->
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden" *ngIf="!loading">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
+                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Name</th>
+                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Contact</th>
+                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Role</th>
+                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Status</th>
+                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+              <tr *ngFor="let user of filteredUsers" class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                <!-- Name -->
+                <td class="p-4">
+                   <div class="flex items-center gap-3">
+                     <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 font-bold text-xs uppercase">
+                        {{ user.full_name.charAt(0) }}
+                     </div>
+                     <span class="font-medium text-gray-900 dark:text-white">{{ user.full_name }}</span>
+                   </div>
+                </td>
+                
+                <!-- Email/Phone -->
+                <td class="p-4">
+                  <div class="flex flex-col">
+                    <span class="text-sm text-gray-900 dark:text-gray-200">{{ user.email }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ user.phone || 'N/A' }}</span>
+                  </div>
+                </td>
+
+                <!-- Role -->
+                <td class="p-4">
+                  <div class="relative w-32">
+                     <select [(ngModel)]="user.role" (change)="changeRole(user)" 
+                       class="w-full appearance-none bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 py-1.5 pl-3 pr-8 rounded-lg text-sm focus:outline-none focus:border-blue-500 cursor-pointer">
+                        <option *ngFor="let r of roles" [value]="r.value">{{ r.label }}</option>
+                     </select>
+                     <span class="material-icons absolute right-2 top-1.5 text-gray-400 text-sm pointer-events-none">expand_more</span>
+                  </div>
+                </td>
+
+                <!-- Status -->
+                <td class="p-4">
+                   <button (click)="toggleStatus(user)" 
+                      [class]="'px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ' + 
+                        (user.status === 'active' 
+                           ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800' 
+                           : 'bg-gray-50 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700')">
+                      <span class="flex items-center gap-1">
+                        <span [class]="'w-1.5 h-1.5 rounded-full ' + (user.status === 'active' ? 'bg-green-500' : 'bg-gray-400')"></span>
+                        {{ user.status === 'active' ? 'Active' : 'Inactive' }}
+                      </span>
+                   </button>
+                </td>
+
+                <!-- Actions -->
+                <td class="p-4 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    <button (click)="openUserDialog(user)" class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:text-blue-400 dark:hover:bg-blue-900/30 rounded-lg transition-colors" title="Edit">
+                       <span class="material-icons text-[20px]">edit</span>
+                    </button>
+                    <button (click)="confirmDelete(user)" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete">
+                       <span class="material-icons text-[20px]">delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <!-- Empty State -->
+              <tr *ngIf="filteredUsers.length === 0">
+                 <td colspan="5" class="p-8 text-center text-gray-500 dark:text-gray-400">
+                    No users found matching your search.
+                 </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-  `,
-  styles: [``],
+  `
 })
 export class UsersComponent implements OnInit {
-  displayedColumns: string[] = [
-    'name',
-    'email',
-    'phone',
-    'role',
-    'status',
-    'actions',
-  ];
-  dataSource = new MatTableDataSource<any>([]);
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  users: any[] = [];
+  filteredUsers: any[] = [];
   loading = false;
   error = '';
+  
   roles = [
-    { value: 'admin', label: 'Admin', icon: 'security' },
-    { value: 'doctor', label: 'Doctor', icon: 'medical_services' },
-    { value: 'nurse', label: 'Nurse', icon: 'local_hospital' },
-    { value: 'receptionist', label: 'Receptionist', icon: 'person' },
-    { value: 'inventory', label: 'Inventory', icon: 'inventory_2' },
+    { value: 'admin', label: 'Admin'},
+    { value: 'doctor', label: 'Doctor'},
+    { value: 'nurse', label: 'Nurse'},
+    { value: 'receptionist', label: 'Receptionist'},
+    { value: 'inventory', label: 'Inventory'},
   ];
 
   constructor(
     private usersService: UsersService,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private modalService: ModalService
   ) {}
 
   ngOnInit() {
@@ -260,31 +166,39 @@ export class UsersComponent implements OnInit {
     this.error = '';
     this.usersService.getUsers().subscribe({
       next: (res: any) => {
-        // Handle both direct array and wrapped response
-        const users = res.data || res;
-        this.dataSource.data = users;
-        this.dataSource.paginator = this.paginator;
+        const data = res.data || res;
+        this.users = data;
+        this.filteredUsers = data;
         this.loading = false;
       },
       error: (err) => {
         this.error = err.error?.message || 'Failed to load users';
         this.loading = false;
-        this.snackBar.open(this.error, 'Close', { duration: 3000 });
+        // In real app, replace MatSnackBar with a toast service
+        console.error(this.error);
       },
     });
   }
 
   applyFilter(event: any) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    const filterValue = (event.target as HTMLInputElement).value.toLowerCase().trim();
+    if (!filterValue) {
+      this.filteredUsers = this.users;
+    } else {
+      this.filteredUsers = this.users.filter(user => 
+         user.full_name?.toLowerCase().includes(filterValue) || 
+         user.email?.toLowerCase().includes(filterValue) ||
+         user.role?.toLowerCase().includes(filterValue)
+      );
+    }
   }
 
   openUserDialog(user?: any) {
-    const dialogRef = this.dialog.open(UserEditDialogComponent, {
-      data: user ? { ...user } : null,
-      width: '500px',
+    const modalRef = this.modalService.open(UserEditDialogComponent, {
+      data: user ? { ...user } : null
     });
-    dialogRef.afterClosed().subscribe((result) => {
+    
+    modalRef.afterClosed().subscribe((result: any) => {
       if (result) {
         if (user) {
           // Edit
@@ -292,20 +206,19 @@ export class UsersComponent implements OnInit {
           this.usersService.updateUser(user._id, result).subscribe({
             next: (res: any) => {
               const updatedUser = res.data || res;
-              Object.assign(user, updatedUser);
-              this.snackBar.open('User updated successfully', 'Close', {
-                duration: 2000,
-              });
+              // Update local state
+              const index = this.users.findIndex(u => u._id === user._id);
+              if (index !== -1) {
+                this.users[index] = { ...this.users[index], ...updatedUser };
+                this.applyFilter({ target: { value: '' } } as any); // Re-filter if needed, or just update
+                this.filteredUsers = [...this.users]; // simple refresh
+              }
               this.loading = false;
             },
             error: (err) => {
-              this.snackBar.open(
-                err.error?.message || 'Failed to update user',
-                'Close',
-                { duration: 3000 }
-              );
-              this.loading = false;
-            },
+               this.error = err.error?.message || 'Failed to update user';
+               this.loading = false;
+            }
           });
         } else {
           // Add
@@ -313,20 +226,14 @@ export class UsersComponent implements OnInit {
           this.usersService.createUser(result).subscribe({
             next: (res: any) => {
               const newUser = res.data || res;
-              this.dataSource.data = [newUser, ...this.dataSource.data];
-              this.snackBar.open('User created successfully', 'Close', {
-                duration: 2000,
-              });
+              this.users = [newUser, ...this.users];
+              this.filteredUsers = [...this.users];
               this.loading = false;
             },
             error: (err) => {
-              this.snackBar.open(
-                err.error?.message || 'Failed to create user',
-                'Close',
-                { duration: 3000 }
-              );
+              this.error = err.error?.message || 'Failed to create user';
               this.loading = false;
-            },
+            }
           });
         }
       }
@@ -334,31 +241,23 @@ export class UsersComponent implements OnInit {
   }
 
   confirmDelete(user: any) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+    const modalRef = this.modalService.open(ConfirmDialogComponent, {
       data: {
         message: `Are you sure you want to delete user ${user.full_name}?`,
-      },
-      width: '400px',
+      }
     });
-    dialogRef.afterClosed().subscribe((result) => {
+
+    modalRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         this.loading = true;
         this.usersService.deleteUser(user._id).subscribe({
           next: () => {
-            this.dataSource.data = this.dataSource.data.filter(
-              (u: any) => u._id !== user._id
-            );
-            this.snackBar.open('User deleted successfully', 'Close', {
-              duration: 2000,
-            });
+            this.users = this.users.filter((u: any) => u._id !== user._id);
+            this.filteredUsers = [...this.users];
             this.loading = false;
           },
           error: (err) => {
-            this.snackBar.open(
-              err.error?.message || 'Failed to delete user',
-              'Close',
-              { duration: 3000 }
-            );
+            this.error = err.error?.message || 'Failed to delete user';
             this.loading = false;
           },
         });
@@ -367,44 +266,31 @@ export class UsersComponent implements OnInit {
   }
 
   changeRole(user: any) {
+    // Optimistic update already happened via ngModel
     this.usersService.updateUserRole(user._id, user.role).subscribe({
       next: (res: any) => {
-        const updatedUser = res.data || res;
-        Object.assign(user, updatedUser);
-        this.snackBar.open(`User role updated to ${user.role}`, 'Close', {
-          duration: 2000,
-        });
+         // Success
       },
       error: (err) => {
-        this.snackBar.open(
-          err.error?.message || 'Failed to update user role',
-          'Close',
-          { duration: 3000 }
-        );
-        // Revert the change on error
+        console.error('Failed to update role', err);
+        // Revert?
         this.loadUsers();
       },
     });
   }
 
-  changeStatus(user: any) {
-    const newStatus = user.status === 'active' ? 'active' : 'inactive';
+  toggleStatus(user: any) {
+    const newStatus = user.status === 'active' ? 'inactive' : 'active';
+    // Optimistic
+    user.status = newStatus;
+    
     this.usersService.updateUserStatus(user._id, newStatus).subscribe({
       next: (res: any) => {
-        const updatedUser = res.data || res;
-        Object.assign(user, updatedUser);
-        this.snackBar.open(`User status updated to ${newStatus}`, 'Close', {
-          duration: 2000,
-        });
+        // Success
       },
       error: (err) => {
-        this.snackBar.open(
-          err.error?.message || 'Failed to update user status',
-          'Close',
-          { duration: 3000 }
-        );
-        // Revert the change on error
-        this.loadUsers();
+        console.error('Failed to update status', err);
+        user.status = newStatus === 'active' ? 'inactive' : 'active'; // Revert
       },
     });
   }

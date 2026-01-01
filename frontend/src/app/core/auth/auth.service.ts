@@ -13,6 +13,10 @@ export class AuthService {
     return this.appService.postData('/users/login', credentials);
   }
 
+  signup(data: any): Observable<any> {
+    return this.appService.postData('/users/register', data);
+  }
+
   handleLoginSuccess(response: any): void {
     const { accesstoken, refreshToken, user } = response.data;
     localStorage.setItem('access_token', accesstoken);
@@ -53,7 +57,10 @@ export class AuthService {
   }
 
   hasRole(roles: string[]): boolean {
-    // TODO: Implement real role check using JWT or user state
-    return true;
+    const user = this.getUser();
+    if (!user || !user.role) {
+      return false;
+    }
+    return roles.includes(user.role) || user.role === 'admin';
   }
 }
