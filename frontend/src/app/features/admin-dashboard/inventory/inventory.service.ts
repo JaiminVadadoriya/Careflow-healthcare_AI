@@ -26,4 +26,12 @@ export class InventoryService {
   deleteInventoryItem(id: string) {
     return this.appService.deleteData(`${this.baseUrl}/${id}`);
   }
+
+  consumeStock(itemId: string, data: { quantity: number, reason?: string }) {
+    return this.appService.postData(`${this.baseUrl}/consume/${itemId}`, data);
+  }
+
+  getLowStockItems() {
+    return this.appService.getData(`${this.baseUrl}/low-stock`);
+  }
 } 

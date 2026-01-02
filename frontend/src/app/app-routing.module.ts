@@ -68,7 +68,7 @@ const routes: Routes = [
     canLoad: [RoleGuard],
     data: { roles: ['admin', 'inventory'] },
     loadComponent: () =>
-      import('./features/admin-dashboard/inventory/inventory.component').then(m => m.InventoryComponent)
+      import('./features/admin-dashboard/inventory/inventory-dashboard.component').then(m => m.InventoryDashboardComponent)
   },
 
   // Patient (can also be lazy loaded)
