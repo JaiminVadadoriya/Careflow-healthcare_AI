@@ -19,6 +19,10 @@ import { AssignBedDialogComponent } from './assign-bed-dialog.component';
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Bed Management</h2>
           <p class="text-sm text-gray-500 dark:text-gray-400">Track occupancy and assign beds</p>
         </div>
+        <button (click)="openAddBedDialog()" class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors font-medium shadow-sm shadow-blue-500/20">
+            <span class="material-icons text-sm">add</span>
+            Add Bed
+        </button>
       </div>
     
       <!-- Loading -->
@@ -56,8 +60,13 @@ import { AssignBedDialogComponent } from './assign-bed-dialog.component';
                       </div>
 
                       <div>
-                          <h3 class="font-bold text-gray-900 dark:text-white text-lg">Bed {{ bed._id }}</h3>
-                          <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">{{ bed.ward }}</p>
+                          <h3 class="font-bold text-gray-900 dark:text-white text-lg">Bed {{ bed.room_number || bed._id }}</h3>
+                          <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">{{ bed.ward }}</p>
+                          @if (bed.is_occupied) {
+                              <p class="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                                Assigned by: {{ bed.assigned_by?.full_name || 'System' }}
+                              </p>
+                          }
                       </div>
 
                       <div class="pt-2 w-full">
@@ -83,7 +92,10 @@ import { AssignBedDialogComponent } from './assign-bed-dialog.component';
         @if (beds.length === 0) {
             <div class="flex flex-col items-center justify-center py-20 bg-gray-50 dark:bg-gray-800 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700">
                 <span class="material-icons text-gray-400 text-6xl mb-4">bed</span>
-                <p class="text-gray-500 font-medium">No beds found in the system.</p>
+                <p class="text-gray-500 font-medium mb-4">No beds found in the system.</p>
+                <button (click)="openAddBedDialog()" class="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30">
+                    Add Your First Bed
+                </button>
             </div>
         }
       }
@@ -115,6 +127,25 @@ export class BedsComponent implements OnInit {
     });
   }
 
+  openAddBedDialog() {
+      // Lazy load approach not needed since it's standalone, but we need to import it
+      import('./add-bed-dialog.component').then(c => {
+          const ref = this.modalService.open(c.AddBedDialogComponent, {});
+          ref.afterClosed().subscribe(result => {
+              if (result) {
+                  this.loading = true;
+                  this.nurseService.createBed(result).subscribe({
+                      next: () => this.loadBeds(),
+                      error: (err) => {
+                          this.loading = false;
+                          alert(err?.error?.message || 'Failed to create bed');
+                      }
+                  });
+              }
+          });
+      });
+  }
+
   openAssignDialog(bed: any) {
     const ref = this.modalService.open(AssignBedDialogComponent, {});
     ref.afterClosed().subscribe((patientId: any) => {
@@ -124,6 +155,7 @@ export class BedsComponent implements OnInit {
              next: () => {
                 bed.is_occupied = true;
                 this.loadingMap[bed._id] = false;
+                this.loadBeds(); // Reload to get updated user info
              },
              error: () => {
                 alert('Failed to assign bed');
@@ -142,6 +174,7 @@ export class BedsComponent implements OnInit {
          next: () => {
             bed.is_occupied = false;
             this.loadingMap[bed._id] = false;
+            this.loadBeds(); // Reload to clear user info
          },
          error: () => {
             alert('Failed to release bed');

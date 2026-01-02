@@ -13,10 +13,13 @@ class ReceptionistService {
       throw new APIError(409, "Patient with this phone number already exists");
     }
 
-    return await Patient.create({
+    const patient = await Patient.create({
       ...patientData,
+      current_status: "admitted", // Explicitly set status to admitted
       password: "Password123", // Should implement password reset flow
     });
+    console.log("Registered New Patient:", patient.full_name, "Status:", patient.current_status);
+    return patient;
   }
 
   async getAllPatients() {

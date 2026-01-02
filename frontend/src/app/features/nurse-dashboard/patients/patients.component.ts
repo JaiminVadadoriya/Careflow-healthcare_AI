@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 import { FormsModule } from '@angular/forms';
@@ -10,6 +11,7 @@ import { PatientDetailComponent } from './patient-detail.component';
   selector: 'app-nurse-patients',
   standalone: true,
   imports: [
+    CommonModule,
     FormsModule
 ],
   template: `
@@ -50,6 +52,7 @@ import { PatientDetailComponent } from './patient-detail.component';
                     <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Patient Name</th>
                     <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">ID</th>
                     <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Gender</th>
+                    <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Bed</th>
                     <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
@@ -64,6 +67,12 @@ import { PatientDetailComponent } from './patient-detail.component';
                       </td>
                       <td class="p-4 text-gray-600 dark:text-gray-400 font-mono text-sm">{{ patient._id }}</td>
                       <td class="p-4 text-gray-600 dark:text-gray-400 capitalize">{{ patient.gender }}</td>
+                      <td class="p-4 text-gray-600 dark:text-gray-400">
+                          <span *ngIf="patient.bed" class="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-1 rounded text-xs font-semibold">
+                              {{ patient.bed.room_number }} ({{ patient.bed.ward | titlecase }})
+                          </span>
+                          <span *ngIf="!patient.bed" class="text-gray-400 italic text-xs">Unassigned</span>
+                      </td>
                       <td class="p-4 text-right">
                         <button (click)="openPatientDetail(patient)" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium text-sm px-3 py-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
                           View Details
@@ -73,7 +82,7 @@ import { PatientDetailComponent } from './patient-detail.component';
                   }
                   @if (filteredPatients.length === 0) {
                     <tr>
-                      <td colspan="4" class="p-8 text-center text-gray-500 dark:text-gray-400">
+                      <td colspan="5" class="p-8 text-center text-gray-500 dark:text-gray-400">
                         No assigned patients found.
                       </td>
                     </tr>

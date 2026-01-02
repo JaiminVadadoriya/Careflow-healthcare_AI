@@ -46,14 +46,38 @@ class NurseService {
   }
 
   async getAssignedPatients(nurseId) {
-    return await Patient.find({ assigned_nurse: nurseId }) // Assuming assigned_nurse field exists, or logic is to get all active patients for now? 
-      // Nurse usually sees all patients in ward? Let's check Patient model later. For now, assuming direct assignment or all.
-      // If assigned_nurse is not in model, we might need to query by 'admitted' status.
-      // Let's broaden to all admitted patients for now to ensure data visibility.
-      // Change to: status 'admitted'
-    return await Patient.find({ current_status: "admitted" })
+    const patients = await Patient.find({ current_status: "admitted" })
       .select("-password -refreshToken")
-      .populate("assigned_doctor", "full_name");
+      .populate("assigned_doctor", "full_name")
+      .lean();
+    
+    console.log(`NurseService: Found ${patients.length} admitted patients.`);
+
+    const patientIds = patients.map(p => p._id);
+    const beds = await Bed.find({ assigned_patient: { $in: patientIds } })
+        .select('room_number ward assigned_patient');
+
+    const patientBedMap = {};
+    beds.forEach(bed => {
+        patientBedMap[bed.assigned_patient.toString()] = bed;
+    });
+
+    return patients.map(p => ({
+        ...p,
+        bed: patientBedMap[p._id.toString()] || null
+    }));
+  }
+
+  async getAllPatients(search) {
+      const filter = {};
+      if (search) {
+          filter.full_name = { $regex: search, $options: 'i' };
+      }
+      // Return top 50 to avoid performance hit
+      return await Patient.find(filter)
+        .select("full_name dob gender current_status")
+        .sort({ createdAt: -1 })
+        .limit(50);
   }
 
   async getDoctorOrders(patientId) {

@@ -10,9 +10,6 @@ class DoctorService {
       .select("-password -refreshToken")
       .populate("medical_history", "diagnosis date_time");
 
-    if (!patients.length) {
-      throw new APIError(404, "No patients assigned to this doctor");
-    }
     return patients;
   }
 

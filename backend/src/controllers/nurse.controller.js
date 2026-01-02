@@ -39,6 +39,12 @@ class NurseController {
     return res.status(200).json(new ApiResponse(200, "Assigned patients retrieved", patients));
   });
 
+  getAllPatients = asyncHandler(async (req, res) => {
+    const { search } = req.query;
+    const patients = await NurseService.getAllPatients(search);
+    return res.status(200).json(new ApiResponse(200, "Patients retrieved", patients));
+  });
+
   getDoctorOrders = asyncHandler(async (req, res) => {
     const orders = await NurseService.getDoctorOrders(req.params.patientId);
     return res.status(200).json(new ApiResponse(200, "Doctor orders retrieved", orders));
