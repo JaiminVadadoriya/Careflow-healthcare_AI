@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NurseService } from './nurse.service';
 
 import { RouterModule } from '@angular/router';
 import { DashboardLayoutComponent } from 'src/app/shared/layout/dashboard-layout.component';
@@ -80,13 +81,14 @@ import { DashboardService } from 'src/app/core/services/dashboard.service';
     </app-dashboard-layout>
   `
 })
+
 export class NurseDashboardComponent implements OnInit {
   stats: any = {};
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(private nurseService: NurseService) {}
 
   ngOnInit(): void {
-    this.dashboardService.getNurseStats().subscribe({
+    this.nurseService.getDashboardStats().subscribe({
         next: (res) => (this.stats = res.data),
         error: (err) => console.error(err)
     });

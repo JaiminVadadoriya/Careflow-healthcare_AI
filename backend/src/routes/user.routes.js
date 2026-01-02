@@ -82,11 +82,19 @@ router.get(
   AuthMiddleware.restrictTo(["nurse"]),
   NurseController.getNursePatientById
 );
+
 router.get('/nurse/patients', AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['nurse']), NurseController.getNurseAssignedPatients);
+
+// New Nurse Routes for Future-Proofing
+router.get('/nurse/dashboard-stats', AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['nurse']), NurseController.getDashboardStats);
+router.get('/nurse/orders/:patientId', AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['nurse']), NurseController.getDoctorOrders);
+router.post('/nurse/notes/:patientId', AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['nurse']), NurseController.addNursingNote);
+router.get('/nurse/notes/:patientId', AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['nurse']), NurseController.getNursingNotes);
 
 // Receptionist routes moved to receptionist.routes.js
 
 // Keep doctors route for general access if needed
+router.get('/nurse/vitals/:patientId', AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['nurse']), NurseController.getPatientVitals);
 router.get('/doctors', AuthMiddleware.authenticate, DoctorController.getAllDoctors);
 
 export default router;

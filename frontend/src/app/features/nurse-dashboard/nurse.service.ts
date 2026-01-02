@@ -32,4 +32,25 @@ export class NurseService extends BaseDataService<any> {
   getAvailableBeds(): Observable<any> {
     return this.http.get(`${this.apiUrl}/beds/available`, { headers: this.getHeaders() });
   }
+
+  // New Capabilities
+  getDashboardStats(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/nurse/dashboard-stats`, { headers: this.getHeaders() });
+  }
+
+  getDoctorOrders(patientId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/nurse/orders/${patientId}`, { headers: this.getHeaders() });
+  }
+
+  addNursingNote(patientId: string, note: string, type: string = 'general'): Observable<any> {
+    return this.http.post(`${this.apiUrl}/users/nurse/notes/${patientId}`, { note, type }, { headers: this.getHeaders() });
+  }
+
+  getNursingNotes(patientId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/nurse/notes/${patientId}`, { headers: this.getHeaders() });
+  }
+
+  getPatientVitals(patientId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/nurse/vitals/${patientId}`, { headers: this.getHeaders() });
+  }
 }
