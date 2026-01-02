@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { FormsModule } from '@angular/forms';
 import { NurseService } from '../nurse.service';
@@ -85,6 +86,7 @@ import { PatientDetailComponent } from './patient-detail.component';
       </div>
     `
 })
+
 export class PatientsComponent implements OnInit {
   patients: any[] = [];
   filteredPatients: any[] = [];
@@ -93,7 +95,7 @@ export class PatientsComponent implements OnInit {
 
   constructor(
     private nurseService: NurseService,
-    private modalService: ModalService
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -124,8 +126,6 @@ export class PatientsComponent implements OnInit {
   }
 
   openPatientDetail(patient: any) {
-    this.modalService.open(PatientDetailComponent, {
-      data: patient
-    });
+    this.router.navigate(['/nurse/patients', patient._id]);
   }
 }

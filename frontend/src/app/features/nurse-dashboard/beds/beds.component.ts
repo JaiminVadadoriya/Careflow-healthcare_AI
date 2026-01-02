@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NurseService } from '../nurse.service';
 import { ModalService } from 'src/app/shared/ui/modal.service';
@@ -9,6 +9,7 @@ import { AssignBedDialogComponent } from './assign-bed-dialog.component';
   selector: 'app-nurse-beds',
   standalone: true,
   imports: [
+    CommonModule,
     FormsModule
 ],
   template: `
@@ -27,65 +28,64 @@ import { AssignBedDialogComponent } from './assign-bed-dialog.component';
         </div>
       }
     
-      <!-- Grid Layout for Beds (Better than table for visuals maybe?) - Keeping Table for consistency as requested generally, but Grid is nice for beds. Let's use Table as Refactor. -->
+      <!-- Grid Layout for Beds -->
       @if (!loading) {
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead class="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
-                <tr>
-                  <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Bed #</th>
-                  <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Ward</th>
-                  <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Type</th>
-                  <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Status</th>
-                  <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                @for (bed of beds; track bed) {
-                  <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                    <td class="p-4 font-bold text-gray-900 dark:text-white">#{{ bed._id }}</td>
-                    <td class="p-4 text-gray-600 dark:text-gray-400">{{ bed.ward }}</td>
-                    <td class="p-4 text-gray-600 dark:text-gray-400">{{ bed.bed_type }}</td>
-                    <td class="p-4">
-                     <span [class]="'px-2.5 py-1 rounded-full text-xs font-medium border ' + 
-                       (bed.is_occupied 
-                          ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800' 
-                          : 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800')">
-                        {{ bed.is_occupied ? 'Occupied' : 'Avaliable' }}
-                      </span>
-                    </td>
-                    <td class="p-4 text-right">
-                      @if (!bed.is_occupied) {
-                        <button
-                          (click)="openAssignDialog(bed)"
-                          [disabled]="loadingMap[bed._id]"
-                          class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-all shadow-sm disabled:opacity-50 min-w-[80px]"
-                          >
-                          {{ loadingMap[bed._id] ? '...' : 'Assign' }}
-                        </button>
-                      }
-                      @if (bed.is_occupied) {
-                        <button
-                          (click)="confirmRelease(bed)"
-                          [disabled]="loadingMap[bed._id]"
-                          class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-sm font-medium transition-all shadow-sm disabled:opacity-50 min-w-[80px]"
-                          >
-                          {{ loadingMap[bed._id] ? '...' : 'Release' }}
-                        </button>
-                      }
-                    </td>
-                  </tr>
-                }
-                @if (beds.length === 0) {
-                  <tr>
-                    <td colspan="5" class="p-8 text-center text-gray-500 dark:text-gray-400">No beds found.</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+           @for (bed of beds; track bed) {
+              <div class="relative group bg-white dark:bg-gray-800 rounded-2xl border-2 transition-all duration-300 overflow-hidden hover:shadow-lg"
+                   [ngClass]="{
+                     'border-red-100 dark:border-red-900/30': bed.is_occupied,
+                     'border-green-100 dark:border-green-900/30': !bed.is_occupied
+                   }">
+                  
+                  <!-- Status Indicator Strip -->
+                  <div class="h-2 w-full"
+                    [ngClass]="{
+                        'bg-red-500': bed.is_occupied,
+                        'bg-green-500': !bed.is_occupied
+                    }"></div>
+
+                  <div class="p-5 flex flex-col items-center text-center space-y-3">
+                      <!-- Bed Icon -->
+                      <div class="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
+                           [ngClass]="{
+                             'bg-red-50 text-red-500 dark:bg-red-900/20': bed.is_occupied,
+                             'bg-green-50 text-green-500 dark:bg-green-900/20': !bed.is_occupied
+                           }">
+                          <span class="material-icons">bed</span>
+                      </div>
+
+                      <div>
+                          <h3 class="font-bold text-gray-900 dark:text-white text-lg">Bed {{ bed._id }}</h3>
+                          <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">{{ bed.ward }}</p>
+                      </div>
+
+                      <div class="pt-2 w-full">
+                          @if (!bed.is_occupied) {
+                             <button (click)="openAssignDialog(bed)" 
+                                     [disabled]="loadingMap[bed._id]"
+                                     class="w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-colors shadow-sm disabled:opacity-50">
+                                {{ loadingMap[bed._id] ? 'Assigning...' : 'Assign Patient' }}
+                             </button>
+                          } @else {
+                             <button (click)="confirmRelease(bed)" 
+                                     [disabled]="loadingMap[bed._id]"
+                                     class="w-full py-2 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-900/20 font-medium text-sm transition-colors disabled:opacity-50">
+                                {{ loadingMap[bed._id] ? 'Releasing...' : 'Release Bed' }}
+                             </button>
+                          }
+                      </div>
+                  </div>
+              </div>
+           }
         </div>
+
+        @if (beds.length === 0) {
+            <div class="flex flex-col items-center justify-center py-20 bg-gray-50 dark:bg-gray-800 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700">
+                <span class="material-icons text-gray-400 text-6xl mb-4">bed</span>
+                <p class="text-gray-500 font-medium">No beds found in the system.</p>
+            </div>
+        }
       }
     </div>
     `

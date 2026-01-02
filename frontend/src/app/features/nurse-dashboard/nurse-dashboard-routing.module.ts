@@ -16,6 +16,7 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'patients', pathMatch: 'full' },
       {path: "patients", loadComponent: () => import('./patients/patients.component').then(m => m.PatientsComponent)},
+      {path: "patients/:id", loadComponent: () => import('./patient-care/patient-care.component').then(m => m.PatientCareComponent)},
       {path: "beds", loadComponent: () => import('./beds/beds.component').then(m => m.BedsComponent)},
       {path: "vitals", loadComponent: () => import('./vitals/vitals.component').then(m => m.VitalsComponent)},
       
