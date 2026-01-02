@@ -4,9 +4,34 @@ import {asyncHandler} from '../utils/async_handler.utils.js';
 import {APIError} from '../utils/api_error_handler.utils.js';
 import ApiResponse from '../utils/api_response.utils.js';
 
-// 1. Get all beds
+// 1. Create a new bed
+export const createBed = asyncHandler(async (req, res) => {
+  const { room_number, ward, bed_type } = req.body;
+
+  if (!room_number || !ward || !bed_type) {
+    throw new APIError(400, "All fields (room_number, ward, bed_type) are required");
+  }
+
+  const existingBed = await Beds.findOne({ room_number });
+  if (existingBed) {
+    throw new APIError(409, "Bed with this room number already exists");
+  }
+
+  const bed = await Beds.create({
+    room_number,
+    ward,
+    bed_type,
+    is_occupied: false
+  });
+
+  return res.status(201).json(new ApiResponse(201, "Bed created successfully", bed));
+});
+
+// 2. Get all beds
 export const getAllBeds = asyncHandler(async (req, res) => {
-  const beds = await Beds.find().populate('assigned_patient', 'full_name dob');
+  const beds = await Beds.find()
+      .populate('assigned_patient', 'full_name dob')
+      .populate('assigned_by', 'full_name role');
   return res.status(200).json(new ApiResponse(200, 'All beds fetched', beds));
 });
 
@@ -32,11 +57,13 @@ export const assignPatientToBed = asyncHandler(async (req, res) => {
     if (existing) throw new APIError(400, 'Patient is already assigned to another bed');
 
     bed.assigned_patient = patientId;
+    bed.assigned_by = req.user.id; // Set who assigned
     bed.is_occupied = true;
   } else if (action === 'release') {
     if (!bed.is_occupied) throw new APIError(400, 'Bed is already unoccupied');
 
     bed.assigned_patient = null;
+    bed.assigned_by = null; // Clear assignment
     bed.is_occupied = false;
   } else {
     throw new APIError(400, "Invalid action. Use 'assign' or 'release'");

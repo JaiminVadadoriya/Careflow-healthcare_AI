@@ -13,6 +13,10 @@ export class NurseService extends BaseDataService<any> {
     return this.http.get(`${this.apiUrl}/users/nurse/patients`, { headers: this.getHeaders() });
   }
 
+  getAllPatients(search: string = ''): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/nurse/patients/all?search=${search}`, { headers: this.getHeaders() });
+  }
+
   getPatientDetails(id: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/users/nurse/patient/${id}`, { headers: this.getHeaders() });
   }
@@ -52,5 +56,9 @@ export class NurseService extends BaseDataService<any> {
 
   getPatientVitals(patientId: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/users/nurse/vitals/${patientId}`, { headers: this.getHeaders() });
+  }
+
+  createBed(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/beds`, data, { headers: this.getHeaders() });
   }
 }

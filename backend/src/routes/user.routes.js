@@ -84,6 +84,7 @@ router.get(
 );
 
 router.get('/nurse/patients', AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['nurse']), NurseController.getNurseAssignedPatients);
+router.get('/nurse/patients/all', AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['nurse']), NurseController.getAllPatients);
 
 // New Nurse Routes for Future-Proofing
 router.get('/nurse/dashboard-stats', AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['nurse']), NurseController.getDashboardStats);

@@ -19,6 +19,11 @@ const BedSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Patient',
       default: null
+    },
+    assigned_by: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
     }
   },
   { timestamps: true }

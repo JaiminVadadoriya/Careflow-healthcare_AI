@@ -1,6 +1,7 @@
 import express from 'express';
 import {
     assignPatientToBed,
+    createBed,
     getAllBeds,
     getAvailableBeds,
     updateBedStatus
@@ -9,6 +10,7 @@ import AuthMiddleware from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
+router.post('/', AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['admin', 'nurse']), createBed);
 router.get('/', AuthMiddleware.authenticate, getAllBeds);
 router.get('/available', AuthMiddleware.authenticate, getAvailableBeds);
 router.patch('/:bedId/assign', AuthMiddleware.authenticate, AuthMiddleware.restrictTo(['admin', 'nurse']), assignPatientToBed);
