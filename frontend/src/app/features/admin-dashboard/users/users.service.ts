@@ -6,7 +6,7 @@ import { AppService } from 'src/app/app.service';
   providedIn: 'root',
 })
 export class UsersService {
-    appUrl = '/users';
+    appUrl = '/admin/users';
   constructor(private appService: AppService, private router: Router) {}
   getUsers() {
     return this.appService.getData(this.appUrl);

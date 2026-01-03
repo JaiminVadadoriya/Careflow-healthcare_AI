@@ -327,10 +327,49 @@ export class ReportsComponent implements OnInit {
   }
 
   exportCSV() {
-    alert('CSV export functionality will be implemented soon!');
+    let data: any[] = [];
+    let filename = 'report.csv';
+
+    if (this.activeTab === 'users') {
+        data = this.userReports;
+        filename = `users_report_${new Date().toISOString().slice(0,10)}.csv`;
+    } else if (this.activeTab === 'appointments') {
+        data = this.appointmentReports;
+        filename = `appointments_report_${new Date().toISOString().slice(0,10)}.csv`;
+    } else if (this.activeTab === 'inventory') {
+        data = this.inventoryReports;
+        filename = `inventory_report_${new Date().toISOString().slice(0,10)}.csv`;
+    }
+
+    if (!data.length) {
+        alert('No data to export');
+        return;
+    }
+
+    const headers = Object.keys(data[0]);
+    const csvContent = [
+        headers.join(','),
+        ...data.map(row => headers.map(fieldName => {
+            const val = row[fieldName];
+            return typeof val === 'string' ? `"${val.replace(/"/g, '""')}"` : val;
+        }).join(','))
+    ].join('\r\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
   }
 
   exportPDF() {
-    alert('PDF export functionality will be implemented soon!');
+    // Reverting to print while resolving dependency issues
+    window.print();
   }
 }

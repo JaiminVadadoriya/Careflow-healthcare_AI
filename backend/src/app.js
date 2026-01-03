@@ -11,6 +11,7 @@ import bedsRoutes from "./routes/bed.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import receptionistRoutes from "./routes/receptionist.routes.js";
 import doctorRoutes from "./routes/doctor.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use(`/api/${apiVersion}/beds`, bedsRoutes);
 app.use(`/api/${apiVersion}/dashboard`, dashboardRoutes);
 app.use(`/api/${apiVersion}/receptionist`, receptionistRoutes);
 app.use(`/api/${apiVersion}/doctor`, doctorRoutes); // New dedicated route
+app.use(`/api/${apiVersion}/admin`, adminRoutes);
 
 // app.use(`/api/${apiVersion}/users`, userRouter);
 

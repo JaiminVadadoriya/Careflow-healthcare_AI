@@ -13,136 +13,150 @@ import { ModalService } from 'src/app/shared/ui/modal.service';
     FormsModule
 ],
   template: `
-    <div class="p-6 max-w-7xl mx-auto">
-      <!-- Header -->
-      <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+    <div class="p-6 max-w-[1600px] mx-auto space-y-6">
+      
+      <!-- Page Header -->
+      <div class="flex flex-col md:flex-row justify-between items-end gap-4 p-1">
         <div>
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">User Management</h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400">Manage system access and roles</p>
+          <h2 class="text-3xl font-bold text-slate-800 dark:text-white tracking-tight">User Management</h2>
+          <p class="text-slate-500 dark:text-slate-400 mt-1">Manage system access, roles, and account statuses.</p>
         </div>
         <button
           (click)="openUserDialog()"
           [disabled]="loading"
-          class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg shadow-blue-500/30 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
           <span class="material-icons text-xl">add</span>
-          <span class="font-medium">Add User</span>
+          <span>Add New User</span>
         </button>
       </div>
     
-      <!-- Filters -->
-      <div class="mb-6">
-        <div class="relative w-full md:w-96">
-          <input
-            type="text"
-            (keyup)="applyFilter($event)"
-            placeholder="Search users..."
-            class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
-            />
-            <span class="material-icons absolute left-3 top-3.5 text-gray-400">search</span>
+      <!-- Toolbar -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row gap-4 items-center justify-between">
+          
+          <div class="relative w-full md:w-96 group">
+             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span class="material-icons text-slate-400 group-focus-within:text-blue-500 transition-colors">search</span>
+             </div>
+             <input
+               type="text"
+               (keyup)="applyFilter($event)"
+               placeholder="Search by name, email, or role..."
+               class="block w-full pl-10 pr-4 py-3 rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+             />
           </div>
-        </div>
-    
-        <!-- Alert -->
-        @if (error) {
-          <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-xl mb-6 flex items-center gap-2">
-            <span class="material-icons text-sm">error</span>
-            {{ error }}
+
+          <div class="flex items-center gap-2 text-sm text-slate-500">
+             <span>Showing {{ filteredUsers.length }} users</span>
+             <button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" title="Filter" (click)="loadUsers()">
+                <span class="material-icons text-slate-400">refresh</span>
+             </button>
           </div>
-        }
-    
-        <!-- Loading -->
-        @if (loading) {
-          <div class="flex justify-center items-center py-12">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          </div>
-        }
-    
-        <!-- Table -->
-        @if (!loading) {
-          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse">
-                <thead>
-                  <tr class="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
-                    <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Name</th>
-                    <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Contact</th>
-                    <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Role</th>
-                    <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Status</th>
-                    <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                  @for (user of filteredUsers; track user) {
-                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                      <!-- Name -->
-                      <td class="p-4">
-                        <div class="flex items-center gap-3">
-                          <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 font-bold text-xs uppercase">
-                            {{ user.full_name.charAt(0) }}
-                          </div>
-                          <span class="font-medium text-gray-900 dark:text-white">{{ user.full_name }}</span>
-                        </div>
-                      </td>
-                      <!-- Email/Phone -->
-                      <td class="p-4">
-                        <div class="flex flex-col">
-                          <span class="text-sm text-gray-900 dark:text-gray-200">{{ user.email }}</span>
-                          <span class="text-xs text-gray-500 dark:text-gray-400">{{ user.phone || 'N/A' }}</span>
-                        </div>
-                      </td>
-                      <!-- Role -->
-                      <td class="p-4">
-                        <div class="relative w-32">
-                          <select [(ngModel)]="user.role" (change)="changeRole(user)"
-                            class="w-full appearance-none bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 py-1.5 pl-3 pr-8 rounded-lg text-sm focus:outline-none focus:border-blue-500 cursor-pointer">
-                            @for (r of roles; track r) {
-                              <option [value]="r.value">{{ r.label }}</option>
-                            }
-                          </select>
-                          <span class="material-icons absolute right-2 top-1.5 text-gray-400 text-sm pointer-events-none">expand_more</span>
-                        </div>
-                      </td>
-                      <!-- Status -->
-                      <td class="p-4">
-                        <button (click)="toggleStatus(user)"
-                      [class]="'px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ' + 
-                        (user.status === 'active' 
-                           ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800' 
-                           : 'bg-gray-50 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700')">
-                          <span class="flex items-center gap-1">
-                            <span [class]="'w-1.5 h-1.5 rounded-full ' + (user.status === 'active' ? 'bg-green-500' : 'bg-gray-400')"></span>
-                            {{ user.status === 'active' ? 'Active' : 'Inactive' }}
-                          </span>
-                        </button>
-                      </td>
-                      <!-- Actions -->
-                      <td class="p-4 text-right">
-                        <div class="flex items-center justify-end gap-2">
-                          <button (click)="openUserDialog(user)" class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:text-blue-400 dark:hover:bg-blue-900/30 rounded-lg transition-colors" title="Edit">
-                            <span class="material-icons text-[20px]">edit</span>
-                          </button>
-                          <button (click)="confirmDelete(user)" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-900/30 rounded-lg transition-colors" title="Delete">
-                            <span class="material-icons text-[20px]">delete</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  }
-                  <!-- Empty State -->
-                  @if (filteredUsers.length === 0) {
-                    <tr>
-                      <td colspan="5" class="p-8 text-center text-gray-500 dark:text-gray-400">
-                        No users found matching your search.
-                      </td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
-            </div>
-          </div>
-        }
       </div>
+    
+      <!-- Alert -->
+      @if (error) {
+         <div class="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/30 text-red-600 dark:text-red-400 px-4 py-3 rounded-xl flex items-center gap-2 animate-fade-in">
+           <span class="material-icons text-sm">error</span>
+           {{ error }}
+         </div>
+      }
+    
+      <!-- Loading State -->
+      @if (loading) {
+         <div class="flex flex-col items-center justify-center py-24 space-y-4">
+            <div class="relative w-16 h-16">
+               <div class="absolute top-0 left-0 w-full h-full border-4 border-blue-200 dark:border-blue-900/30 rounded-full"></div>
+               <div class="absolute top-0 left-0 w-full h-full border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
+            </div>
+            <p class="text-slate-500 font-medium">Loading users...</p>
+         </div>
+      }
+    
+      <!-- Modern Table -->
+      @if (!loading) {
+         <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-800 overflow-hidden">
+           <div class="overflow-x-auto">
+             <table class="w-full text-left border-collapse">
+               <thead>
+                 <tr class="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
+                   <th class="p-5 text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">User Profile</th>
+                   <th class="p-5 text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">Role & Permissions</th>
+                   <th class="p-5 text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">Account Status</th>
+                   <th class="p-5 text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider text-right">Actions</th>
+                 </tr>
+               </thead>
+               <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                 @for (user of filteredUsers; track user) {
+                   <tr class="group hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all duration-200">
+                     <!-- Profile -->
+                     <td class="p-5">
+                       <div class="flex items-center gap-4">
+                         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-md group-hover:scale-105 transition-transform">
+                           {{ user.full_name.charAt(0) }}
+                         </div>
+                         <div>
+                            <div class="font-semibold text-slate-800 dark:text-white">{{ user.full_name }}</div>
+                            <div class="text-sm text-slate-500 dark:text-slate-400">{{ user.email }}</div>
+                         </div>
+                       </div>
+                     </td>
+                     <!-- Role -->
+                     <td class="p-5">
+                       <div class="relative w-40">
+                         <select [(ngModel)]="user.role" (change)="changeRole(user)"
+                           class="w-full appearance-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 py-2 pl-3 pr-8 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm hover:border-blue-300 transition-colors">
+                           @for (r of roles; track r) {
+                             <option [value]="r.value">{{ r.label }}</option>
+                           }
+                         </select>
+                         <span class="material-icons absolute right-2 top-2.5 text-slate-400 text-sm pointer-events-none">expand_more</span>
+                       </div>
+                     </td>
+                     <!-- Status -->
+                     <td class="p-5">
+                       <button (click)="toggleStatus(user)"
+                         [class]="'group/status relative px-3 py-1.5 rounded-full text-xs font-bold border transition-all duration-300 flex items-center gap-2 w-fit ' + 
+                           (user.status === 'active' 
+                              ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100' 
+                              : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-100')">
+                          <span [class]="'w-2 h-2 rounded-full ' + (user.status === 'active' ? 'bg-emerald-500' : 'bg-slate-400')"></span>
+                          <span>{{ user.status === 'active' ? 'Active' : 'Inactive' }}</span>
+                          <span class="absolute inset-0 rounded-full ring-2 ring-emerald-500/0 group-hover/status:ring-emerald-500/20 transition-all"></span>
+                       </button>
+                     </td>
+                     <!-- Actions -->
+                     <td class="p-5 text-right">
+                       <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                         <button (click)="openUserDialog(user)" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors" title="Edit User">
+                           <span class="material-icons text-[20px]">edit</span>
+                         </button>
+                         <div class="w-px h-4 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+                         <button (click)="confirmDelete(user)" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-colors" title="Delete User">
+                           <span class="material-icons text-[20px]">delete</span>
+                         </button>
+                       </div>
+                     </td>
+                   </tr>
+                 }
+                 <!-- Empty State -->
+                 @if (filteredUsers.length === 0) {
+                   <tr>
+                     <td colspan="4" class="p-16 text-center">
+                        <div class="flex flex-col items-center justify-center text-slate-400">
+                           <span class="material-icons text-6xl mb-4 text-slate-200 dark:text-slate-700">search_off</span>
+                           <h3 class="text-lg font-semibold text-slate-600 dark:text-slate-300">No users found</h3>
+                           <p class="text-sm">Try adjusting your search terms.</p>
+                        </div>
+                     </td>
+                   </tr>
+                 }
+               </tbody>
+             </table>
+           </div>
+         </div>
+      }
+    </div>
     `
 })
 export class UsersComponent implements OnInit {

@@ -5,7 +5,7 @@ import { AppService } from 'src/app/app.service';
   providedIn: 'root'
 })
 export class ReportsService {
-  private baseUrl = '/users/reports';
+  private baseUrl = '/admin/reports';
 
   constructor(private appService: AppService) {}
 
