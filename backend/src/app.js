@@ -29,18 +29,16 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 // routes declaration
-const apiVersion = "v1";
-
 // Routes
-app.use(`/api/${apiVersion}/users`, userRoutes);
-app.use(`/api/${apiVersion}/appointments`, appointmentRoutes);
-app.use(`/api/${apiVersion}/patients`, patientRoutes);
-app.use(`/api/${apiVersion}/inventory`, inventoryRoutes); // Assuming doctor routes are under userRoutes
-app.use(`/api/${apiVersion}/beds`, bedsRoutes); 
-app.use(`/api/${apiVersion}/dashboard`, dashboardRoutes);
-app.use(`/api/${apiVersion}/receptionist`, receptionistRoutes);
-app.use(`/api/${apiVersion}/doctor`, doctorRoutes); // New dedicated route
-app.use(`/api/${apiVersion}/admin`, adminRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/appointments", appointmentRoutes);
+app.use("/api/v1/patients", patientRoutes);
+app.use("/api/v1/inventory", inventoryRoutes); // Assuming doctor routes are under userRoutes
+app.use("/api/v1/beds", bedsRoutes); 
+app.use("/api/v1/dashboard", dashboardRoutes);
+app.use("/api/v1/receptionist", receptionistRoutes);
+app.use("/api/v1/doctor", doctorRoutes); // New dedicated route
+app.use("/api/v1/admin", adminRoutes);
 
 // app.use(`/api/${apiVersion}/users`, userRouter);
 

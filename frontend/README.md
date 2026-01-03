@@ -1,6 +1,6 @@
 # CareFlow Frontend
 
-The frontend for the CareFlow Hospital Management System is a modern **Angular 18** application designed with **Material 3 Expressive** aesthetics and utility-first styling via **Tailwind CSS**. It interacts with the CareFlow Backend API to provide a comprehensive dashboard for hospital staff and patients.
+The frontend for the CareFlow Hospital Management System is a modern **Angular 21** application designed with **Material 3 Expressive** aesthetics and utility-first styling via **Tailwind CSS**. It interacts with the CareFlow Backend API to provide a comprehensive dashboard for hospital staff and patients.
 
 ## 🏗 Architecture
 
@@ -12,7 +12,7 @@ The frontend uses strict OOP principles to ensure code reuse and maintainability
 -   **Standalone Components**: Fully utilizes Angular's Standalone Component architecture (no NgModules for features).
 
 ### Tech Stack
--   **Framework**: Angular 18+
+-   **Framework**: Angular 21+
 -   **Styling**: SCSS, Angular Material 3, Tailwind CSS
 -   **State/Data**: RxJS, Services
 -   **Build**: Angular CLI (with customized budgets)

@@ -24,7 +24,8 @@
   "license": "ISC",
   "devDependencies": {
     "nodemon": "^3.0.3",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "swagger-autogen": "^2.23.7"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

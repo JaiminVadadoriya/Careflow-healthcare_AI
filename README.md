@@ -1,6 +1,6 @@
 # CareFlow Healthcare AI
 
-CareFlow is a comprehensive Hospital Resource Management Platform designed to streamline operations for doctors, nurses, receptionists, and administrators. It features a robust **Node.js/Express Backend** and a modern **Angular 18 Frontend**.
+CareFlow is a comprehensive Hospital Resource Management Platform designed to streamline operations for doctors, nurses, receptionists, and administrators. It features a robust **Node.js/Express Backend** and a modern **Angular 21 Frontend**.
 
 **Project Masterplan**: See [MASTERPLAN.md](./MASTERPLAN.md) for the high-level vision, target audience, and detailed feature list.
 

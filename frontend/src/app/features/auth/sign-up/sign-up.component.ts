@@ -2,6 +2,7 @@
 import { Component } from '@angular/core';
 import {
   FormBuilder,
+  FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -23,18 +24,20 @@ import { DarkModeComponent } from 'src/app/helpers/dark-mode-button/dark-mode-bu
 export class SignUpComponent  {
   hidePassword = true;
   loading = false;
-
-  signUpForm = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(2)]],
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
-    phone: ['', Validators.required],
-    gender: ['', Validators.required],
-  });
+  signUpForm!: FormGroup;
 
   constructor(
     private fb: FormBuilder,
-    private auth: AuthService) {}
+    private auth: AuthService
+  ) {
+    this.signUpForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      phone: ['', Validators.required],
+      gender: ['', Validators.required],
+    });
+  }
 
   onSubmit() {
     if (this.signUpForm.valid) {
