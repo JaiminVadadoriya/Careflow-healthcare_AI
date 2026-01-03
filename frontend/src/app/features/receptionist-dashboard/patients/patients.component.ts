@@ -213,6 +213,7 @@ import { ReceptionistService } from '../receptionist.service';
                 <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Emergency</th>
                 <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Assigned To</th>
                 <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Status</th>
+                <th class="p-4 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 tracking-wider text-right">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -252,11 +253,16 @@ import { ReceptionistService } from '../receptionist.service';
                        {{ patient.current_status || 'Registered' | titlecase }}
                     </span>
                   </td>
+                   <td class="p-4">
+                     <button (click)="openAssignModal(patient)" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 p-2 rounded-lg transition-colors flex items-center gap-1 text-xs font-medium">
+                        <span class="material-icons text-sm">edit</span> Assign
+                     </button>
+                   </td>
                 </tr>
               }
               @if (filteredPatients.length === 0) {
                 <tr>
-                  <td colspan="5" class="p-12 text-center">
+                  <td colspan="6" class="p-12 text-center">
                      <div class="flex flex-col items-center justify-center text-gray-400">
                         <span class="material-icons text-4xl mb-2 text-gray-300 dark:text-gray-600">search_off</span>
                         <p class="text-sm">No patients found matching your search.</p>
@@ -268,6 +274,41 @@ import { ReceptionistService } from '../receptionist.service';
           </table>
         </div>
       </div>
+
+      <!-- Assign Doctor Modal -->
+      @if (showAssignModal) {
+        <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
+           <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-gray-100 dark:border-gray-700">
+              <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
+                 <h3 class="font-bold text-gray-900 dark:text-white">Assign Doctor</h3>
+                 <button (click)="closeAssignModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <span class="material-icons">close</span>
+                 </button>
+              </div>
+              <div class="p-6 space-y-4">
+                 <p class="text-sm text-gray-600 dark:text-gray-300">
+                    Assigning a new doctor for <strong>{{ selectedPatient?.full_name }}</strong>.
+                 </p>
+                 <div class="space-y-1">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Doctor</label>
+                    <div class="relative">
+                      <select [(ngModel)]="newDoctorId" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none appearance-none">
+                         <option value="" disabled>Choose a doctor</option>
+                         @for (d of doctors; track d) {
+                            <option [value]="d._id">Dr. {{ d.full_name }} ({{ d.specialization }})</option>
+                         }
+                      </select>
+                      <span class="material-icons absolute right-3 top-3 text-gray-400 pointer-events-none text-sm">expand_more</span>
+                    </div>
+                 </div>
+                 <div class="flex justify-end gap-3 pt-2">
+                    <button (click)="closeAssignModal()" class="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-sm font-medium">Cancel</button>
+                    <button (click)="assignDoctor()" [disabled]="!newDoctorId" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm disabled:opacity-50">Confirm Assignment</button>
+                 </div>
+              </div>
+           </div>
+        </div>
+      }
     </div>
   `
 })
@@ -350,6 +391,41 @@ export class PatientsComponent implements OnInit {
       p.contact_info?.phone?.includes(term) ||
       p.contact_info?.email?.toLowerCase().includes(term)
     );
+  }
+  // Assignment Modal
+  showAssignModal = false;
+  selectedPatient: any = null;
+  newDoctorId = '';
+
+  openAssignModal(patient: any) {
+    this.selectedPatient = patient;
+    this.newDoctorId = patient.assigned_doctor?._id || patient.assigned_doctor || '';
+    this.showAssignModal = true;
+  }
+
+  closeAssignModal() {
+     this.showAssignModal = false;
+     this.selectedPatient = null;
+     this.newDoctorId = '';
+  }
+
+  assignDoctor() {
+     if (!this.selectedPatient || !this.newDoctorId) return;
+     
+     this.receptionistService.assignDoctor(this.selectedPatient._id, this.newDoctorId).subscribe({
+        next: (res: any) => {
+           // Update local data
+           const pIndex = this.patients.findIndex(p => p._id === this.selectedPatient._id);
+           if (pIndex !== -1) {
+              this.patients[pIndex] = res.data;
+              this.applyFilter();
+           }
+           this.successMessage = 'Doctor assigned successfully';
+           setTimeout(() => this.successMessage = '', 3000);
+           this.closeAssignModal();
+        },
+        error: (err) => alert(err.error?.message || 'Failed to assign doctor')
+     });
   }
 }
 

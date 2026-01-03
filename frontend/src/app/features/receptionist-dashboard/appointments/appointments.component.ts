@@ -333,8 +333,8 @@ export class AppointmentsComponent implements OnInit {
   applyFilter() {
      const term = this.search.trim().toLowerCase();
      this.filteredAppointments = this.appointments.filter(a => {
-        const pName = this.getPatientName(a.patientId).toLowerCase();
-        const dName = this.getDoctorName(a.doctorId).toLowerCase();
+        const pName = (this.getPatientName(a.patientId) || '').toString().toLowerCase();
+        const dName = (this.getDoctorName(a.doctorId) || '').toString().toLowerCase();
         return pName.includes(term) || dName.includes(term);
      });
   }

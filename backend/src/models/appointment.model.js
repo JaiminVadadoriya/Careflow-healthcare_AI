@@ -13,8 +13,8 @@ const AppointmentSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'confirmed', 'arrived', 'in-progress', 'completed', 'cancelled'],
-      default: 'pending'
+      enum: ['pending', 'confirmed', 'scheduled', 'arrived', 'in-progress', 'completed', 'cancelled'],
+      default: 'scheduled'
     }
   },
   { timestamps: true }

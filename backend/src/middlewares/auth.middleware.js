@@ -22,6 +22,10 @@ class AuthMiddleware {
     try {
       const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
       req.user = decoded;
+      // Ensure _id is available for controllers expecting it (standardizing with MongoDB)
+      if (req.user.id && !req.user._id) {
+          req.user._id = req.user.id;
+      }
       next();
     } catch (error) {
       throw new APIError(403, "Invalid or expired token");

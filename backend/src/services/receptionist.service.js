@@ -1,5 +1,6 @@
 import Patient from "../models/patient.model.js";
 import Appointment from "../models/appointment.model.js";
+import User from "../models/user.model.js";
 import { APIError } from "../utils/api_error_handler.utils.js";
 
 class ReceptionistService {
@@ -30,8 +31,6 @@ class ReceptionistService {
 
   async getDoctors() {
     // Assuming doctors are users with role 'doctor'
-    // I need to import User model
-    const User = (await import("../models/user.model.js")).default;
     return await User.find({ role: "doctor", status: "active" })
       .select("full_name email specialization");
   }
@@ -134,10 +133,23 @@ class ReceptionistService {
   async dischargePatient(patientId) {
     const patient = await Patient.findByIdAndUpdate(
       patientId,
-      { current_status: "discharged", discharge_date: new Date() },
+      { current_status: "discharged", bed_assigned: null }, // Auto-free bed if any
       { new: true }
-    ).select("-password -refreshToken");
+    );
+    if (!patient) throw new APIError(404, "Patient not found");
+    return patient;
+  }
 
+  async assignDoctor(patientId, doctorId) {
+    const doctorExists = await User.exists({ _id: doctorId, role: 'doctor' });
+    if (!doctorExists) throw new APIError(404, "Doctor not found");
+
+    const patient = await Patient.findByIdAndUpdate(
+        patientId,
+        { assigned_doctor: doctorId },
+        { new: true }
+    ).populate('assigned_doctor', 'full_name');
+    
     if (!patient) throw new APIError(404, "Patient not found");
     return patient;
   }

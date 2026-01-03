@@ -49,6 +49,14 @@ class ReceptionistController {
     const availability = await ReceptionistService.getDoctorAvailability(req.params.doctorId, date);
     return res.status(200).json(new ApiResponse(200, "Availability retrieved", availability));
   });
+
+  assignDoctor = asyncHandler(async (req, res) => {
+    const { doctorId } = req.body;
+    if (!doctorId) throw new APIError(400, "Doctor ID is required");
+    
+    const patient = await ReceptionistService.assignDoctor(req.params.patientId, doctorId);
+    return res.status(200).json(new ApiResponse(200, "Doctor assigned successfully", patient));
+  });
 }
 
 export default new ReceptionistController();

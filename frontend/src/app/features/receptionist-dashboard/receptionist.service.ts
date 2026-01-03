@@ -62,4 +62,8 @@ export class ReceptionistService extends BaseDataService<any> {
   checkAvailability(doctorId: string, date: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/receptionist/doctors/${doctorId}/availability?date=${date}`, { headers: this.getHeaders() });
   }
+
+  assignDoctor(patientId: string, doctorId: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/receptionist/patients/${patientId}/assign-doctor`, { doctorId }, { headers: this.getHeaders() });
+  }
 }
