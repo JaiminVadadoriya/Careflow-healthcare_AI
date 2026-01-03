@@ -18,8 +18,8 @@ class DashboardController {
     // 3. Inventory Items count
     const totalInventoryItems = await Inventory.countDocuments();
     
-    // 4. Occupied Beds count
-    const occupiedBeds = await Bed.countDocuments({ isOccupied: true });
+    // 4. Occupied Beds count (Admitted Patients)
+    const occupiedBeds = await Patient.countDocuments({ current_status: { $in: ['admitted', 'icu', 'isolation'] } });
 
     const stats = {
       totalUsers,
@@ -74,8 +74,8 @@ class DashboardController {
 
   getNurseStats = asyncHandler(async (req, res) => {
      // 1. Ward Capacity (Occupied / Total)
-     const totalBeds = await Bed.countDocuments();
-     const occupiedBeds = await Bed.countDocuments({ isOccupied: true });
+     const totalBeds = await Bed.countDocuments() || 50; // Default to 50 if no beds configured
+     const occupiedBeds = await Patient.countDocuments({ current_status: { $in: ['admitted', 'icu', 'isolation'] } });
      
      // 2. Critical Alerts (Placeholder)
      const criticalAlerts = 2;

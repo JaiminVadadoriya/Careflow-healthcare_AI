@@ -332,8 +332,45 @@ app-dashboard-layout [sidebar-items] a:hover {
     @apply bg-white text-black;
   }
 
-  .no-print {
+  /* Hide Layout Elements */
+  app-sidebar,
+  aside,
+  nav,
+  header,
+  .no-print,
+  button {
     display: none !important;
+  }
+
+  /* Reset Layout Margins */
+  main,
+  .p-6,
+  .max-w-7xl {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Optimize Tables for Print */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  th,
+  td {
+    padding: 8px !important;
+    border: 1px solid #ddd !important;
+    font-size: 10pt !important;
+  }
+
+  /* Ensure backgrounds print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
 

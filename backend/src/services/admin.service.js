@@ -2,27 +2,36 @@ import User from "../models/user.model.js";
 import Appointment from "../models/appointment.model.js";
 import Inventory from "../models/inventory.model.js";
 import Bed from "../models/bed.model.js";
+import Patient from "../models/patient.model.js";
+import AuditLog from "../models/audit_log.model.js";
+import Setting from "../models/setting.model.js";
 
 class AdminService {
   async getDashboardStats() {
-    const [userCount, appointmentCount, inventoryCount, bedCount] = await Promise.all([
+    // Occupied beds = Admitted Patients (admitted, icu, isolation)
+    const [userCount, appointmentCount, inventoryCount, occupiedBedsCount] = await Promise.all([
       User.countDocuments(),
       Appointment.countDocuments(),
       Inventory.countDocuments(),
-      Bed.countDocuments({ is_occupied: true }),
+      Patient.countDocuments({ current_status: { $in: ['admitted', 'icu', 'isolation'] } }),
     ]);
+
+    // Fetch real recent activity
+    const recentActivity = await AuditLog.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .populate('performed_by', 'full_name');
 
     return {
       totalUsers: userCount,
       totalAppointments: appointmentCount,
       totalInventoryItems: inventoryCount,
-      occupiedBeds: bedCount,
-      recentActivity: [
-        { type: "user", text: `${userCount} total users`, time: new Date() },
-        { type: "appointment", text: `${appointmentCount} total appointments`, time: new Date() },
-        { type: "inventory", text: `${inventoryCount} inventory items`, time: new Date() },
-        { type: "bed", text: `${bedCount} beds occupied`, time: new Date() },
-      ],
+      occupiedBeds: occupiedBedsCount,
+      recentActivity: recentActivity.map(log => ({
+        text: `${log.action} by ${log.performed_by?.full_name || 'System'}`,
+        time: log.createdAt,
+        type: 'log'
+      })) 
     };
   }
 
@@ -98,6 +107,48 @@ class AdminService {
       lowStockItems: lowStockItems.length,
       lowStockItemsList: lowStockItems,
     };
+  }
+  // Audit Logs
+  async logAction({ action, performedBy, targetResource, details }) {
+      return await AuditLog.create({
+          action,
+          performed_by: performedBy,
+          target_resource: targetResource,
+          details
+      });
+  }
+
+  async getActivityLogs(limit = 20) {
+      return await AuditLog.find()
+          .sort({ createdAt: -1 })
+          .limit(limit)
+          .populate('performed_by', 'full_name email role');
+  }
+
+  // Settings Management
+  async getSettings() {
+      return await Setting.find();
+  }
+
+  async updateSetting(key, value) {
+      return await Setting.findOneAndUpdate(
+          { key },
+          { value },
+          { new: true, upsert: true } // Create if not exists
+      );
+  }
+
+  // User Management extended
+  async getAllUsers() {
+      return await User.find().select("-password");
+  }
+
+  async updateUserRole(userId, newRole) {
+      return await User.findByIdAndUpdate(userId, { role: newRole }, { new: true });
+  }
+
+  async updateUserStatus(userId, status) {
+      return await User.findByIdAndUpdate(userId, { status }, { new: true });
   }
 }
 
