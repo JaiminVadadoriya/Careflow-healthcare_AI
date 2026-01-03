@@ -40,26 +40,10 @@ router.get("/reports/appointments", AuthMiddleware.authenticate, AuthMiddleware.
 router.get("/reports/inventory", AuthMiddleware.authenticate, AuthMiddleware.restrictTo(["admin"]), AdminController.getInventoryReports);
 
 /**
- * 👨‍⚕️ Doctor Routes
+ * 👨‍⚕️ Doctor Routes (Moved to doctor.routes.js)
  */
-router.get(
-  "/doctor/patients",
-  AuthMiddleware.authenticate,
-  AuthMiddleware.restrictTo(["doctor"]),
-  DoctorController.getAssignedPatients
-);
-router.patch(
-  "/doctor/records/:id",
-  AuthMiddleware.authenticate,
-  AuthMiddleware.restrictTo(["doctor"]),
-  DoctorController.updateMedicalRecord
-);
-router.get(
-  "/doctor/appointments",
-  AuthMiddleware.authenticate,
-  AuthMiddleware.restrictTo(["doctor"]),
-  DoctorController.getDoctorAppointments
-);
+// Routes migrated to /api/v1/doctor/...
+
 
 /**
  * 👩‍⚕️ Nurse Routes

@@ -15,6 +15,7 @@ router.get("/patients", ReceptionistController.getAllPatients);
 router.get("/doctors", ReceptionistController.getDoctors); // New Route
 router.patch("/patients/:patientId/checkin", ReceptionistController.checkInPatient);
 router.patch("/patients/:patientId/discharge", ReceptionistController.dischargePatient);
+router.patch("/patients/:patientId/assign-doctor", ReceptionistController.assignDoctor);
 
 // Doctor Availability
 router.get("/doctors/:doctorId/availability", ReceptionistController.getDoctorAvailability);
