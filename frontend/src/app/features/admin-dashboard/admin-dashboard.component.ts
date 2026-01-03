@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from '../../shared/shared.module';
 import { AuthService } from '../../core/auth/auth.service';
 import { DashboardLayoutComponent } from 'src/app/shared/layout/dashboard-layout.component';
-import { MetricCardComponent } from 'src/app/shared/ui/metric-card.component';
 import { ActionCardComponent } from 'src/app/shared/ui/action-card.component';
 import { DashboardService } from 'src/app/core/services/dashboard.service';
 
@@ -12,10 +11,10 @@ import { DashboardService } from 'src/app/core/services/dashboard.service';
   selector: 'app-admin-dashboard',
   standalone: true,
   imports: [
+    CommonModule,
     RouterModule,
     SharedModule,
     DashboardLayoutComponent,
-    MetricCardComponent,
     ActionCardComponent
 ],
   template: `
@@ -155,8 +154,8 @@ import { DashboardService } from 'src/app/core/services/dashboard.service';
 })
 export class AdminDashboardComponent implements OnInit {
   recentActivity: any[] = [];
-
   stats: any = {};
+  today: Date = new Date();
 
   constructor(
     private auth: AuthService,
